@@ -36,11 +36,13 @@
       [interactionData]="rawdata"
       [hideNetwork]="true"
     ></airgap-from-to>
-    <airgap-evm-transaction-display
-      *ngIf="evmResults[i] as decoded"
-      class="ion-padding-horizontal"
-      [result]="decoded"
-      [dbDate]="dbDate"
-    ></airgap-evm-transaction-display>
+    <ng-container *ngIf="evmResults$ | async as evmResults">
+      <airgap-evm-transaction-display
+        *ngIf="evmResults[i] as decoded"
+        class="ion-padding-horizontal"
+        [result]="decoded"
+        [dbDate]="dbDate$ | async"
+      ></airgap-evm-transaction-display>
+    </ng-container>
   </ng-container>
 </ng-container>

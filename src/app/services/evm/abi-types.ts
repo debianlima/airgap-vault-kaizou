@@ -48,8 +48,14 @@ export interface SignatureDatabaseMetadata {
 }
 
 export interface DisplayRow {
-  label: string
+  /** i18n key, falls back to raw label */
+  labelKey: string
+  /** Already-formatted display value (addresses, amounts, etc.) */
   value: string
+  /** Optional i18n key whose translation replaces value */
+  valueKey?: string
+  /** Optional params passed to the translation pipe */
+  valueParams?: Record<string, string | number>
   type: 'address' | 'amount' | 'text' | 'hex' | 'warning'
 }
 
@@ -57,9 +63,13 @@ export interface RenderResult {
   type: RenderType
   confidence: ConfidenceLevel
   rows: DisplayRow[]
-  warningMessage?: string
+  warningKey?: string
+  warningParams?: Record<string, string | number>
   nested?: RenderResult[]
   rawCalldata: string
+  functionNameKey?: string
+  functionNameParams?: Record<string, string | number>
+  /** Plain text fallback if no key is available */
   functionName?: string
 }
 

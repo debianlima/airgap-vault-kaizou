@@ -1,31 +1,31 @@
 <div class="evm-decoded" *ngIf="result">
   <div class="evm-decoded__header">
     <ion-badge [class]="'evm-decoded__badge evm-decoded__badge--' + result.confidence">
-      {{ confidenceLabel() }}
+      {{ confidenceLabelKey() | translate }}
     </ion-badge>
-    <span class="evm-decoded__fn" *ngIf="result.functionName">{{ result.functionName }}</span>
+    <span class="evm-decoded__fn">{{ functionName() }}</span>
   </div>
 
   <ion-list lines="full" class="evm-decoded__rows">
     <ion-item *ngFor="let row of result.rows">
       <ion-label>
-        <p class="evm-decoded__label">{{ row.label }}</p>
-        <h3 [class]="'evm-decoded__value evm-decoded__value--' + row.type">{{ row.value }}</h3>
+        <p class="evm-decoded__label">{{ row.labelKey | translate }}</p>
+        <h3 [class]="'evm-decoded__value evm-decoded__value--' + row.type">{{ renderValue(row) }}</h3>
       </ion-label>
     </ion-item>
   </ion-list>
 
-  <ion-card color="warning" *ngIf="result.warningMessage" class="evm-decoded__warning">
+  <ion-card color="warning" *ngIf="result.warningKey" class="evm-decoded__warning">
     <ion-card-content>
       <ion-icon name="warning-outline"></ion-icon>
-      {{ result.warningMessage }}
+      {{ result.warningKey | translate: result.warningParams }}
     </ion-card-content>
   </ion-card>
 
   <div class="evm-decoded__nested" *ngIf="result.nested && result.nested.length">
-    <h4>Inner calls</h4>
+    <h4>{{ 'evm-decoder.inner-calls' | translate }}</h4>
     <airgap-evm-transaction-display
-      *ngFor="let inner of result.nested; let i = index"
+      *ngFor="let inner of result.nested"
       [result]="inner"
       [dbDate]="dbDate"
     ></airgap-evm-transaction-display>
@@ -34,11 +34,13 @@
   <ion-accordion-group>
     <ion-accordion value="raw">
       <ion-item slot="header" color="light">
-        <ion-label>Raw calldata</ion-label>
+        <ion-label>{{ 'evm-decoder.raw-calldata-label' | translate }}</ion-label>
       </ion-item>
       <div slot="content" class="evm-decoded__raw">{{ result.rawCalldata }}</div>
     </ion-accordion>
   </ion-accordion-group>
 
-  <small class="evm-decoded__meta" *ngIf="dbDate">Signature database: {{ dbDate }}</small>
+  <small class="evm-decoded__meta" *ngIf="dbDate">
+    {{ 'evm-decoder.db-date-label' | translate }}: {{ dbDate }}
+  </small>
 </div>

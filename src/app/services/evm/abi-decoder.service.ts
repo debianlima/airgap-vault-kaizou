@@ -13,9 +13,9 @@ interface AbiType {
 
 @Injectable({ providedIn: 'root' })
 export class AbiDecoderService {
-  public extractSelector(calldata: string): string {
+  public extractSelector(calldata: string): string | null {
     const hex = stripHexPrefix(calldata).toLowerCase()
-    if (hex.length < 8) return ''
+    if (hex.length < 8) return null
     return hex.slice(0, 8)
   }
 
@@ -38,10 +38,6 @@ export class AbiDecoderService {
     } catch {
       return null
     }
-  }
-
-  public decode(_calldata: string): DecodedCall | null {
-    return null
   }
 }
 

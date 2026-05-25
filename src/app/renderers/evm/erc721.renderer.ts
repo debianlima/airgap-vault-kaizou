@@ -8,10 +8,9 @@ const SAFE_TRANSFER_FROM = '42842e0e'
 const SAFE_TRANSFER_FROM_DATA = 'b88d4fde'
 
 /**
- * Selector 23b872dd is shared with ERC-20 transferFrom. The original spec
- * hardcodes it as NFT; reviewer pushback said this is wrong because ERC-20
- * transferFrom is more common in DeFi. We render with low confidence and an
- * explicit ambiguity warning instead of pretending we know.
+ * Selector 0x23b872dd is shared with ERC-20 transferFrom. We render with
+ * `low` confidence and an explicit ambiguity warning rather than pretending
+ * we know whether this is an NFT or a token amount.
  */
 export class Erc721Renderer implements TransactionRenderer {
   constructor(private readonly decoder: AbiDecoderService) {}
@@ -39,16 +38,15 @@ export class Erc721Renderer implements TransactionRenderer {
     return {
       type: 'erc721-transfer',
       confidence: 'low',
-      functionName: 'transferFrom (ambiguous)',
+      functionNameKey: 'evm-decoder.fn-transferfrom-ambiguous',
       rows: [
-        { label: 'Function', value: 'transferFrom (ERC-20 or ERC-721)', type: 'text' },
-        { label: 'Contract', value: tx.to, type: 'address' },
-        { label: 'From', value: from, type: 'address' },
-        { label: 'To', value: to, type: 'address' },
-        { label: 'Amount or Token ID', value: third.toString(), type: 'amount' }
+        { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-transferfrom-ambiguous', value: 'transferFrom', type: 'text' },
+        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        { labelKey: 'evm-decoder.from-label', value: from, type: 'address' },
+        { labelKey: 'evm-decoder.to-label', value: to, type: 'address' },
+        { labelKey: 'evm-decoder.amount-or-token-id-label', value: third.toString(), type: 'amount' }
       ],
-      warningMessage:
-        'Selector 0x23b872dd is used by both ERC-20 transferFrom and ERC-721 transferFrom. The third parameter is either a token amount (ERC-20) or a token ID (ERC-721). Verify the contract before signing.',
+      warningKey: 'evm-decoder.transferfrom-ambiguous-warning',
       rawCalldata: tx.data
     }
   }
@@ -66,13 +64,13 @@ export class Erc721Renderer implements TransactionRenderer {
     return {
       type: 'erc721-transfer',
       confidence: 'high',
-      functionName: 'NFT Transfer',
+      functionNameKey: 'evm-decoder.fn-nft-transfer',
       rows: [
-        { label: 'Function', value: 'NFT Transfer (safe)', type: 'text' },
-        { label: 'Contract', value: tx.to, type: 'address' },
-        { label: 'From', value: from, type: 'address' },
-        { label: 'To', value: to, type: 'address' },
-        { label: 'Token ID', value: tokenId.toString(), type: 'text' }
+        { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-nft-transfer', value: 'NFT Transfer', type: 'text' },
+        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        { labelKey: 'evm-decoder.from-label', value: from, type: 'address' },
+        { labelKey: 'evm-decoder.to-label', value: to, type: 'address' },
+        { labelKey: 'evm-decoder.token-id-label', value: tokenId.toString(), type: 'text' }
       ],
       rawCalldata: tx.data
     }

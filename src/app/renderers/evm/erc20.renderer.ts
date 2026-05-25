@@ -28,18 +28,18 @@ export class Erc20Renderer implements TransactionRenderer {
     const amountRaw = paramUint(decoded, 1)
     if (to === null || amountRaw === null) return null
     const token = lookupKnownToken(tx.chainId, tx.to)
-    const amount = token
-      ? formatAmount(amountRaw, token.decimals, token.symbol)
-      : `${amountRaw.toString()} (raw — token decimals unknown)`
+    const amountRow = token
+      ? { value: formatAmount(amountRaw, token.decimals, token.symbol) }
+      : { valueKey: 'evm-decoder.amount-raw-note', valueParams: { value: amountRaw.toString() }, value: amountRaw.toString() }
     return {
       type: 'erc20-transfer',
       confidence: 'high',
-      functionName: 'Token Transfer',
+      functionNameKey: 'evm-decoder.fn-token-transfer',
       rows: [
-        { label: 'Function', value: 'Token Transfer', type: 'text' },
-        { label: 'Contract', value: tx.to, type: 'address' },
-        { label: 'To', value: to, type: 'address' },
-        { label: 'Amount', value: amount, type: 'amount' }
+        { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-token-transfer', value: 'Token Transfer', type: 'text' },
+        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        { labelKey: 'evm-decoder.to-label', value: to, type: 'address' },
+        { labelKey: 'evm-decoder.amount-label', type: 'amount', ...amountRow }
       ],
       rawCalldata: tx.data
     }
@@ -53,23 +53,22 @@ export class Erc20Renderer implements TransactionRenderer {
     if (spender === null || amountRaw === null) return null
     const token = lookupKnownToken(tx.chainId, tx.to)
     const unlimited = isUnlimitedApproval(amountRaw)
-    const amount = unlimited
-      ? 'Unlimited'
+    const amountRow = unlimited
+      ? { valueKey: 'evm-decoder.amount-unlimited', value: 'Unlimited' }
       : token
-      ? formatAmount(amountRaw, token.decimals, token.symbol)
-      : `${amountRaw.toString()} (raw — token decimals unknown)`
+      ? { value: formatAmount(amountRaw, token.decimals, token.symbol) }
+      : { valueKey: 'evm-decoder.amount-raw-note', valueParams: { value: amountRaw.toString() }, value: amountRaw.toString() }
     return {
       type: 'erc20-approve',
       confidence: 'high',
-      functionName: 'Token Approval',
+      functionNameKey: 'evm-decoder.fn-token-approval',
       rows: [
-        { label: 'Function', value: 'Token Approval', type: 'text' },
-        { label: 'Contract', value: tx.to, type: 'address' },
-        { label: 'Spender', value: spender, type: 'address' },
-        { label: 'Amount', value: amount, type: unlimited ? 'warning' : 'amount' }
+        { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-token-approval', value: 'Token Approval', type: 'text' },
+        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        { labelKey: 'evm-decoder.spender-label', value: spender, type: 'address' },
+        { labelKey: 'evm-decoder.amount-label', type: unlimited ? 'warning' : 'amount', ...amountRow }
       ],
-      warningMessage:
-        'This grants the spender permission to transfer tokens on your behalf. Verify the spender address carefully.',
+      warningKey: 'evm-decoder.approval-warning',
       rawCalldata: tx.data
     }
   }
@@ -83,9 +82,4 @@ export function paramAddress(d: DecodedCall, i: number): string | null {
 export function paramUint(d: DecodedCall, i: number): bigint | null {
   const v = d.params[i]?.value
   return v && v.kind === 'uint' ? v.value : null
-}
-
-export function paramBytes(d: DecodedCall, i: number): Uint8Array | null {
-  const v = d.params[i]?.value
-  return v && v.kind === 'bytes' ? v.value : null
 }

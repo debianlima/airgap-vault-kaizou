@@ -1,6 +1,6 @@
 import { IAirGapTransaction, ProtocolSymbols } from '@airgap/coinlib-core'
 import { Component, Input, OnInit } from '@angular/core'
-import { Observable } from 'rxjs'
+import { BehaviorSubject, Observable } from 'rxjs'
 import { ContactsService } from 'src/app/services/contacts/contacts.service'
 
 import { RenderResult } from '../../services/evm/abi-types'
@@ -26,8 +26,10 @@ export class TransactionComponent implements OnInit {
   public airGapTxs$: Observable<IAirGapTransaction[]>
   public aggregatedDetails$: Observable<AggregatedDetails | undefined>
 
-  public evmResults: (RenderResult | null)[] = []
-  public dbDate?: string
+  private readonly evmResultsSubject = new BehaviorSubject<(RenderResult | null)[]>([])
+  public readonly evmResults$ = this.evmResultsSubject.asObservable()
+  private readonly dbDateSubject = new BehaviorSubject<string | undefined>(undefined)
+  public readonly dbDate$ = this.dbDateSubject.asObservable()
 
   constructor(
     private readonly store: TransactionStore,
@@ -55,21 +57,17 @@ export class TransactionComponent implements OnInit {
 
   private async decodeEvm(): Promise<void> {
     if (!this.airGapTxs) {
-      this.evmResults = []
+      this.evmResultsSubject.next([])
       return
     }
-    this.evmResults = await Promise.all(
+    const results = await Promise.all(
       this.airGapTxs.map(async tx => {
         if (!isEvmProtocol(tx.protocolIdentifier)) return null
         const data = tx.data
         if (!data || data === '0x' || data.length <= 2) return null
         const to = tx.to?.[0]
         if (!to) return null
-        const input = {
-          to,
-          data,
-          chainId: chainIdForProtocol(tx.protocolIdentifier)
-        }
+        const input = { to, data, chainId: chainIdForProtocol(tx.protocolIdentifier) }
         try {
           await this.evmRenderer.prepare(input)
           return this.evmRenderer.render(input)
@@ -79,8 +77,13 @@ export class TransactionComponent implements OnInit {
         }
       })
     )
-    const meta = this.evmResults.some(r => r) ? await this.evmRenderer.getDbMetadata() : null
-    this.dbDate = meta?.sourcifyExportDate
+    this.evmResultsSubject.next(results)
+    if (results.some(r => r)) {
+      const meta = await this.evmRenderer.getDbMetadata()
+      this.dbDateSubject.next(meta?.sourcifyExportDate)
+    } else {
+      this.dbDateSubject.next(undefined)
+    }
   }
 
   private async setAddressNames() {

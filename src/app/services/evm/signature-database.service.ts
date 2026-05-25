@@ -3,20 +3,22 @@ import { Injectable } from '@angular/core'
 import { firstValueFrom } from 'rxjs'
 
 import { SignatureDatabaseMetadata, SignatureLookupResult } from './abi-types'
-import { bytesToHex, hexToBytes } from './abi-decoder.service'
+import { hexToBytes } from './abi-decoder.service'
 
 /**
  * Flat binary signature DB.
  *
  * File layout (little-endian):
- *   magic    [4]  = 'A4BY'
- *   version  [u32]
- *   count    [u32]      number of entries
+ *   magic    [4]    = 'A4BY'
+ *   version  [u32]  = 2
+ *   count    [u32]  number of entries
  *   index    [count * 8]  -> repeated: 4-byte selector + 4-byte u32 offset into blob
- *   blob     [..]       -> repeated: u16 length + UTF-8 signature bytes
+ *   blob     [..]   -> repeated: u16 collisions + u16 length + UTF-8 signature bytes
  *
  * Index is sorted by selector ASC. Lookup = binary search.
  * Each selector appears at most once (oldest-first dedup at build time).
+ * `collisions` is how many distinct signatures the build script saw for this
+ * selector before dedup — surfaced in the UI as an ambiguity warning.
  */
 @Injectable({ providedIn: 'root' })
 export class SignatureDatabaseService {
@@ -46,10 +48,11 @@ export class SignatureDatabaseService {
     if (idx < 0) return null
     const off = this.view.getUint32(this.indexStart + idx * 8 + 4, true)
     const blobPos = this.blobStart + off
-    const len = this.view.getUint16(blobPos, true)
-    const sigBytes = this.buffer.slice(blobPos + 2, blobPos + 2 + len)
+    const collisions = this.view.getUint16(blobPos, true)
+    const len = this.view.getUint16(blobPos + 2, true)
+    const sigBytes = this.buffer.slice(blobPos + 4, blobPos + 4 + len)
     const signature = new TextDecoder('utf-8').decode(sigBytes)
-    return { signature, selector: clean, collisions: 1 }
+    return { signature, selector: clean, collisions }
   }
 
   public async getMetadata(): Promise<SignatureDatabaseMetadata | null> {
@@ -67,6 +70,8 @@ export class SignatureDatabaseService {
       this.view = new DataView(this.buffer.buffer, this.buffer.byteOffset, this.buffer.byteLength)
       const magic = String.fromCharCode(this.buffer[0], this.buffer[1], this.buffer[2], this.buffer[3])
       if (magic !== 'A4BY') throw new Error('bad magic')
+      const version = this.view.getUint32(4, true)
+      if (version !== 2) throw new Error('unsupported db version ' + version)
       this.count = this.view.getUint32(8, true)
       this.indexStart = 12
       this.blobStart = this.indexStart + this.count * 8
@@ -102,15 +107,4 @@ export class SignatureDatabaseService {
     return 0
   }
 
-  public _debugSize(): number {
-    return this.buffer ? this.buffer.length : 0
-  }
-
-  public _debugCount(): number {
-    return this.count
-  }
-
-  public _hexFromBytes(b: Uint8Array): string {
-    return bytesToHex(b)
-  }
 }

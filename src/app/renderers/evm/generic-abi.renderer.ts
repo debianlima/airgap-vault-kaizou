@@ -1,11 +1,9 @@
 import { AbiDecoderService } from '../../services/evm/abi-decoder.service'
 import { DecodedParam, EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
-import { SignatureDatabaseService } from '../../services/evm/signature-database.service'
 import { selectorOf, TransactionRenderer } from './base.renderer'
 
 export class GenericAbiRenderer implements TransactionRenderer {
   constructor(
-    _db: SignatureDatabaseService,
     private readonly decoder: AbiDecoderService,
     private readonly cache: Map<string, { sig: string; collisions: number } | null>
   ) {}
@@ -30,40 +28,39 @@ export class GenericAbiRenderer implements TransactionRenderer {
       confidence: collisionWarn ? 'low' : 'medium',
       functionName: `${fn}(…)`,
       rows: [
-        { label: 'Function', value: fn, type: 'text' },
-        { label: 'Contract', value: tx.to, type: 'address' },
+        { labelKey: 'evm-decoder.function-label', value: fn, type: 'text' },
+        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
         ...rows
       ],
-      warningMessage: collisionWarn
-        ? 'Multiple function signatures match this selector. The most likely interpretation is shown; verify the raw calldata.'
-        : 'Decoded via the local signature database. The signature is not a known standard — verify before signing.',
+      warningKey: collisionWarn ? 'evm-decoder.collision-warning' : 'evm-decoder.database-note',
+      warningParams: collisionWarn ? { count: cached.collisions } : undefined,
       rawCalldata: tx.data
     }
   }
 }
 
 export function paramToRow(label: string, p: DecodedParam): {
-  label: string
+  labelKey: string
   value: string
   type: 'address' | 'amount' | 'text' | 'hex' | 'warning'
 } {
   const v = p.value
   switch (v.kind) {
     case 'address':
-      return { label: `${label} (address)`, value: v.value, type: 'address' }
+      return { labelKey: `${label} (address)`, value: v.value, type: 'address' }
     case 'uint':
-      return { label: `${label} (${p.type})`, value: v.display, type: 'amount' }
+      return { labelKey: `${label} (${p.type})`, value: v.display, type: 'amount' }
     case 'int':
-      return { label: `${label} (${p.type})`, value: v.display, type: 'amount' }
+      return { labelKey: `${label} (${p.type})`, value: v.display, type: 'amount' }
     case 'bool':
-      return { label: `${label} (bool)`, value: v.value ? 'true' : 'false', type: 'text' }
+      return { labelKey: `${label} (bool)`, value: v.value ? 'true' : 'false', type: 'text' }
     case 'bytes':
-      return { label: `${label} (${p.type})`, value: v.hex, type: 'hex' }
+      return { labelKey: `${label} (${p.type})`, value: v.hex, type: 'hex' }
     case 'string':
-      return { label: `${label} (string)`, value: v.value, type: 'text' }
+      return { labelKey: `${label} (string)`, value: v.value, type: 'text' }
     case 'array':
-      return { label: `${label} (${p.type})`, value: `[${v.items.length} items]`, type: 'text' }
+      return { labelKey: `${label} (${p.type})`, value: `[${v.items.length} items]`, type: 'text' }
     case 'tuple':
-      return { label: `${label} (${p.type})`, value: `{${v.fields.length} fields}`, type: 'text' }
+      return { labelKey: `${label} (${p.type})`, value: `{${v.fields.length} fields}`, type: 'text' }
   }
 }

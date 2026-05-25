@@ -74,7 +74,7 @@ describe('EvmTransactionRendererService', () => {
     const r = svc.render(tx)
     expect(r.type).toBe('erc721-transfer')
     expect(r.confidence).toBe('low')
-    expect(r.warningMessage).toBeTruthy()
+    expect(r.warningKey).toBeTruthy()
   })
 
   it('decodes multicall and renders inner calls', async () => {
@@ -84,18 +84,20 @@ describe('EvmTransactionRendererService', () => {
       '000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045' +
       '0000000000000000000000000000000000000000000000000000000000000001'
     // bytes[] with 2 entries each containing 68 (0x44) bytes
+    // 68 % 32 = 4, so pad each blob with 28 zero bytes = 56 hex chars
+    const pad = '0'.repeat(56)
     const data =
       '0xac9650d8' +
       '0000000000000000000000000000000000000000000000000000000000000020' + // offset to array
       '0000000000000000000000000000000000000000000000000000000000000002' + // length
       '0000000000000000000000000000000000000000000000000000000000000040' + // offset to elem 0
-      '00000000000000000000000000000000000000000000000000000000000000a0' + // offset to elem 1
+      '00000000000000000000000000000000000000000000000000000000000000c0' + // offset to elem 1
       '0000000000000000000000000000000000000000000000000000000000000044' + // elem 0 length
       inner +
-      '00000000000000000000000000000000' + // pad elem 0 to 32
+      pad +
       '0000000000000000000000000000000000000000000000000000000000000044' + // elem 1 length
       inner +
-      '00000000000000000000000000000000'
+      pad
     const tx = { to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', data, chainId: 1 }
     await svc.prepare(tx)
     const r = svc.render(tx)

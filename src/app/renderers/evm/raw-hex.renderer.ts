@@ -10,14 +10,13 @@ export class RawHexRenderer implements TransactionRenderer {
     return {
       type: 'raw-hex',
       confidence: 'unknown',
-      functionName: 'Unknown call',
+      functionNameKey: 'evm-decoder.fn-unknown',
       rows: [
-        { label: 'Function', value: 'Unknown', type: 'warning' },
-        { label: 'Contract', value: tx.to, type: 'address' },
-        { label: 'Raw calldata', value: tx.data, type: 'hex' }
+        { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-unknown', value: 'Unknown', type: 'warning' },
+        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        { labelKey: 'evm-decoder.raw-calldata-label', value: tx.data, type: 'hex' }
       ],
-      warningMessage:
-        'This transaction could not be decoded. This does not mean it is invalid. Review the raw calldata carefully before signing.',
+      warningKey: 'evm-decoder.unknown-warning',
       rawCalldata: tx.data
     }
   }

@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core'
+import { TranslateService } from '@ngx-translate/core'
 
-import { RenderResult } from '../../services/evm/abi-types'
+import { DisplayRow, RenderResult } from '../../services/evm/abi-types'
 
 @Component({
   selector: 'airgap-evm-transaction-display',
@@ -11,17 +12,32 @@ export class EvmTransactionDisplayComponent {
   @Input() public result!: RenderResult
   @Input() public dbDate?: string
 
-  public confidenceLabel(): string {
+  constructor(private readonly translate: TranslateService) {}
+
+  public confidenceLabelKey(): string {
     switch (this.result?.confidence) {
       case 'high':
-        return 'Verified standard'
+        return 'evm-decoder.confidence-high'
       case 'medium':
-        return 'Database match'
+        return 'evm-decoder.confidence-medium'
       case 'low':
-        return 'Ambiguous match'
+        return 'evm-decoder.confidence-low'
       case 'unknown':
       default:
-        return 'Could not decode'
+        return 'evm-decoder.confidence-unknown'
     }
+  }
+
+  public functionName(): string {
+    if (!this.result) return ''
+    if (this.result.functionNameKey) {
+      return this.translate.instant(this.result.functionNameKey, this.result.functionNameParams)
+    }
+    return this.result.functionName || ''
+  }
+
+  public renderValue(row: DisplayRow): string {
+    if (row.valueKey) return this.translate.instant(row.valueKey, row.valueParams)
+    return row.value
   }
 }

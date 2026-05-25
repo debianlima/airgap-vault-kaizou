@@ -21,16 +21,18 @@ export class MulticallRenderer implements TransactionRenderer {
       return {
         type: 'multicall',
         confidence: 'unknown',
-        functionName: 'Multicall (depth limit reached)',
+        functionNameKey: 'evm-decoder.fn-multicall-depth',
+        functionNameParams: { max: ctx.maxDepth },
         rows: [
           {
-            label: 'Function',
-            value: `Multicall — nested too deep (max ${ctx.maxDepth})`,
+            labelKey: 'evm-decoder.function-label',
+            valueKey: 'evm-decoder.fn-multicall-depth',
+            valueParams: { max: ctx.maxDepth },
+            value: 'Multicall nested too deep',
             type: 'warning'
           }
         ],
-        warningMessage:
-          'Refusing to decode multicall nested deeper than the safety limit. Review raw calldata.',
+        warningKey: 'evm-decoder.multicall-depth-warning',
         rawCalldata: tx.data
       }
     }
@@ -50,24 +52,25 @@ export class MulticallRenderer implements TransactionRenderer {
     for (const item of arrayParam.value.items) {
       if (item.kind !== 'bytes') continue
       const innerData = '0x' + bytesToHex(item.value)
-      inner.push(
-        ctx.renderInner(
-          { to: tx.to, data: innerData, value: '0', chainId: tx.chainId },
-          innerCtx
-        )
-      )
+      inner.push(ctx.renderInner({ to: tx.to, data: innerData, value: '0', chainId: tx.chainId }, innerCtx))
     }
     const confidence = inheritConfidence(inner)
     return {
       type: 'multicall',
       confidence,
-      functionName: `Multicall (${inner.length} calls)`,
+      functionNameKey: 'evm-decoder.fn-multicall',
+      functionNameParams: { count: inner.length },
       rows: [
-        { label: 'Function', value: `Multicall (${inner.length} calls)`, type: 'text' },
-        { label: 'Contract', value: tx.to, type: 'address' }
+        {
+          labelKey: 'evm-decoder.function-label',
+          valueKey: 'evm-decoder.fn-multicall',
+          valueParams: { count: inner.length },
+          value: `Multicall (${inner.length} calls)`,
+          type: 'text'
+        },
+        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' }
       ],
-      warningMessage:
-        'This transaction contains multiple inner calls. Review each one carefully — a single multicall can hide a malicious operation.',
+      warningKey: 'evm-decoder.multicall-warning',
       nested: inner,
       rawCalldata: tx.data
     }

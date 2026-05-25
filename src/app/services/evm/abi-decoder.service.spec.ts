@@ -11,8 +11,8 @@ describe('AbiDecoderService', () => {
     expect(decoder.extractSelector('0xa9059cbb000000')).toBe('a9059cbb')
   })
 
-  it('returns empty selector for short calldata', () => {
-    expect(decoder.extractSelector('0x01')).toBe('')
+  it('returns null selector for short calldata', () => {
+    expect(decoder.extractSelector('0x01')).toBeNull()
   })
 
   it('decodes transfer(address,uint256)', () => {
