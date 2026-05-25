@@ -10,22 +10,19 @@
 import { HttpClient } from '@angular/common/http'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { IonicModule } from '@ionic/angular'
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
+import { TranslateModule, TranslateService } from '@ngx-translate/core'
 import { IAirGapTransaction, MainProtocolSymbols } from '@airgap/coinlib-core'
 import { of } from 'rxjs'
 
 import { ContactsService } from '../../services/contacts/contacts.service'
 import { EvmTransactionDisplayComponent } from '../evm-transaction-display/evm-transaction-display.component'
 import { TransactionWarningComponent } from '../transaction-warning/transaction-warning.component'
-import en from '../../../assets/i18n/en.json'
+import enJson from '../../../assets/i18n/en.json'
 
 import { TransactionComponent } from './transaction.component'
 
-class StaticTranslateLoader implements TranslateLoader {
-  getTranslation() {
-    return of(en as Record<string, unknown>)
-  }
-}
+// Some webpack setups wrap JSON imports in a `default` property; handle both.
+const EN: Record<string, any> = (enJson as any).default || (enJson as any)
 
 /**
  * Build a v2 signature DB (matches scripts/build-signature-db.js + the runtime
@@ -122,10 +119,7 @@ describe('TransactionComponent — EVM decoder (e2e)', () => {
     contactsSpy.getContactName.and.returnValue(Promise.resolve(null))
     await TestBed.configureTestingModule({
       declarations: [TransactionComponent, EvmTransactionDisplayComponent, TransactionWarningComponent],
-      imports: [
-        IonicModule.forRoot({ innerHTMLTemplatesEnabled: true }),
-        TranslateModule.forRoot({ loader: { provide: TranslateLoader, useClass: StaticTranslateLoader } })
-      ],
+      imports: [IonicModule.forRoot({ innerHTMLTemplatesEnabled: true }), TranslateModule.forRoot()],
       providers: [
         { provide: HttpClient, useClass: FakeHttpClient },
         { provide: ContactsService, useValue: contactsSpy }
@@ -138,6 +132,10 @@ describe('TransactionComponent — EVM decoder (e2e)', () => {
         set: { template: '<airgap-evm-transaction-display *ngFor="let r of evmResults$ | async" [result]="r"></airgap-evm-transaction-display>' }
       })
       .compileComponents()
+
+    const translate = TestBed.inject(TranslateService)
+    translate.setTranslation('en', EN, true)
+    translate.use('en')
 
     fixture = TestBed.createComponent(TransactionComponent)
     component = fixture.componentInstance
