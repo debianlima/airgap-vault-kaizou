@@ -1,5 +1,20 @@
 {
   "next": "Next",
+  "evm-decoder": {
+    "confidence-high": "Verified standard",
+    "confidence-medium": "Database match",
+    "confidence-low": "Ambiguous match",
+    "confidence-unknown": "Could not decode",
+    "collision-warning": "Multiple function signatures match this selector. The most likely interpretation is shown, but verify the raw calldata.",
+    "unknown-warning": "This transaction could not be decoded. This does not mean it is invalid. Review the raw calldata carefully before signing.",
+    "raw-calldata-label": "Raw calldata",
+    "function-label": "Function",
+    "to-label": "To",
+    "amount-label": "Amount",
+    "spender-label": "Spender",
+    "token-id-label": "Token ID",
+    "db-date-label": "Signature database date"
+  },
   "account-list": {
     "delete": "Delete"
   },

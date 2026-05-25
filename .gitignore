@@ -37,3 +37,6 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 
 src/assets/protocol_modules/
+
+src/assets/evm/signatures.db
+src/assets/evm/signatures.meta.json

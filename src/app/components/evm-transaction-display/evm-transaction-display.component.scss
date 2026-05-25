@@ -1,0 +1,97 @@
+.evm-decoded {
+  margin: 0.5rem 0 1rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &__fn {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  &__badge {
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+
+    &--high {
+      --background: var(--ion-color-success, #2dd36f);
+      --color: #fff;
+    }
+    &--medium {
+      --background: var(--ion-color-warning, #ffc409);
+      --color: #000;
+    }
+    &--low {
+      --background: var(--ion-color-warning, #ff8c00);
+      --color: #000;
+    }
+    &--unknown {
+      --background: var(--ion-color-danger, #eb445a);
+      --color: #fff;
+    }
+  }
+
+  &__rows {
+    background: transparent;
+  }
+
+  &__label {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  &__value {
+    font-family: inherit;
+    word-break: break-all;
+
+    &--address,
+    &--hex {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+    }
+
+    &--warning {
+      color: var(--ion-color-danger, #eb445a);
+      font-weight: 600;
+    }
+  }
+
+  &__warning {
+    margin: 0.5rem 0;
+    ion-icon {
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+  }
+
+  &__nested {
+    margin-top: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--ion-color-medium, #92949c);
+
+    h4 {
+      margin: 0.5rem 0;
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+  }
+
+  &__raw {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    word-break: break-all;
+    background: var(--ion-color-light, #f4f5f8);
+  }
+
+  &__meta {
+    display: block;
+    margin-top: 0.5rem;
+    opacity: 0.6;
+  }
+}

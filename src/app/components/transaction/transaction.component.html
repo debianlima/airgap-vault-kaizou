@@ -28,7 +28,7 @@
     </ion-row>
   </ng-container>
 
-  <ng-container *ngFor="let airGapTx of airGapTxs">
+  <ng-container *ngFor="let airGapTx of airGapTxs; let i = index">
     <airgap-transaction-warning [transaction]="airGapTx"></airgap-transaction-warning>
     <airgap-from-to
       class="ion-padding-horizontal"
@@ -36,5 +36,11 @@
       [interactionData]="rawdata"
       [hideNetwork]="true"
     ></airgap-from-to>
+    <airgap-evm-transaction-display
+      *ngIf="evmResults[i] as decoded"
+      class="ion-padding-horizontal"
+      [result]="decoded"
+      [dbDate]="dbDate"
+    ></airgap-evm-transaction-display>
   </ng-container>
 </ng-container>

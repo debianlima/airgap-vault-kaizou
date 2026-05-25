@@ -1,0 +1,44 @@
+<div class="evm-decoded" *ngIf="result">
+  <div class="evm-decoded__header">
+    <ion-badge [class]="'evm-decoded__badge evm-decoded__badge--' + result.confidence">
+      {{ confidenceLabel() }}
+    </ion-badge>
+    <span class="evm-decoded__fn" *ngIf="result.functionName">{{ result.functionName }}</span>
+  </div>
+
+  <ion-list lines="full" class="evm-decoded__rows">
+    <ion-item *ngFor="let row of result.rows">
+      <ion-label>
+        <p class="evm-decoded__label">{{ row.label }}</p>
+        <h3 [class]="'evm-decoded__value evm-decoded__value--' + row.type">{{ row.value }}</h3>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-card color="warning" *ngIf="result.warningMessage" class="evm-decoded__warning">
+    <ion-card-content>
+      <ion-icon name="warning-outline"></ion-icon>
+      {{ result.warningMessage }}
+    </ion-card-content>
+  </ion-card>
+
+  <div class="evm-decoded__nested" *ngIf="result.nested && result.nested.length">
+    <h4>Inner calls</h4>
+    <airgap-evm-transaction-display
+      *ngFor="let inner of result.nested; let i = index"
+      [result]="inner"
+      [dbDate]="dbDate"
+    ></airgap-evm-transaction-display>
+  </div>
+
+  <ion-accordion-group>
+    <ion-accordion value="raw">
+      <ion-item slot="header" color="light">
+        <ion-label>Raw calldata</ion-label>
+      </ion-item>
+      <div slot="content" class="evm-decoded__raw">{{ result.rawCalldata }}</div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <small class="evm-decoded__meta" *ngIf="dbDate">Signature database: {{ dbDate }}</small>
+</div>
