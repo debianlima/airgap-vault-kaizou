@@ -202,5 +202,106 @@ console.log('Renderer pipeline')
   )
 }
 
+// 6. Depth-3 cap: a multicall that contains a multicall, recursed past the cap,
+//    must surface a depth-warning result rather than infinite recursion.
+{
+  // Build a 1-call multicall whose single inner blob is the SAME multicall.
+  // Wrapping it 4 deep means at least one level hits the cap.
+  function wrapMulticall(innerHex) {
+    const innerBytes = innerHex.replace(/^0x/, '')
+    const byteLen = innerBytes.length / 2
+    const padLen = (32 - (byteLen % 32)) % 32
+    const pad = '0'.repeat(padLen * 2)
+    const lenWord = byteLen.toString(16).padStart(64, '0')
+    return (
+      '0xac9650d8' +
+      '0000000000000000000000000000000000000000000000000000000000000020' +
+      '0000000000000000000000000000000000000000000000000000000000000001' +
+      '0000000000000000000000000000000000000000000000000000000000000020' +
+      lenWord +
+      innerBytes +
+      pad
+    )
+  }
+  let payload = '0xfeedface00112233'
+  for (let i = 0; i < 4; i++) payload = wrapMulticall(payload)
+  const tx = { to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', data: payload, chainId: 1 }
+  await svc.prepare(tx)
+  const r = svc.render(tx)
+  // walk down, ensure no infinite recursion and we eventually reach a depth-cap result
+  let cur = r
+  let depthSeen = 0
+  let hitDepthCap = false
+  while (cur && cur.type === 'multicall') {
+    if (cur.warningKey === 'evm-decoder.multicall-depth-warning') {
+      hitDepthCap = true
+      break
+    }
+    depthSeen++
+    cur = cur.nested?.[0]
+    if (depthSeen > 10) break
+  }
+  check('depth cap reached without infinite recursion', hitDepthCap, `depthSeen=${depthSeen}`)
+}
+
+// 7. i18n key existence: every translation key any renderer emitted must be
+//    present in en.json. Catches typos and missed keys at build time.
+{
+  const { readFileSync } = await import('fs')
+  const en = JSON.parse(readFileSync(join(projRoot, 'src/assets/i18n/en.json'), 'utf8'))
+  function resolveKey(obj, key) {
+    return key.split('.').reduce((o, k) => (o && typeof o === 'object' ? o[k] : undefined), obj)
+  }
+  const seen = new Set()
+  function collect(r) {
+    if (!r) return
+    if (r.functionNameKey) seen.add(r.functionNameKey)
+    if (r.warningKey) seen.add(r.warningKey)
+    for (const row of r.rows || []) {
+      if (row.labelKey) seen.add(row.labelKey)
+      if (row.valueKey) seen.add(row.valueKey)
+    }
+    for (const inner of r.nested || []) collect(inner)
+  }
+  // Exercise every renderer path to populate `seen`.
+  const fixtures = [
+    {
+      to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      data:
+        '0xa9059cbb' +
+        '000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045' +
+        '00000000000000000000000000000000000000000000000000000000000003e8',
+      chainId: 1
+    },
+    {
+      to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      data:
+        '0x095ea7b3' +
+        '0000000000000000000000007a250d5630b4cf539739df2c5dacb4c659f2488d' +
+        'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+    },
+    {
+      to: '0xabcabcabcabcabcabcabcabcabcabcabcabcabca',
+      data:
+        '0x23b872dd' +
+        '000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+        '000000000000000000000000bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' +
+        '000000000000000000000000000000000000000000000000000000000000002a'
+    },
+    { to: '0xdead000000000000000000000000000000000000', data: '0xdeadbeef00' },
+    { to: '', data: '' }
+  ]
+  for (const f of fixtures) {
+    await svc.prepare(f)
+    collect(svc.render(f))
+  }
+  const missing = [...seen].filter(k => resolveKey(en, k) === undefined)
+  check(
+    `all ${seen.size} emitted i18n keys exist in en.json`,
+    missing.length === 0,
+    missing.length ? `missing: ${missing.join(', ')}` : ''
+  )
+}
+
 console.log(`\n${pass} passed, ${fail} failed`)
 process.exit(fail === 0 ? 0 : 1)
