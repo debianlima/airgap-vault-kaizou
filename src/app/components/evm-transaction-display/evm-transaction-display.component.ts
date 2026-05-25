@@ -40,4 +40,9 @@ export class EvmTransactionDisplayComponent {
     if (row.valueKey) return this.translate.instant(row.valueKey, row.valueParams)
     return row.value
   }
+
+  public renderLabel(row: DisplayRow): string {
+    if (row.labelKey) return this.translate.instant(row.labelKey)
+    return row.label || ''
+  }
 }

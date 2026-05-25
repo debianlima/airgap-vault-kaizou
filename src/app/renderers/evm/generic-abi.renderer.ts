@@ -40,27 +40,27 @@ export class GenericAbiRenderer implements TransactionRenderer {
 }
 
 export function paramToRow(label: string, p: DecodedParam): {
-  labelKey: string
+  label: string
   value: string
   type: 'address' | 'amount' | 'text' | 'hex' | 'warning'
 } {
   const v = p.value
   switch (v.kind) {
     case 'address':
-      return { labelKey: `${label} (address)`, value: v.value, type: 'address' }
+      return { label: `${label} (address)`, value: v.value, type: 'address' }
     case 'uint':
-      return { labelKey: `${label} (${p.type})`, value: v.display, type: 'amount' }
+      return { label: `${label} (${p.type})`, value: v.display, type: 'amount' }
     case 'int':
-      return { labelKey: `${label} (${p.type})`, value: v.display, type: 'amount' }
+      return { label: `${label} (${p.type})`, value: v.display, type: 'amount' }
     case 'bool':
-      return { labelKey: `${label} (bool)`, value: v.value ? 'true' : 'false', type: 'text' }
+      return { label: `${label} (bool)`, value: v.value ? 'true' : 'false', type: 'text' }
     case 'bytes':
-      return { labelKey: `${label} (${p.type})`, value: v.hex, type: 'hex' }
+      return { label: `${label} (${p.type})`, value: v.hex, type: 'hex' }
     case 'string':
-      return { labelKey: `${label} (string)`, value: v.value, type: 'text' }
+      return { label: `${label} (string)`, value: v.value, type: 'text' }
     case 'array':
-      return { labelKey: `${label} (${p.type})`, value: `[${v.items.length} items]`, type: 'text' }
+      return { label: `${label} (${p.type})`, value: `[${v.items.length} items]`, type: 'text' }
     case 'tuple':
-      return { labelKey: `${label} (${p.type})`, value: `{${v.fields.length} fields}`, type: 'text' }
+      return { label: `${label} (${p.type})`, value: `{${v.fields.length} fields}`, type: 'text' }
   }
 }

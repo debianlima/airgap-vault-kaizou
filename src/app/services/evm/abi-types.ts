@@ -48,8 +48,10 @@ export interface SignatureDatabaseMetadata {
 }
 
 export interface DisplayRow {
-  /** i18n key, falls back to raw label */
-  labelKey: string
+  /** i18n key for the label; if absent, `label` is used verbatim */
+  labelKey?: string
+  /** Plain label fallback (or for synthesised text like "arg0 (uint256)") */
+  label?: string
   /** Already-formatted display value (addresses, amounts, etc.) */
   value: string
   /** Optional i18n key whose translation replaces value */

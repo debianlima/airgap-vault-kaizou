@@ -27,15 +27,6 @@ const files = [
   'scripts/stubs/rxjs.ts'
 ].map(f => join(projRoot, f))
 
-writeFileSync(
-  join(projRoot, 'scripts/stubs/angular-common-http.ts'),
-  'export class HttpClient { get(_a: any, _b?: any): any { return null } }\n'
-)
-writeFileSync(
-  join(projRoot, 'scripts/stubs/rxjs.ts'),
-  'export function firstValueFrom<T>(_x: any): Promise<T> { return Promise.reject(new Error("no http")) }\n'
-)
-
 const tsconfig = {
   compilerOptions: {
     target: 'ES2020',
@@ -54,11 +45,17 @@ const tsconfig = {
 writeFileSync(join(tmp, 'tsconfig.json'), JSON.stringify(tsconfig, null, 2))
 execSync(`npx tsc -p "${join(tmp, 'tsconfig.json')}"`, { cwd: projRoot, stdio: 'inherit' })
 
-// Rewrite imports in emitted JS to point at stubs (since path mapping doesn't survive emit)
+// Write tmp ESM stubs and rewrite bare-specifier imports in emitted JS to point at them.
+const stubFiles = {
+  'angular-core.js': 'export const Injectable = () => (_) => {}\n',
+  'angular-common-http.js': 'export class HttpClient { get(_a, _b) { return null } }\n',
+  'rxjs.js': 'export function firstValueFrom(_x) { return Promise.reject(new Error("no http")) }\n'
+}
+for (const [name, src] of Object.entries(stubFiles)) writeFileSync(join(tmp, name), src)
 const stubMap = {
-  '@angular/core': `${tmp}/scripts/stubs/angular-core.js`,
-  '@angular/common/http': `${tmp}/scripts/stubs/angular-common-http.js`,
-  rxjs: `${tmp}/scripts/stubs/rxjs.js`
+  '@angular/core': `${tmp}/angular-core.js`,
+  '@angular/common/http': `${tmp}/angular-common-http.js`,
+  rxjs: `${tmp}/rxjs.js`
 }
 function walk(dir) {
   for (const name of readdirSync(dir)) {

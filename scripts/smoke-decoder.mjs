@@ -34,24 +34,17 @@ const tsconfig = {
   include: []
 }
 writeFileSync(join(tmp, 'tsconfig.json'), JSON.stringify(tsconfig, null, 2))
-const stubDir = join(projRoot, 'scripts', 'stubs')
-execSync(`mkdir -p "${stubDir}"`)
-writeFileSync(join(stubDir, 'angular-core.ts'), 'export const Injectable: any = () => (_: any) => {}\n')
-
 execSync(`npx tsc -p "${join(tmp, 'tsconfig.json')}"`, { cwd: projRoot, stdio: 'inherit' })
 
-// The emitted JS still imports '@angular/core' — rewrite to the stub.
+// The emitted JS still imports '@angular/core' — rewrite to a tmp stub.
+const stubJs = join(tmp, 'angular-core.js')
+writeFileSync(stubJs, 'export const Injectable = () => (_) => {}\n')
 const decFile = `${tmp}/src/app/services/evm/abi-decoder.service.js`
 const decSrc = readFileSync(decFile, 'utf8').replace(
   /from ['"]@angular\/core['"]/g,
-  `from "${join(projRoot, 'scripts/stubs/angular-core.js').replace(/\\/g, '/')}"`
+  `from "${stubJs.replace(/\\/g, '/')}"`
 )
 writeFileSync(decFile, decSrc)
-// Also write the stub as JS since tsc output went elsewhere
-writeFileSync(
-  join(projRoot, 'scripts/stubs/angular-core.js'),
-  'export const Injectable = () => (_) => {}\n'
-)
 
 const { AbiDecoderService } = await import(`file://${decFile}`)
 const { formatAmount, isUnlimitedApproval, lookupKnownToken } = await import(

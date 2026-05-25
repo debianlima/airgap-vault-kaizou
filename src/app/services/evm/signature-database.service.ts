@@ -56,6 +56,7 @@ export class SignatureDatabaseService {
   }
 
   public async getMetadata(): Promise<SignatureDatabaseMetadata | null> {
+    if (this.metadata) return this.metadata
     await this.initialize()
     return this.metadata
   }

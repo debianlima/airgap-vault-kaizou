@@ -9,7 +9,7 @@
   <ion-list lines="full" class="evm-decoded__rows">
     <ion-item *ngFor="let row of result.rows">
       <ion-label>
-        <p class="evm-decoded__label">{{ row.labelKey | translate }}</p>
+        <p class="evm-decoded__label">{{ renderLabel(row) }}</p>
         <h3 [class]="'evm-decoded__value evm-decoded__value--' + row.type">{{ renderValue(row) }}</h3>
       </ion-label>
     </ion-item>
