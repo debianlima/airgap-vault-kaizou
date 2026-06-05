@@ -31,15 +31,6 @@
     ></airgap-evm-transaction-display>
   </div>
 
-  <ion-accordion-group>
-    <ion-accordion value="raw">
-      <ion-item slot="header" color="light">
-        <ion-label>{{ 'evm-decoder.raw-calldata-label' | translate }}</ion-label>
-      </ion-item>
-      <div slot="content" class="evm-decoded__raw">{{ result.rawCalldata }}</div>
-    </ion-accordion>
-  </ion-accordion-group>
-
   <small class="evm-decoded__meta" *ngIf="dbDate">
     {{ 'evm-decoder.db-date-label' | translate }}: {{ dbDate }}
   </small>
