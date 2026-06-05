@@ -8,8 +8,9 @@
   "main": "electron/main.js",
   "scripts": {
     "ng": "ng",
-    "serve": "ionic serve --external",
-    "start": "ng serve",
+    "serve": "yarn build:signatures && ionic serve --external",
+    "start": "yarn build:signatures && ng serve",
+    "signatures:refresh": "python3 scripts/refresh-signatures-sourcify.py",
     "build:signatures": "node scripts/build-signature-db.js",
     "smoke:evm": "node scripts/smoke-decoder.mjs && node scripts/smoke-renderer.mjs",
     "build": "yarn build:signatures && ng build",

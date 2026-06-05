@@ -1,161 +1,107 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 /**
- * Build a flat binary signature DB for offline lookup.
+ * Phase 2 of the signature-DB pipeline: pack a flat binary signature DB for
+ * offline, on-device lookup. Pure Node, no dependencies — safe to run in CI.
  *
- * Sources, in order of preference:
- *   1. 4byte.directory CSV/JSON dump (network)
- *   2. scripts/signatures.seed.json (committed, deterministic)
+ * Sources, in order of precedence (highest wins per selector):
+ *   1. scripts/signatures.seed.json            (hand-curated canonical names)
+ *   2. scripts/signatures.curated.ndjson.gz    (Sourcify export, phase 1)
  *
- * Modes via env:
- *   SIGDB_SOURCE       = auto | 4byte | seed       (default: auto)
- *   SIGDB_DETERMINISTIC= 1 -> seed-only, no network. Use for reproducible CI builds.
- *   SIGDB_MAX_PAGES    = N -> cap 4byte fetch (debug)
- *   SIGDB_VERIFY       = 1 -> after build, verify sha256 against scripts/signatures.lock.json.
+ * The curated artifact is produced by scripts/refresh-signatures-sourcify.py
+ * (the heavy, occasionally-run step). This script just packs it, so a normal
+ * `yarn build` stays fast, dependency-free and fully reproducible.
+ *
+ * If the curated artifact is missing, the build falls back to seed-only so the
+ * app still builds (decoder degrades to the curated ERC set + raw hex).
+ *
+ * Env:
+ *   SIGDB_VERIFY       = 1 -> after build, verify sha256 against signatures.lock.json.
  *                              Exits non-zero on mismatch. Use in release CI.
  *   SIGDB_UPDATE_LOCK  = 1 -> rewrite scripts/signatures.lock.json with new sha256.
  *   SIGDB_FAIL_IF_EMPTY= 1 -> exit non-zero if final DB has 0 entries.
  *
- * Strategy:
- *   - Oldest-first per 4-byte selector (lowest id wins). Collision count is preserved
- *     and stored in the output so the runtime can warn about ambiguity.
- *   - Network fetch is best-effort by default. Set SIGDB_DETERMINISTIC=1 for CI.
- *
  * Output:
- *   src/assets/evm/signatures.db    (gitignored)
- *   src/assets/evm/signatures.meta.json
+ *   src/assets/evm/signatures.db        (gitignored, regenerated each build)
+ *   src/assets/evm/signatures.meta.json (gitignored)
  *
- * File format documented in signature-database.service.ts.
+ * Binary file format (little-endian) — see signature-database.service.ts:
+ *   magic[4]='A4BY' | version u32 | count u32 | index[count*8] | blob[..]
+ *   index entry  = 4-byte selector + u32 blob offset (sorted by selector ASC)
+ *   blob entry   = u16 collisions + u16 length + UTF-8 signature
  */
 
 const fs = require('fs')
 const path = require('path')
-const https = require('https')
+const zlib = require('zlib')
 const crypto = require('crypto')
 
 const OUT_DIR = path.join(__dirname, '..', 'src', 'assets', 'evm')
 const OUT_DB = path.join(OUT_DIR, 'signatures.db')
 const OUT_META = path.join(OUT_DIR, 'signatures.meta.json')
 const SEED = path.join(__dirname, 'signatures.seed.json')
+const CURATED = path.join(__dirname, 'signatures.curated.ndjson.gz')
+const CURATED_META = path.join(__dirname, 'signatures.curated.meta.json')
 const LOCK = path.join(__dirname, 'signatures.lock.json')
 
-const FOURBYTE_API = 'https://www.4byte.directory/api/v1/signatures/?format=json&page='
-const MAX_PAGES = parseInt(process.env.SIGDB_MAX_PAGES || '0', 10)
-const SOURCE = process.env.SIGDB_DETERMINISTIC === '1' ? 'seed' : process.env.SIGDB_SOURCE || 'auto'
 const VERIFY = process.env.SIGDB_VERIFY === '1'
 const UPDATE_LOCK = process.env.SIGDB_UPDATE_LOCK === '1'
 const FAIL_IF_EMPTY = process.env.SIGDB_FAIL_IF_EMPTY === '1'
 
 const FORMAT_VERSION = 2
 
-function httpJson(url) {
-  return new Promise((resolve, reject) => {
-    https
-      .get(url, { headers: { 'User-Agent': 'airgap-vault-build' } }, res => {
-        if (res.statusCode !== 200) {
-          res.resume()
-          return reject(new Error(`HTTP ${res.statusCode} ${url}`))
-        }
-        let body = ''
-        res.setEncoding('utf8')
-        res.on('data', c => (body += c))
-        res.on('end', () => {
-          try {
-            resolve(JSON.parse(body))
-          } catch (e) {
-            reject(e)
-          }
-        })
-      })
-      .on('error', reject)
-      .setTimeout(20000, function () {
-        this.destroy(new Error('timeout'))
-      })
-  })
-}
-
 /**
- * Pull all 4byte rows. Track every distinct signature per selector so we can
- * record collision counts.
+ * Load the Sourcify-derived curated list. Each NDJSON line is
+ * { selector, signature, collisions }. Returns Map<selector, {signature, collisions}>.
  */
-async function fetchFourByte() {
-  const sigsBySelector = new Map() // selector -> Map<sig, id>
-  let page = 1
-  let networkOk = true
-  while (true) {
-    if (MAX_PAGES > 0 && page > MAX_PAGES) break
-    let json
-    try {
-      json = await httpJson(FOURBYTE_API + page)
-    } catch (e) {
-      console.warn(`4byte fetch failed on page ${page}: ${e.message}`)
-      networkOk = false
-      break
-    }
-    for (const row of json.results || []) {
-      const sel = (row.hex_signature || '').replace(/^0x/i, '').toLowerCase()
-      const sig = row.text_signature || ''
-      const id = row.id
-      if (!/^[0-9a-f]{8}$/.test(sel) || !sig) continue
-      let bucket = sigsBySelector.get(sel)
-      if (!bucket) {
-        bucket = new Map()
-        sigsBySelector.set(sel, bucket)
-      }
-      const prevId = bucket.get(sig)
-      if (prevId === undefined || id < prevId) bucket.set(sig, id)
-    }
-    if (!json.next) break
-    page++
-    if (page % 100 === 0) console.log(`  fetched ${page} pages, ${sigsBySelector.size} unique selectors`)
-  }
-  return { sigsBySelector, networkOk }
-}
-
-function loadSeed() {
+function loadCurated() {
   const out = new Map()
-  if (!fs.existsSync(SEED)) return out
-  const arr = JSON.parse(fs.readFileSync(SEED, 'utf8'))
-  for (let i = 0; i < arr.length; i++) {
-    const sel = (arr[i].selector || '').replace(/^0x/i, '').toLowerCase()
-    if (!/^[0-9a-f]{8}$/.test(sel) || !arr[i].signature) continue
-    let bucket = out.get(sel)
-    if (!bucket) {
-      bucket = new Map()
-      out.set(sel, bucket)
+  if (!fs.existsSync(CURATED)) return out
+  const text = zlib.gunzipSync(fs.readFileSync(CURATED)).toString('utf8')
+  for (const line of text.split('\n')) {
+    if (!line) continue
+    let row
+    try {
+      row = JSON.parse(line)
+    } catch {
+      continue
     }
-    if (!bucket.has(arr[i].signature)) bucket.set(arr[i].signature, i)
+    const sel = (row.selector || '').replace(/^0x/i, '').toLowerCase()
+    if (!/^[0-9a-f]{8}$/.test(sel) || !row.signature) continue
+    out.set(sel, {
+      signature: row.signature,
+      collisions: Math.max(1, Math.min(Number(row.collisions) || 1, 0xffff))
+    })
   }
   return out
 }
 
-function mergeBuckets(primary, fallback) {
-  for (const [sel, bucket] of fallback) {
-    if (!primary.has(sel)) primary.set(sel, new Map(bucket))
+/**
+ * Hand-curated canonical names. These win over the export so the most common
+ * selectors always render with the expected human name.
+ */
+function loadSeed() {
+  if (!fs.existsSync(SEED)) return new Map()
+  const arr = JSON.parse(fs.readFileSync(SEED, 'utf8'))
+  const out = new Map()
+  for (const item of arr) {
+    const sel = (item.selector || '').replace(/^0x/i, '').toLowerCase()
+    if (!/^[0-9a-f]{8}$/.test(sel) || !item.signature) continue
+    if (!out.has(sel)) out.set(sel, { signature: item.signature, collisions: 1 })
   }
-  return primary
+  return out
 }
 
-/**
- * Per selector: pick the signature with the lowest id (oldest), and record
- * how many distinct signatures we saw for that selector.
- */
-function chooseOldest(sigsBySelector) {
-  const result = new Map()
-  for (const [sel, bucket] of sigsBySelector) {
-    let bestSig = null
-    let bestId = Infinity
-    for (const [sig, id] of bucket) {
-      if (id < bestId) {
-        bestId = id
-        bestSig = sig
-      }
-    }
-    if (bestSig !== null) {
-      result.set(sel, { signature: bestSig, collisions: Math.min(bucket.size, 0xffff) })
-    }
+/** Seed overrides curated; seed's collision count is the max of the two. */
+function merge(curated, seed) {
+  for (const [sel, s] of seed) {
+    const existing = curated.get(sel)
+    curated.set(sel, {
+      signature: s.signature,
+      collisions: Math.max(s.collisions, existing ? existing.collisions : 1)
+    })
   }
-  return result
+  return curated
 }
 
 function writeBinary(map) {
@@ -210,46 +156,41 @@ function writeLock(hash, count, source) {
   )
 }
 
-async function main() {
+function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true })
-  let primary = new Map()
-  let networkOk = true
-  let sourceLabel = 'seed'
-  if (SOURCE === 'auto' || SOURCE === '4byte') {
-    console.log('fetching 4byte.directory…')
-    try {
-      const res = await fetchFourByte()
-      primary = res.sigsBySelector
-      networkOk = res.networkOk
-      sourceLabel = networkOk ? '4byte' : '4byte-partial'
-    } catch (e) {
-      console.warn('4byte fetch error:', e.message)
-      networkOk = false
-      sourceLabel = '4byte-failed'
-    }
-  }
+
+  const curated = loadCurated()
   const seed = loadSeed()
-  const merged = mergeBuckets(primary, seed)
-  const chosen = chooseOldest(merged)
+  const merged = merge(curated, seed)
 
-  if (chosen.size === 0) {
-    console.warn('WARN: no signatures collected, writing empty DB')
-    if (FAIL_IF_EMPTY) {
-      console.error('ERROR: SIGDB_FAIL_IF_EMPTY set and DB is empty')
-      process.exit(2)
+  let sourceLabel = 'seed'
+  let sourcifyExportDate = new Date().toISOString().slice(0, 10)
+  if (curated.size > 0) {
+    sourceLabel = 'sourcify'
+    if (fs.existsSync(CURATED_META)) {
+      try {
+        const cm = JSON.parse(fs.readFileSync(CURATED_META, 'utf8'))
+        if (cm.sourcifyExportDate) sourcifyExportDate = cm.sourcifyExportDate
+      } catch {
+        /* ignore */
+      }
     }
-  }
-  if (sourceLabel.startsWith('4byte-') && !networkOk) {
-    console.warn(`WARN: 4byte fetch was incomplete (${sourceLabel}). DB may be missing entries.`)
+  } else {
+    console.warn('WARN: curated list missing, building seed-only. Run scripts/refresh-signatures-sourcify.py first.')
   }
 
-  const buf = writeBinary(chosen)
+  if (merged.size === 0 && FAIL_IF_EMPTY) {
+    console.error('ERROR: SIGDB_FAIL_IF_EMPTY set and DB is empty')
+    process.exit(2)
+  }
+
+  const buf = writeBinary(merged)
   fs.writeFileSync(OUT_DB, buf)
   const hash = sha256(buf)
   const meta = {
     generatedAt: new Date().toISOString(),
-    sourcifyExportDate: new Date().toISOString().slice(0, 10),
-    totalSignatures: chosen.size,
+    sourcifyExportDate,
+    totalSignatures: merged.size,
     schemaVersion: FORMAT_VERSION,
     source: sourceLabel,
     sha256: hash
@@ -258,16 +199,16 @@ async function main() {
 
   console.log('---')
   console.log('source        :', sourceLabel)
-  console.log('entries       :', chosen.size)
+  console.log('entries       :', merged.size)
   console.log('size          :', (buf.length / 1024 / 1024).toFixed(2), 'MB')
   console.log('sha256        :', hash)
   console.log('output        :', OUT_DB)
 
   if (UPDATE_LOCK) {
-    writeLock(hash, chosen.size, sourceLabel)
+    writeLock(hash, merged.size, sourceLabel)
     console.log('lock updated  :', LOCK)
   } else if (VERIFY) {
-    const r = checkLock(hash, chosen.size, sourceLabel)
+    const r = checkLock(hash, merged.size, sourceLabel)
     if (!r.ok) {
       console.error('VERIFY FAILED:', r.reason)
       process.exit(3)
@@ -276,7 +217,4 @@ async function main() {
   }
 }
 
-main().catch(e => {
-  console.error(e)
-  process.exit(1)
-})
+main()
