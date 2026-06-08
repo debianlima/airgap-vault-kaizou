@@ -180,7 +180,7 @@ describe('TransactionComponent — EVM decoder (e2e)', () => {
     const text = (fixture.nativeElement as HTMLElement).textContent || ''
     expect(text).toContain('Token Approval')
     expect(text).toContain('Unlimited')
-    expect(text).toContain('grants the spender permission')
+    expect(text).toContain('letting this address spend your tokens')
   })
 
   it('renders transferFrom as ambiguous with explicit warning', async () => {
@@ -196,7 +196,7 @@ describe('TransactionComponent — EVM decoder (e2e)', () => {
     ])
     const text = (fixture.nativeElement as HTMLElement).textContent || ''
     expect(text).toContain('Ambiguous match')
-    expect(text).toContain('ERC-20 transferFrom and ERC-721 transferFrom')
+    expect(text).toContain('used by both regular tokens and NFTs')
   })
 
   it('renders an unknown selector as raw hex with could-not-decode indicator', async () => {
@@ -236,7 +236,7 @@ describe('TransactionComponent — EVM decoder (e2e)', () => {
     ])
     const text = (fixture.nativeElement as HTMLElement).textContent || ''
     expect(text).toContain('Ambiguous match')
-    expect(text).toContain('Multiple function signatures')
+    expect(text).toContain('different functions in the catalog share the same ID')
   })
 
   it('renders multicall with two inner ERC-20 transfers nested', async () => {
