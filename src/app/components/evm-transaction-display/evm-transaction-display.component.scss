@@ -61,6 +61,10 @@
     }
   }
 
+  &__nested-row {
+    border-left: 2px solid var(--ion-color-medium, #92949c);
+  }
+
   &__warning {
     margin: 0.5rem 0;
     ion-icon {

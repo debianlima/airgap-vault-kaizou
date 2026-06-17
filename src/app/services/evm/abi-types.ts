@@ -59,6 +59,8 @@ export interface DisplayRow {
   /** Optional params passed to the translation pipe */
   valueParams?: Record<string, string | number>
   type: 'address' | 'amount' | 'text' | 'hex' | 'warning'
+  /** Nesting depth for indenting array/tuple element rows; absent ⇒ 0 */
+  depth?: number
 }
 
 export interface RenderResult {
