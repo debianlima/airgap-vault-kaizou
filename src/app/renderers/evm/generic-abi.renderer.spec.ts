@@ -1,5 +1,5 @@
 import { AbiDecoderService } from '../../services/evm/abi-decoder.service'
-import { DecodedParam } from '../../services/evm/abi-types'
+import { DecodedParam, DisplayRow } from '../../services/evm/abi-types'
 
 import { elementType, paramToRows } from './generic-abi.renderer'
 
@@ -56,7 +56,7 @@ describe('generic-abi.renderer', () => {
       const rows = paramToRows('arg0', decodeParam(data, SIG, 0))
       expect(rows.length).toBe(3)
       expect(rows[0]).toEqual(
-        jasmine.objectContaining({
+        jasmine.objectContaining<DisplayRow>({
           label: 'arg0 (address[])',
           value: '2 items',
           valueKey: 'evm-decoder.array-items',
@@ -66,7 +66,7 @@ describe('generic-abi.renderer', () => {
         })
       )
       expect(rows[1]).toEqual(
-        jasmine.objectContaining({
+        jasmine.objectContaining<DisplayRow>({
           label: 'arg0[0] (address)',
           value: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           type: 'address',
@@ -74,7 +74,7 @@ describe('generic-abi.renderer', () => {
         })
       )
       expect(rows[2]).toEqual(
-        jasmine.objectContaining({
+        jasmine.objectContaining<DisplayRow>({
           label: 'arg0[1] (address)',
           value: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
           type: 'address',
@@ -87,10 +87,10 @@ describe('generic-abi.renderer', () => {
       const rows = paramToRows('arg1', decodeParam(data, SIG, 1))
       expect(rows.length).toBe(3)
       expect(rows[0]).toEqual(
-        jasmine.objectContaining({ label: 'arg1 (uint256[])', value: '2 items', type: 'text', depth: 0 })
+        jasmine.objectContaining<DisplayRow>({ label: 'arg1 (uint256[])', value: '2 items', type: 'text', depth: 0 })
       )
-      expect(rows[1]).toEqual(jasmine.objectContaining({ label: 'arg1[0] (uint256)', value: '1', type: 'amount', depth: 1 }))
-      expect(rows[2]).toEqual(jasmine.objectContaining({ label: 'arg1[1] (uint256)', value: '1000', type: 'amount', depth: 1 }))
+      expect(rows[1]).toEqual(jasmine.objectContaining<DisplayRow>({ label: 'arg1[0] (uint256)', value: '1', type: 'amount', depth: 1 }))
+      expect(rows[2]).toEqual(jasmine.objectContaining<DisplayRow>({ label: 'arg1[1] (uint256)', value: '1000', type: 'amount', depth: 1 }))
     })
   })
 
@@ -104,7 +104,7 @@ describe('generic-abi.renderer', () => {
       const rows = paramToRows('arg0', decodeParam(data, 'g((address,uint256))'))
       expect(rows.length).toBe(3)
       expect(rows[0]).toEqual(
-        jasmine.objectContaining({
+        jasmine.objectContaining<DisplayRow>({
           label: 'arg0 ((address,uint256))',
           value: '2 fields',
           valueKey: 'evm-decoder.tuple-fields',
@@ -114,14 +114,14 @@ describe('generic-abi.renderer', () => {
         })
       )
       expect(rows[1]).toEqual(
-        jasmine.objectContaining({
+        jasmine.objectContaining<DisplayRow>({
           label: 'arg0[0] (address)',
           value: '0xcccccccccccccccccccccccccccccccccccccccc',
           type: 'address',
           depth: 1
         })
       )
-      expect(rows[2]).toEqual(jasmine.objectContaining({ label: 'arg0[1] (uint256)', value: '42', type: 'amount', depth: 1 }))
+      expect(rows[2]).toEqual(jasmine.objectContaining<DisplayRow>({ label: 'arg0[1] (uint256)', value: '42', type: 'amount', depth: 1 }))
     })
 
     it('renders an array of tuples nested three levels deep', () => {
@@ -135,20 +135,20 @@ describe('generic-abi.renderer', () => {
       const rows = paramToRows('arg0', decodeParam(data, 'h((address,uint256)[])'))
       expect(rows.length).toBe(4)
       expect(rows[0]).toEqual(
-        jasmine.objectContaining({ label: 'arg0 ((address,uint256)[])', value: '1 items', type: 'text', depth: 0 })
+        jasmine.objectContaining<DisplayRow>({ label: 'arg0 ((address,uint256)[])', value: '1 items', type: 'text', depth: 0 })
       )
       expect(rows[1]).toEqual(
-        jasmine.objectContaining({ label: 'arg0[0] ((address,uint256))', value: '2 fields', type: 'text', depth: 1 })
+        jasmine.objectContaining<DisplayRow>({ label: 'arg0[0] ((address,uint256))', value: '2 fields', type: 'text', depth: 1 })
       )
       expect(rows[2]).toEqual(
-        jasmine.objectContaining({
+        jasmine.objectContaining<DisplayRow>({
           label: 'arg0[0][0] (address)',
           value: '0xdddddddddddddddddddddddddddddddddddddddd',
           type: 'address',
           depth: 2
         })
       )
-      expect(rows[3]).toEqual(jasmine.objectContaining({ label: 'arg0[0][1] (uint256)', value: '7', type: 'amount', depth: 2 }))
+      expect(rows[3]).toEqual(jasmine.objectContaining<DisplayRow>({ label: 'arg0[0][1] (uint256)', value: '7', type: 'amount', depth: 2 }))
     })
   })
 
@@ -161,7 +161,7 @@ describe('generic-abi.renderer', () => {
       const rows = paramToRows('arg0', decodeParam(data, 'f(uint256[])'))
       expect(rows.length).toBe(1)
       expect(rows[0]).toEqual(
-        jasmine.objectContaining({ value: '0 items', valueKey: 'evm-decoder.array-items', valueParams: { count: 0 }, depth: 0 })
+        jasmine.objectContaining<DisplayRow>({ value: '0 items', valueKey: 'evm-decoder.array-items', valueParams: { count: 0 }, depth: 0 })
       )
     })
 
@@ -173,10 +173,10 @@ describe('generic-abi.renderer', () => {
 
       // 1 header + 50 element rows + 1 truncation row
       expect(rows.length).toBe(52)
-      expect(rows[0]).toEqual(jasmine.objectContaining({ value: '51 items', valueParams: { count: 51 }, depth: 0 }))
+      expect(rows[0]).toEqual(jasmine.objectContaining<DisplayRow>({ value: '51 items', valueParams: { count: 51 }, depth: 0 }))
       expect(rows.filter((r) => r.type === 'amount').length).toBe(50)
       expect(rows[51]).toEqual(
-        jasmine.objectContaining({
+        jasmine.objectContaining<DisplayRow>({
           value: '… and 1 more',
           valueKey: 'evm-decoder.array-truncated',
           valueParams: { count: 1 },
@@ -190,8 +190,8 @@ describe('generic-abi.renderer', () => {
       const data = '0x00000000' + uintWord(0x20) + uintWord(1) + uintWord(99)
       const rows = paramToRows('arg0', decodeParam(data, 'f(uint256[])'))
       expect(rows.length).toBe(2)
-      expect(rows[0]).toEqual(jasmine.objectContaining({ value: '1 items', depth: 0 }))
-      expect(rows[1]).toEqual(jasmine.objectContaining({ label: 'arg0[0] (uint256)', value: '99', type: 'amount', depth: 1 }))
+      expect(rows[0]).toEqual(jasmine.objectContaining<DisplayRow>({ value: '1 items', depth: 0 }))
+      expect(rows[1]).toEqual(jasmine.objectContaining<DisplayRow>({ label: 'arg0[0] (uint256)', value: '99', type: 'amount', depth: 1 }))
     })
   })
 })
