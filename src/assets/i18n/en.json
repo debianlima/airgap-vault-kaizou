@@ -32,7 +32,10 @@
     "fn-plain-transfer": "Plain value transfer (no calldata)",
     "fn-unknown": "Unknown",
     "amount-unlimited": "Unlimited",
-    "amount-raw-note": "{{ value }} (raw — token decimals unknown)"
+    "amount-raw-note": "{{ value }} (raw — token decimals unknown)",
+    "array-items": "{{ count }} items",
+    "tuple-fields": "{{ count }} fields",
+    "array-truncated": "… and {{ count }} more"
   },
   "account-list": {
     "delete": "Delete"
