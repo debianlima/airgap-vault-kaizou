@@ -22,6 +22,9 @@ export class GenericAbiRenderer implements TransactionRenderer {
   public render(tx: EvmTransactionInput, ctx?: RendererContext): RenderResult | null {
     const sel = selectorOf(tx.data)
     if (!sel || sel.length < 8) return null
+    // Scam selectors (0x00000000 / 0xffffffff are squatted by ~dozens of junk
+    // signatures) always fall through to raw hex, never a misleading decode.
+    if (isBlockedSelector(sel)) return null
     const cached = this.cache.get(sel)
     if (cached === undefined) return null
     if (cached === null) return null

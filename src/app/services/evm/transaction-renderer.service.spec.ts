@@ -184,4 +184,22 @@ describe('EvmTransactionRendererService', () => {
     expect(r.nested?.[0].nested?.length).toBe(1)
     expect(r.nested?.[0].nested?.[0].functionName).toContain('foo')
   })
+
+  it('never decodes the blocklisted 0x00000000 selector, even when the DB has a (scam) entry', async () => {
+    db.set('00000000', 'ROOT4146650865()', 30) // classic selector-squatting entry on Sourcify
+    const tx = { to: '0xabc0000000000000000000000000000000000000', data: '0x00000000' + word('1') }
+    await svc.prepare(tx)
+    const r = svc.render(tx)
+    expect(r.type).toBe('raw-hex')
+    expect(r.confidence).toBe('unknown')
+  })
+
+  it('never decodes the blocklisted 0xffffffff selector', async () => {
+    db.set('ffffffff', 'LOCK8605463013()')
+    const tx = { to: '0xabc0000000000000000000000000000000000000', data: '0xffffffff' + word('1') }
+    await svc.prepare(tx)
+    const r = svc.render(tx)
+    expect(r.type).toBe('raw-hex')
+    expect(r.confidence).toBe('unknown')
+  })
 })
