@@ -1,6 +1,13 @@
 import { AbiDecoderService } from '../../services/evm/abi-decoder.service'
-import { DecodedParam, DisplayRow, EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
-import { selectorOf, TransactionRenderer } from './base.renderer'
+import { ConfidenceLevel, DecodedParam, DisplayRow, EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
+import { isBlockedSelector, looksLikeCalldata, RendererContext, selectorOf, TransactionRenderer } from './base.renderer'
+
+const CONFIDENCE_ORDER: ConfidenceLevel[] = ['high', 'medium', 'low', 'unknown']
+
+/** Lower the inner result's confidence so it never exceeds (out-ranks) its container's. */
+function cappedConfidence(inner: ConfidenceLevel, cap: ConfidenceLevel): ConfidenceLevel {
+  return CONFIDENCE_ORDER[Math.max(CONFIDENCE_ORDER.indexOf(inner), CONFIDENCE_ORDER.indexOf(cap))]
+}
 
 export class GenericAbiRenderer implements TransactionRenderer {
   constructor(
@@ -12,7 +19,7 @@ export class GenericAbiRenderer implements TransactionRenderer {
     return true
   }
 
-  public render(tx: EvmTransactionInput): RenderResult | null {
+  public render(tx: EvmTransactionInput, ctx?: RendererContext): RenderResult | null {
     const sel = selectorOf(tx.data)
     if (!sel || sel.length < 8) return null
     const cached = this.cache.get(sel)
@@ -21,14 +28,41 @@ export class GenericAbiRenderer implements TransactionRenderer {
     const decoded = this.decoder.decodeWithSignature(tx.data, cached.sig, 'database')
     if (!decoded) return null
     const fn = decoded.functionName
+    const collisionWarn = cached.collisions > 1
+    const confidence: ConfidenceLevel = collisionWarn ? 'low' : 'medium'
+
+    // Recursively decode any bytes parameter whose content is itself calldata
+    // (e.g. a Gnosis Safe createProxyWithNonce `initializer` wrapping setup(...)),
+    // so the signer can verify the wrapped call instead of an opaque hex blob.
+    const nested: RenderResult[] = []
+    const decodedAsCalldata = new Set<number>()
+    if (ctx && ctx.depth < ctx.maxDepth) {
+      decoded.params.forEach((p, i) => {
+        const inner = this.tryDecodeBytesParam(tx, p, ctx)
+        if (inner) {
+          nested.push({ ...inner, confidence: cappedConfidence(inner.confidence, confidence) })
+          decodedAsCalldata.add(i)
+        }
+      })
+    }
+
     const rows: DisplayRow[] = []
     decoded.params.forEach((p, i) => {
-      rows.push(...paramToRows(`arg${i}`, p))
+      if (decodedAsCalldata.has(i)) {
+        rows.push({
+          label: `arg${i} (${p.type})`,
+          valueKey: 'evm-decoder.bytes-decoded-below',
+          value: '↓ decoded below',
+          type: 'text'
+        })
+      } else {
+        rows.push(...paramToRows(`arg${i}`, p))
+      }
     })
-    const collisionWarn = cached.collisions > 1
+
     return {
       type: 'generic-decoded',
-      confidence: collisionWarn ? 'low' : 'medium',
+      confidence,
       functionName: `${fn}(…)`,
       rows: [
         { labelKey: 'evm-decoder.function-label', value: fn, type: 'text' },
@@ -37,8 +71,25 @@ export class GenericAbiRenderer implements TransactionRenderer {
       ],
       warningKey: collisionWarn ? 'evm-decoder.collision-warning' : 'evm-decoder.database-note',
       warningParams: collisionWarn ? { count: cached.collisions } : undefined,
+      nested: nested.length ? nested : undefined,
       rawCalldata: tx.data
     }
+  }
+
+  /**
+   * If `p` is a dynamic `bytes` parameter holding decodable embedded calldata,
+   * render it through the full renderer chain (so ERC-20/721, multicall and DB
+   * decodes all work) and return it as a nested result. Returns null — leaving
+   * the plain raw-hex row in place — for blocklisted selectors, non-calldata
+   * shapes, or content that does not actually decode.
+   */
+  private tryDecodeBytesParam(tx: EvmTransactionInput, p: DecodedParam, ctx: RendererContext): RenderResult | null {
+    if (p.value.kind !== 'bytes' || p.type !== 'bytes') return null
+    if (!looksLikeCalldata(p.value.value)) return null
+    if (isBlockedSelector(selectorOf(p.value.hex))) return null
+    const innerTx: EvmTransactionInput = { to: tx.to, data: p.value.hex, value: '0', chainId: tx.chainId }
+    const inner = ctx.renderInner(innerTx, { ...ctx, depth: ctx.depth + 1 })
+    return inner.type === 'raw-hex' ? null : inner
   }
 }
 

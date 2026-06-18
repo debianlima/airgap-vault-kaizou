@@ -35,7 +35,8 @@
     "amount-raw-note": "{{ value }} (raw — token decimals unknown)",
     "array-items": "{{ count }} items",
     "tuple-fields": "{{ count }} fields",
-    "array-truncated": "… and {{ count }} more"
+    "array-truncated": "… and {{ count }} more",
+    "bytes-decoded-below": "↓ decoded below"
   },
   "account-list": {
     "delete": "Delete"
