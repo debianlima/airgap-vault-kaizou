@@ -16,7 +16,7 @@ const MAX_DEPTH = 3
 const MULTICALL_SIGS: Record<string, string> = {
   ac9650d8: 'multicall(bytes[])',
   '5ae401dc': 'multicall(uint256,bytes[])',
-  '1f931c1c': 'multicall(uint256,bytes[])'
+  '1f0464d1': 'multicall(bytes32,bytes[])' // NOT 1f931c1c (= EIP-2535 diamondCut)
 }
 
 @Injectable({ providedIn: 'root' })

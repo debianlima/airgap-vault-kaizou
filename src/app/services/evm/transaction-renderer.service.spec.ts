@@ -202,4 +202,42 @@ describe('EvmTransactionRendererService', () => {
     expect(r.type).toBe('raw-hex')
     expect(r.confidence).toBe('unknown')
   })
+
+  it('decodes 0x1f931c1c as diamondCut via the generic path, not as multicall', async () => {
+    // diamondCut(FacetCut[] (empty), address 0, bytes (empty))
+    const data = '0x1f931c1c' + word('60') + word('0') + word('80') + word('0') + word('0')
+    db.set('1f931c1c', 'diamondCut((address,uint8,bytes4[])[],address,bytes)')
+    const tx = { to: '0xddddddddddddddddddddddddddddddddddddddd0', data }
+    await svc.prepare(tx)
+    const r = svc.render(tx)
+    expect(r.type).toBe('generic-decoded')
+    expect(r.functionName).toContain('diamondCut')
+  })
+
+  it('routes multicall(bytes32,bytes[]) (0x1f0464d1) to the dedicated multicall renderer with nested calls', async () => {
+    const erc20 =
+      'a9059cbb' +
+      '000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045' +
+      '0000000000000000000000000000000000000000000000000000000000000001'
+    const pad = '0'.repeat(56)
+    const data =
+      '0x1f0464d1' +
+      word('aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899') + // bytes32 previousBlockhash
+      word('40') + // offset to bytes[]
+      word('2') +
+      word('40') +
+      word('c0') +
+      word('44') +
+      erc20 +
+      pad +
+      word('44') +
+      erc20 +
+      pad
+    const tx = { to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', data, chainId: 1 }
+    await svc.prepare(tx)
+    const r = svc.render(tx)
+    expect(r.type).toBe('multicall')
+    expect(r.nested?.length).toBe(2)
+    expect(r.nested?.[0].type).toBe('erc20-transfer')
+  })
 })
