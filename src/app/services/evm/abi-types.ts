@@ -59,6 +59,9 @@ export interface DisplayRow {
   /** Optional params passed to the translation pipe */
   valueParams?: Record<string, string | number>
   type: 'address' | 'amount' | 'text' | 'hex' | 'warning'
+  /** Raw integer (base units) for an `amount` whose token decimals are unknown.
+   *  Enables the display-only manual decimals selector; never affects what is signed. */
+  rawValue?: string
 }
 
 export interface RenderResult {
