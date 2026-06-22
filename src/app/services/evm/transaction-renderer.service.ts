@@ -9,6 +9,7 @@ import { RendererContext, TransactionRenderer, selectorOf } from '../../renderer
 
 import { AbiDecoderService, bytesToHex } from './abi-decoder.service'
 import { EvmTransactionInput, RenderResult } from './abi-types'
+import { resolveAddressName } from './known-tokens'
 import { SignatureDatabaseService } from './signature-database.service'
 
 const MAX_DEPTH = 3
@@ -60,7 +61,27 @@ export class EvmTransactionRendererService {
       maxDepth: MAX_DEPTH,
       renderInner: (innerTx, innerCtx) => this.renderWith(innerTx, innerCtx)
     }
-    return this.renderWith(tx, ctx)
+    const result = this.renderWith(tx, ctx)
+    this.annotateAddressNames(result, tx.chainId)
+    return result
+  }
+
+  /**
+   * Attach curated well-known names (USDC, Uniswap V2: Router 2, …) to every
+   * `address` row across the whole result tree. Single pass over all renderers'
+   * output keeps the lookup in one place; the raw address in `row.value` is left
+   * untouched, so a name is only ever an additional hint.
+   */
+  private annotateAddressNames(result: RenderResult, chainId: number | undefined): void {
+    for (const row of result.rows) {
+      if (row.type === 'address') {
+        const name = resolveAddressName(chainId, row.value)
+        if (name) row.addressName = name
+      }
+    }
+    if (result.nested) {
+      for (const inner of result.nested) this.annotateAddressNames(inner, chainId)
+    }
   }
 
   private renderWith(tx: EvmTransactionInput, ctx: RendererContext): RenderResult {
