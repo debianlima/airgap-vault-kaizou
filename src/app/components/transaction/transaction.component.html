@@ -30,12 +30,6 @@
 
   <ng-container *ngFor="let airGapTx of airGapTxs; let i = index">
     <airgap-transaction-warning [transaction]="airGapTx"></airgap-transaction-warning>
-    <airgap-from-to
-      class="ion-padding-horizontal"
-      [transaction]="airGapTx"
-      [interactionData]="rawdata"
-      [hideNetwork]="true"
-    ></airgap-from-to>
     <ng-container *ngIf="evmResults$ | async as evmResults">
       <airgap-evm-transaction-display
         *ngIf="evmResults[i] as decoded"
@@ -44,5 +38,11 @@
         [dbDate]="dbDate$ | async"
       ></airgap-evm-transaction-display>
     </ng-container>
+    <airgap-from-to
+      class="ion-padding-horizontal"
+      [transaction]="airGapTx"
+      [interactionData]="rawdata"
+      [hideNetwork]="true"
+    ></airgap-from-to>
   </ng-container>
 </ng-container>
