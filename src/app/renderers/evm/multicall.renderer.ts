@@ -4,7 +4,9 @@ import { RendererContext, selectorOf, TransactionRenderer } from './base.rendere
 
 const MULTICALL = 'ac9650d8'
 const MULTICALL_DEADLINE = '5ae401dc'
-const MULTICALL_PREVIOUS_BLOCK = '1f931c1c'
+// multicall(bytes32 previousBlockhash, bytes[]) = 0x1f0464d1. NOT 0x1f931c1c —
+// that is EIP-2535 diamondCut((address,uint8,bytes4[])[],address,bytes).
+const MULTICALL_PREVIOUS_BLOCK = '1f0464d1'
 
 const CONFIDENCE_ORDER: ConfidenceLevel[] = ['high', 'medium', 'low', 'unknown']
 
@@ -42,7 +44,7 @@ export class MulticallRenderer implements TransactionRenderer {
         ? 'multicall(bytes[])'
         : sel === MULTICALL_DEADLINE
         ? 'multicall(uint256,bytes[])'
-        : 'multicall(uint256,bytes[])'
+        : 'multicall(bytes32,bytes[])'
     const decoded = this.decoder.decodeWithSignature(tx.data, sig)
     if (!decoded) return null
     const arrayParam = decoded.params.find(p => p.value.kind === 'array')

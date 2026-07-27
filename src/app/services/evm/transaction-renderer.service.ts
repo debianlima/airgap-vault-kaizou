@@ -5,10 +5,10 @@ import { Erc721Renderer } from '../../renderers/evm/erc721.renderer'
 import { GenericAbiRenderer } from '../../renderers/evm/generic-abi.renderer'
 import { MulticallRenderer } from '../../renderers/evm/multicall.renderer'
 import { RawHexRenderer } from '../../renderers/evm/raw-hex.renderer'
-import { RendererContext, TransactionRenderer, selectorOf } from '../../renderers/evm/base.renderer'
+import { isBlockedSelector, looksLikeCalldata, RendererContext, TransactionRenderer, selectorOf } from '../../renderers/evm/base.renderer'
 
 import { AbiDecoderService, bytesToHex } from './abi-decoder.service'
-import { EvmTransactionInput, RenderResult } from './abi-types'
+import { DecodedParam, DecodedValue, EvmTransactionInput, RenderResult } from './abi-types'
 import { resolveAddressName } from './known-tokens'
 import { SignatureDatabaseService } from './signature-database.service'
 
@@ -17,7 +17,7 @@ const MAX_DEPTH = 3
 const MULTICALL_SIGS: Record<string, string> = {
   ac9650d8: 'multicall(bytes[])',
   '5ae401dc': 'multicall(uint256,bytes[])',
-  '1f931c1c': 'multicall(uint256,bytes[])'
+  '1f0464d1': 'multicall(bytes32,bytes[])' // NOT 1f931c1c (= EIP-2535 diamondCut)
 }
 
 @Injectable({ providedIn: 'root' })
@@ -39,20 +39,48 @@ export class EvmTransactionRendererService {
   }
 
   /**
-   * Walk the tx (and inner multicall payloads, depth-capped) to collect every
-   * selector we'll need, then prefetch them all in one DB pass.
+   * Prefetch every signature the renderer will need, depth-capped. Generic
+   * functions hide embedded calldata inside `bytes` params whose positions are
+   * only known after the *outer* signature resolves, so this runs round by round:
+   * look up the current round's selectors in one DB pass, decode each blob with
+   * its resolved signature, harvest the selectors of every embedded-calldata
+   * `bytes` value (incl. inside arrays/tuples and hardcoded multicall payloads),
+   * then repeat with those until nothing new appears or the depth cap is hit.
    */
   public async prepare(tx: EvmTransactionInput): Promise<void> {
     await this.db.initialize()
-    const selectors = new Set<string>()
-    this.collectSelectors(tx.data, 0, selectors)
-    const missing = [...selectors].filter(s => !this.genericCache.has(s))
-    if (missing.length === 0) return
-    const results = await Promise.all(missing.map(s => this.db.lookup(s)))
-    missing.forEach((sel, i) => {
-      const r = results[i]
-      this.genericCache.set(sel, r ? { sig: r.signature, collisions: r.collisions } : null)
-    })
+    const expanded = new Set<string>()
+    let frontier: string[] = tx.data && selectorOf(tx.data).length === 8 ? [tx.data] : []
+    for (let depth = 0; depth <= MAX_DEPTH && frontier.length > 0; depth++) {
+      // 1. Resolve the selectors of this round's blobs in a single DB pass.
+      const missing = new Set<string>()
+      for (const data of frontier) {
+        const sel = selectorOf(data)
+        if (sel.length === 8 && !isBlockedSelector(sel) && !this.genericCache.has(sel)) missing.add(sel)
+      }
+      if (missing.size > 0) {
+        const sels = [...missing]
+        const results = await Promise.all(sels.map(s => this.db.lookup(s)))
+        sels.forEach((sel, i) => {
+          const r = results[i]
+          this.genericCache.set(sel, r ? { sig: r.signature, collisions: r.collisions } : null)
+        })
+      }
+      if (depth === MAX_DEPTH) break
+      // 2. Decode each blob and gather the embedded calldata to look up next round.
+      const next: string[] = []
+      for (const data of frontier) {
+        if (expanded.has(data)) continue
+        expanded.add(data)
+        const sel = selectorOf(data)
+        const sig = MULTICALL_SIGS[sel] ?? this.genericCache.get(sel)?.sig
+        if (!sig) continue
+        const decoded = this.decoder.decodeWithSignature(data, sig)
+        if (!decoded) continue
+        this.collectEmbeddedCalldata(decoded.params, next)
+      }
+      frontier = next
+    }
   }
 
   public render(tx: EvmTransactionInput): RenderResult {
@@ -108,31 +136,36 @@ export class EvmTransactionRendererService {
         if (result) return result
       }
     }
-    const fromDb = this.generic.render(tx)
+    const fromDb = this.generic.render(tx, ctx)
     if (fromDb) return fromDb
     return this.rawHex.render(tx)
   }
 
+  /** Collect every embedded-calldata blob found in a decoded call's params. */
+  private collectEmbeddedCalldata(params: DecodedParam[], out: string[]): void {
+    for (const p of params) this.collectCalldataFromValue(p.value, out)
+  }
+
   /**
-   * Recursively collect selectors. For multicall payloads we use the hardcoded
-   * multicall signature to decode the bytes[] without needing the DB, then
-   * recurse into each inner call up to the depth cap.
+   * Recurse through a decoded value, pushing the hex of every `bytes` value that
+   * looks like calldata (4-byte selector + whole words) and is not blocklisted.
+   * `bytes[]` arrays (multicall) and tuple fields are walked transparently.
    */
-  private collectSelectors(data: string | undefined, depth: number, out: Set<string>): void {
-    if (depth >= MAX_DEPTH) return
-    if (!data || data.length < 10) return
-    const sel = selectorOf(data)
-    if (sel.length !== 8) return
-    out.add(sel)
-    const multicallSig = MULTICALL_SIGS[sel]
-    if (!multicallSig) return
-    const decoded = this.decoder.decodeWithSignature(data, multicallSig)
-    if (!decoded) return
-    const arrayParam = decoded.params.find(p => p.value.kind === 'array')
-    if (!arrayParam || arrayParam.value.kind !== 'array') return
-    for (const item of arrayParam.value.items) {
-      if (item.kind !== 'bytes') continue
-      this.collectSelectors('0x' + bytesToHex(item.value), depth + 1, out)
+  private collectCalldataFromValue(v: DecodedValue, out: string[]): void {
+    switch (v.kind) {
+      case 'bytes':
+        if (looksLikeCalldata(v.value) && !isBlockedSelector(bytesToHex(v.value).slice(0, 8))) {
+          out.push('0x' + bytesToHex(v.value))
+        }
+        break
+      case 'array':
+        for (const item of v.items) this.collectCalldataFromValue(item, out)
+        break
+      case 'tuple':
+        for (const f of v.fields) this.collectCalldataFromValue(f.value, out)
+        break
+      default:
+        break
     }
   }
 }

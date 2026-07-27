@@ -65,6 +65,8 @@ export interface DisplayRow {
   /** Resolved well-known name for an `address` value (e.g. "USDC", "Uniswap V2: Router 2").
    *  A display hint only — the raw address in `value` stays visible. */
   addressName?: string
+  /** Nesting depth for indenting array/tuple element rows; absent ⇒ 0 */
+  depth?: number
 }
 
 export interface RenderResult {

@@ -8,7 +8,10 @@
 
   <ion-list lines="full" class="evm-decoded__rows">
     <ion-item *ngFor="let row of result.rows">
-      <ion-label>
+      <ion-label
+        [style.padding-left.rem]="(row.depth || 0) * 0.9"
+        [class.evm-decoded__nested-row]="(row.depth || 0) > 0"
+      >
         <p class="evm-decoded__label">{{ renderLabel(row) }}</p>
         <p class="evm-decoded__name" *ngIf="row.addressName">{{ row.addressName }}</p>
         <h3 [class]="'evm-decoded__value evm-decoded__value--' + row.type">{{ renderValue(row) }}</h3>

@@ -92,6 +92,27 @@ function loadSeed() {
   return out
 }
 
+/**
+ * Defensive self-check: a seed signature whose keccak256 does not match its
+ * selector is a typo/mismapping (this is exactly how 1f931c1c was found to be
+ * diamondCut, not multicall). Warn rather than fail, and skip silently if the
+ * hash lib is unavailable at build time so the build never breaks on this.
+ */
+function validateSeedSelectors(seed) {
+  let keccak256
+  try {
+    keccak256 = require('js-sha3').keccak256
+  } catch {
+    return
+  }
+  for (const [sel, s] of seed) {
+    const expected = keccak256(s.signature).slice(0, 8)
+    if (expected !== sel) {
+      console.warn(`WARN: seed selector 0x${sel} != keccak256("${s.signature}") = 0x${expected} — fix scripts/signatures.seed.json`)
+    }
+  }
+}
+
 /** Seed overrides curated; seed's collision count is the max of the two. */
 function merge(curated, seed) {
   for (const [sel, s] of seed) {
@@ -161,6 +182,7 @@ function main() {
 
   const curated = loadCurated()
   const seed = loadSeed()
+  validateSeedSelectors(seed)
   const merged = merge(curated, seed)
 
   let sourceLabel = 'seed'
