@@ -12,6 +12,16 @@
         <p class="evm-decoded__label">{{ renderLabel(row) }}</p>
         <p class="evm-decoded__name" *ngIf="row.addressName">{{ row.addressName }}</p>
         <h3 [class]="'evm-decoded__value evm-decoded__value--' + row.type">{{ renderValue(row) }}</h3>
+        <div class="evm-decoded__decimals" *ngIf="isScalable(row)">
+          <button type="button" class="evm-decoded__decimals-btn" (click)="cycleDecimals(row)">
+            {{ 'evm-decoder.decimals-apply' | translate }}:
+            {{ currentDecimals(row) === null ? ('evm-decoder.decimals-raw' | translate) : currentDecimals(row) }}
+          </button>
+          <span class="evm-decoded__scaled" *ngIf="scaledValue(row) as scaled">
+            = {{ scaled }}
+            <small>({{ 'evm-decoder.assuming-decimals' | translate: { decimals: currentDecimals(row) } }})</small>
+          </span>
+        </div>
       </ion-label>
     </ion-item>
   </ion-list>

@@ -43,13 +43,14 @@ export function paramToRow(label: string, p: DecodedParam): {
   label: string
   value: string
   type: 'address' | 'amount' | 'text' | 'hex' | 'warning'
+  rawValue?: string
 } {
   const v = p.value
   switch (v.kind) {
     case 'address':
       return { label: `${label} (address)`, value: v.value, type: 'address' }
     case 'uint':
-      return { label: `${label} (${p.type})`, value: v.display, type: 'amount' }
+      return { label: `${label} (${p.type})`, value: v.display, type: 'amount', rawValue: v.display }
     case 'int':
       return { label: `${label} (${p.type})`, value: v.display, type: 'amount' }
     case 'bool':
