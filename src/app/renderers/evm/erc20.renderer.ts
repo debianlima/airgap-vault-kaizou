@@ -30,7 +30,7 @@ export class Erc20Renderer implements TransactionRenderer {
     const token = lookupKnownToken(tx.chainId, tx.to)
     const amountRow = token
       ? { value: formatAmount(amountRaw, token.decimals, token.symbol) }
-      : { valueKey: 'evm-decoder.amount-raw-note', valueParams: { value: amountRaw.toString() }, value: amountRaw.toString() }
+      : { valueKey: 'evm-decoder.amount-raw-note', valueParams: { value: amountRaw.toString() }, value: amountRaw.toString(), rawValue: amountRaw.toString() }
     return {
       type: 'erc20-transfer',
       confidence: 'high',
@@ -57,7 +57,7 @@ export class Erc20Renderer implements TransactionRenderer {
       ? { valueKey: 'evm-decoder.amount-unlimited', value: 'Unlimited' }
       : token
       ? { value: formatAmount(amountRaw, token.decimals, token.symbol) }
-      : { valueKey: 'evm-decoder.amount-raw-note', valueParams: { value: amountRaw.toString() }, value: amountRaw.toString() }
+      : { valueKey: 'evm-decoder.amount-raw-note', valueParams: { value: amountRaw.toString() }, value: amountRaw.toString(), rawValue: amountRaw.toString() }
     return {
       type: 'erc20-approve',
       confidence: 'high',
