@@ -55,3 +55,48 @@ export function formatAmount(raw: bigint, decimals: number, symbol?: string): st
 export function isUnlimitedApproval(v: bigint): boolean {
   return v === (1n << 256n) - 1n
 }
+
+export interface KnownContract {
+  /** Omit for contracts deployed at the same (CREATE2-deterministic) address on every chain. */
+  chainId?: number
+  address: string
+  name: string
+}
+
+// Curated, strictly-local list of well-known protocol contracts. Keep it small and
+// reviewable. Addresses are lowercased. SECURITY: every entry must be independently
+// verified before it is added — a wrong address→name mapping is a phishing vector,
+// and the raw address is always shown alongside the name (a name is a hint, not proof).
+const CONTRACTS: KnownContract[] = [
+  // Same address on every chain (CREATE2 / deterministic deployers)
+  { address: '0x000000000022d473030f116ddee9f6b43ac78ba3', name: 'Uniswap: Permit2' },
+  { address: '0xca11bde05977b3631167028862be2a173976ca11', name: 'Multicall3' },
+  { address: '0xa6b71e26c5e0845f74c812102ca7114b6a896ab2', name: 'Safe: Proxy Factory 1.3.0' },
+  { address: '0xd9db270c1b5e3bd161e8c8503c55ceabee709552', name: 'Safe: Singleton 1.3.0' },
+  { address: '0x3e5c63644e683549055b9be8653de26e0b4cd36e', name: 'Safe: Singleton L2 1.3.0' },
+  // Ethereum mainnet
+  { chainId: 1, address: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d', name: 'Uniswap V2: Router 2' },
+  { chainId: 1, address: '0xe592427a0aece92de3edee1f18e0157c05861564', name: 'Uniswap V3: Router' },
+  { chainId: 1, address: '0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45', name: 'Uniswap V3: Router 2' }
+]
+
+/**
+ * Resolve a well-known, *locally curated* human name for an address — a token
+ * symbol (USDC, WETH, …) or a protocol-contract name (Uniswap V2: Router 2, …).
+ * Strictly offline; returns null for unknown addresses. Mirrors the chain-scoped
+ * + no-chainId fallback behaviour of {@link lookupKnownToken}. The raw address
+ * must always stay visible — a name is a hint, not a substitute, since
+ * lookalike-contract scams exist.
+ */
+export function resolveAddressName(chainId: number | undefined, address: string | undefined): string | null {
+  if (!address) return null
+  const token = lookupKnownToken(chainId, address)
+  if (token) return token.symbol
+  const addr = address.toLowerCase()
+  for (const c of CONTRACTS) {
+    if (c.address === addr && (c.chainId === undefined || chainId === undefined || c.chainId === chainId)) {
+      return c.name
+    }
+  }
+  return null
+}

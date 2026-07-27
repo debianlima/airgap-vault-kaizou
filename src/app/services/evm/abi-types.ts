@@ -59,6 +59,9 @@ export interface DisplayRow {
   /** Optional params passed to the translation pipe */
   valueParams?: Record<string, string | number>
   type: 'address' | 'amount' | 'text' | 'hex' | 'warning'
+  /** Resolved well-known name for an `address` value (e.g. "USDC", "Uniswap V2: Router 2").
+   *  A display hint only — the raw address in `value` stays visible. */
+  addressName?: string
 }
 
 export interface RenderResult {

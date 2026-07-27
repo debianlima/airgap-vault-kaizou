@@ -105,4 +105,21 @@ describe('EvmTransactionRendererService', () => {
     expect(r.nested?.length).toBe(2)
     expect(r.nested?.[0].type).toBe('erc20-transfer')
   })
+
+  it('annotates address rows with curated well-known names', async () => {
+    // transfer(0xd8da…, 1000) sent to the USDC contract on Ethereum
+    const tx = {
+      to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      data:
+        '0xa9059cbb' +
+        '000000000000000000000000d8da6bf26964af9d7eed9e03e53415d37aa96045' +
+        '00000000000000000000000000000000000000000000000000000000000003e8',
+      chainId: 1
+    }
+    await svc.prepare(tx)
+    const r = svc.render(tx)
+    const named = r.rows.find((row) => row.type === 'address' && row.addressName === 'USDC')
+    expect(named).toBeTruthy()
+    expect(named!.value.toLowerCase()).toBe('0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48')
+  })
 })

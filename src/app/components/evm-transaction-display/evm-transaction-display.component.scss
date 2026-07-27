@@ -45,6 +45,15 @@
     opacity: 0.7;
   }
 
+  // Resolved well-known name (USDC, Uniswap V2: Router 2, …) shown above the raw
+  // address. A hint only — the full address still renders below it.
+  &__name {
+    margin: 0 0 0.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ion-color-primary, #3880ff);
+  }
+
   &__value {
     font-family: inherit;
     word-break: break-all;
