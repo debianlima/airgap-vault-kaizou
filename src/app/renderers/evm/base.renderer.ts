@@ -1,4 +1,4 @@
-import { EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
+import { DisplayRow, EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
 
 export interface TransactionRenderer {
   matches(tx: EvmTransactionInput): boolean
@@ -9,6 +9,19 @@ export interface RendererContext {
   depth: number
   maxDepth: number
   renderInner(tx: EvmTransactionInput, ctx: RendererContext): RenderResult
+}
+
+/**
+ * The "Contract" row every renderer shows. When `tx.to` is absent the execution
+ * target is not derivable from the calldata (see {@link EvmTransactionInput.to}),
+ * so the row says so instead of naming an address we cannot vouch for — showing
+ * the *outer* contract there would assert a target the transaction never states.
+ */
+export function contractRow(tx: EvmTransactionInput, labelKey = 'evm-decoder.contract-label'): DisplayRow {
+  if (tx.to === undefined) {
+    return { labelKey, valueKey: 'evm-decoder.target-unknown', value: 'Unknown (decided at execution time)', type: 'warning' }
+  }
+  return { labelKey, value: tx.to, type: 'address' }
 }
 
 export function selectorOf(data: string): string {

@@ -1,7 +1,7 @@
 import { AbiDecoderService } from '../../services/evm/abi-decoder.service'
 import { DecodedCall, EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
 import { formatAmount, isUnlimitedApproval, lookupKnownToken } from '../../services/evm/known-tokens'
-import { selectorOf, TransactionRenderer } from './base.renderer'
+import { contractRow, selectorOf, TransactionRenderer } from './base.renderer'
 
 const TRANSFER = 'a9059cbb'
 const APPROVE = '095ea7b3'
@@ -37,7 +37,7 @@ export class Erc20Renderer implements TransactionRenderer {
       functionNameKey: 'evm-decoder.fn-token-transfer',
       rows: [
         { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-token-transfer', value: 'Token Transfer', type: 'text' },
-        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        contractRow(tx),
         { labelKey: 'evm-decoder.to-label', value: to, type: 'address' },
         { labelKey: 'evm-decoder.amount-label', type: 'amount', ...amountRow }
       ],
@@ -64,7 +64,7 @@ export class Erc20Renderer implements TransactionRenderer {
       functionNameKey: 'evm-decoder.fn-token-approval',
       rows: [
         { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-token-approval', value: 'Token Approval', type: 'text' },
-        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        contractRow(tx),
         { labelKey: 'evm-decoder.spender-label', value: spender, type: 'address' },
         { labelKey: 'evm-decoder.amount-label', type: unlimited ? 'warning' : 'amount', ...amountRow }
       ],

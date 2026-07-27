@@ -5,7 +5,14 @@ import { Erc721Renderer } from '../../renderers/evm/erc721.renderer'
 import { GenericAbiRenderer } from '../../renderers/evm/generic-abi.renderer'
 import { MulticallRenderer } from '../../renderers/evm/multicall.renderer'
 import { RawHexRenderer } from '../../renderers/evm/raw-hex.renderer'
-import { isBlockedSelector, looksLikeCalldata, RendererContext, TransactionRenderer, selectorOf } from '../../renderers/evm/base.renderer'
+import {
+  contractRow,
+  isBlockedSelector,
+  looksLikeCalldata,
+  RendererContext,
+  TransactionRenderer,
+  selectorOf
+} from '../../renderers/evm/base.renderer'
 
 import { AbiDecoderService, bytesToHex } from './abi-decoder.service'
 import { DecodedParam, DecodedValue, EvmTransactionInput, RenderResult } from './abi-types'
@@ -113,6 +120,21 @@ export class EvmTransactionRendererService {
   }
 
   private renderWith(tx: EvmTransactionInput, ctx: RendererContext): RenderResult {
+    return this.flagUnknownTarget(tx, this.dispatch(tx, ctx))
+  }
+
+  /**
+   * Mark every result produced for a transaction with no known target, so the UI
+   * can warn that the contract this call executes against is undeterminable.
+   * Stamped here rather than in each renderer: the flag follows `tx.to` alone, and
+   * a `multicall` recovered from a `bytes` param propagates the absent `to` to its
+   * own children, so the whole subtree is flagged automatically.
+   */
+  private flagUnknownTarget(tx: EvmTransactionInput, result: RenderResult): RenderResult {
+    return tx.to === undefined ? { ...result, targetUnknown: true } : result
+  }
+
+  private dispatch(tx: EvmTransactionInput, ctx: RendererContext): RenderResult {
     if (!tx.data || tx.data === '0x' || tx.data.length <= 2) {
       return {
         type: 'raw-hex',
@@ -125,7 +147,7 @@ export class EvmTransactionRendererService {
             value: 'Plain value transfer (no calldata)',
             type: 'text'
           },
-          { labelKey: 'evm-decoder.to-label', value: tx.to, type: 'address' }
+          contractRow(tx, 'evm-decoder.to-label')
         ],
         rawCalldata: tx.data || '0x'
       }

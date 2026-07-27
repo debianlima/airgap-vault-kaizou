@@ -76,6 +76,9 @@ export interface RenderResult {
   warningKey?: string
   warningParams?: Record<string, string | number>
   nested?: RenderResult[]
+  /** True when this call's execution target is not knowable from the calldata
+   *  (see {@link EvmTransactionInput.to}); the UI must warn instead of implying one. */
+  targetUnknown?: boolean
   rawCalldata: string
   functionNameKey?: string
   functionNameParams?: Record<string, string | number>
@@ -84,7 +87,16 @@ export interface RenderResult {
 }
 
 export interface EvmTransactionInput {
-  to: string
+  /**
+   * Contract the calldata executes against, or `undefined` when the target is
+   * genuinely unknown. Only the outermost transaction (and a self-delegating
+   * `multicall`) has a known target: calldata recovered from a `bytes` parameter
+   * runs somewhere the decoder cannot determine — a Safe `initializer` executes
+   * on the freshly created proxy, `execTransaction(to, value, data, …)` executes
+   * `data` against its own `to` argument. Never back-fill this with the outer
+   * contract; an unverifiable target must be displayed as unknown.
+   */
+  to?: string
   data: string
   value?: string
   chainId?: number

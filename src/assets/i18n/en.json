@@ -39,7 +39,9 @@
     "array-items": "{{ count }} items",
     "tuple-fields": "{{ count }} fields",
     "array-truncated": "… and {{ count }} more",
-    "bytes-decoded-below": "↓ decoded below"
+    "bytes-decoded-below": "↓ decoded below",
+    "target-unknown": "Unknown — decided at execution time",
+    "target-unknown-warning": "This call was recovered from a bytes parameter. The contract it executes against is chosen at execution time and cannot be determined here — it is NOT the contract shown above it. Amounts are therefore shown in raw base units, with no token symbol."
   },
   "account-list": {
     "delete": "Delete"

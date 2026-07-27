@@ -29,6 +29,13 @@
     </ion-item>
   </ion-list>
 
+  <ion-card color="danger" *ngIf="result.targetUnknown" class="evm-decoded__warning">
+    <ion-card-content>
+      <ion-icon name="warning-outline"></ion-icon>
+      {{ 'evm-decoder.target-unknown-warning' | translate }}
+    </ion-card-content>
+  </ion-card>
+
   <ion-card color="warning" *ngIf="result.warningKey" class="evm-decoded__warning">
     <ion-card-content>
       <ion-icon name="warning-outline"></ion-icon>

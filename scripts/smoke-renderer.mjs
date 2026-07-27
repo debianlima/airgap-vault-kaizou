@@ -244,7 +244,90 @@ console.log('Renderer pipeline')
   check('depth cap reached without infinite recursion', hitDepthCap, `depthSeen=${depthSeen}`)
 }
 
-// 7. i18n key existence: every translation key any renderer emitted must be
+// 7. Calldata recovered from a bytes parameter must not be attributed to the
+//    outer contract: no inherited address, no outer-token denomination.
+{
+  const w = hex => hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')
+  const p32 = hex => hex + '0'.repeat((64 - (hex.length % 64)) % 64)
+  const transfer = 'a9059cbb' + w('d8da6bf26964af9d7eed9e03e53415d37aa96045') + w((10n ** 18n).toString(16))
+  const data = '0x66666666' + w('20') + w('44') + p32(transfer)
+  db.set('66666666', 'wrap(bytes)')
+  const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+  const tx = { to: usdc, data, chainId: 1 }
+  await svc.prepare(tx)
+  const r = svc.render(tx)
+  const inner = r.nested?.[0]
+  const contract = inner?.rows.find(row => row.labelKey === 'evm-decoder.contract-label')
+  const amount = inner?.rows.find(row => row.labelKey === 'evm-decoder.amount-label')
+  check(
+    'bytes-wrapped call does not inherit the outer target',
+    inner?.type === 'erc20-transfer' &&
+      inner.targetUnknown === true &&
+      contract?.valueKey === 'evm-decoder.target-unknown' &&
+      !inner.rows.some(row => row.value.toLowerCase() === usdc),
+    JSON.stringify({ type: inner?.type, targetUnknown: inner?.targetUnknown, contract })
+  )
+  check(
+    'bytes-wrapped amount stays raw (not denominated in the outer token)',
+    amount?.value === (10n ** 18n).toString() && amount?.rawValue === (10n ** 18n).toString(),
+    JSON.stringify(amount)
+  )
+  // Sanity: the same transfer sent directly to USDC still formats as USDC.
+  const direct = { to: usdc, data: '0x' + transfer, chainId: 1 }
+  await svc.prepare(direct)
+  const dr = svc.render(direct)
+  const directAmount = dr.rows.find(row => row.labelKey === 'evm-decoder.amount-label')
+  check(
+    'a direct call to a known token still formats its amount',
+    dr.targetUnknown === undefined && directAmount?.value === '1000000000000 USDC',
+    JSON.stringify({ targetUnknown: dr.targetUnknown, amount: directAmount })
+  )
+}
+
+// 8. A multicall recovered from a bytes parameter self-delegates to an unknown
+//    target, so the whole subtree below it must stay flagged.
+{
+  const w = hex => hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')
+  const p32 = hex => hex + '0'.repeat((64 - (hex.length % 64)) % 64)
+  const transfer = 'a9059cbb' + w('d8da6bf26964af9d7eed9e03e53415d37aa96045') + w('1')
+  const multicall = 'ac9650d8' + w('20') + w('1') + w('20') + w('44') + p32(transfer)
+  const data = '0x66666666' + w('20') + w((multicall.length / 2).toString(16)) + p32(multicall)
+  db.set('66666666', 'wrap(bytes)')
+  const tx = { to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', data, chainId: 1 }
+  await svc.prepare(tx)
+  const nestedMulticall = svc.render(tx).nested?.[0]
+  check(
+    'unknown target propagates through a nested multicall',
+    nestedMulticall?.type === 'multicall' &&
+      nestedMulticall.targetUnknown === true &&
+      nestedMulticall.nested?.[0]?.targetUnknown === true,
+    JSON.stringify({ type: nestedMulticall?.type, flag: nestedMulticall?.targetUnknown, innerFlag: nestedMulticall?.nested?.[0]?.targetUnknown })
+  )
+}
+
+// 9. A top-level multicall keeps its real (self-delegated) target.
+{
+  const w = hex => hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')
+  const p32 = hex => hex + '0'.repeat((64 - (hex.length % 64)) % 64)
+  const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+  const transfer = 'a9059cbb' + w('d8da6bf26964af9d7eed9e03e53415d37aa96045') + w('1')
+  const tx = { to: usdc, data: '0xac9650d8' + w('20') + w('1') + w('20') + w('44') + p32(transfer), chainId: 1 }
+  await svc.prepare(tx)
+  const r = svc.render(tx)
+  const child = r.nested?.[0]
+  const contract = child?.rows.find(row => row.labelKey === 'evm-decoder.contract-label')
+  const amount = child?.rows.find(row => row.labelKey === 'evm-decoder.amount-label')
+  check(
+    'top-level multicall children keep the real target and token unit',
+    r.targetUnknown === undefined &&
+      child?.targetUnknown === undefined &&
+      contract?.value.toLowerCase() === usdc &&
+      amount?.value === '0.000001 USDC',
+    JSON.stringify({ flag: child?.targetUnknown, contract, amount })
+  )
+}
+
+// 10. i18n key existence: every translation key any renderer emitted must be
 //    present in en.json. Catches typos and missed keys at build time.
 {
   const { readFileSync } = await import('fs')
@@ -257,6 +340,8 @@ console.log('Renderer pipeline')
     if (!r) return
     if (r.functionNameKey) seen.add(r.functionNameKey)
     if (r.warningKey) seen.add(r.warningKey)
+    // mirrors the template, which renders this warning off the flag rather than warningKey
+    if (r.targetUnknown) seen.add('evm-decoder.target-unknown-warning')
     for (const row of r.rows || []) {
       if (row.labelKey) seen.add(row.labelKey)
       if (row.valueKey) seen.add(row.valueKey)
@@ -289,7 +374,14 @@ console.log('Renderer pipeline')
         '000000000000000000000000000000000000000000000000000000000000002a'
     },
     { to: '0xdead000000000000000000000000000000000000', data: '0xdeadbeef00' },
-    { to: '', data: '' }
+    { to: '', data: '' },
+    // wrap(bytes) holding transfer(...) — exercises the unknown-target rows/warning
+    (() => {
+      const w = hex => hex.replace(/^0x/, '').toLowerCase().padStart(64, '0')
+      const t = 'a9059cbb' + w('d8da6bf26964af9d7eed9e03e53415d37aa96045') + w('1')
+      db.set('66666666', 'wrap(bytes)')
+      return { to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', data: '0x66666666' + w('20') + w('44') + t + '0'.repeat(56), chainId: 1 }
+    })()
   ]
   for (const f of fixtures) {
     await svc.prepare(f)

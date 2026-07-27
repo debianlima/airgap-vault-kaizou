@@ -155,6 +155,72 @@ describe('EvmTransactionRendererService', () => {
     expect(r.rows.some((row) => row.valueKey === 'evm-decoder.bytes-decoded-below')).toBe(true)
   })
 
+  it('never attributes a bytes-wrapped call to the outer contract', async () => {
+    db.set('1688f0b9', 'createProxyWithNonce(address,bytes,uint256)')
+    db.set('22222222', 'foo(uint256)')
+    const outer = '0xcccccccccccccccccccccccccccccccccccccccc'
+    const tx = { to: outer, data: PROXY_DATA, chainId: 1 }
+    await svc.prepare(tx)
+    const inner = svc.render(tx).nested?.[0]
+    expect(inner).toBeTruthy()
+    // The initializer executes on the proxy the factory creates, never on the factory.
+    expect(inner!.rows.some((row) => row.value.toLowerCase() === outer)).toBe(false)
+    const contract = inner!.rows.find((row) => row.labelKey === 'evm-decoder.contract-label')
+    expect(contract?.valueKey).toBe('evm-decoder.target-unknown')
+    expect(contract?.type).toBe('warning')
+    expect(inner!.targetUnknown).toBe(true)
+  })
+
+  it('does not denominate a bytes-wrapped amount in the outer contract token', async () => {
+    // wrap(bytes) on the USDC contract, wrapping transfer(0xd8da…, 10^18).
+    const transfer = 'a9059cbb' + word('d8da6bf26964af9d7eed9e03e53415d37aa96045') + word((10n ** 18n).toString(16))
+    const data = '0x66666666' + word('20') + word('44') + pad32(transfer)
+    db.set('66666666', 'wrap(bytes)')
+    const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+    const tx = { to: usdc, data, chainId: 1 }
+    await svc.prepare(tx)
+    const inner = svc.render(tx).nested?.[0]
+    expect(inner?.type).toBe('erc20-transfer')
+    const amount = inner!.rows.find((row) => row.labelKey === 'evm-decoder.amount-label')
+    // 10^18 base units must stay raw — formatting it with USDC's 6 decimals would
+    // read "1000000000000 USDC" for a token the inner call may have nothing to do with.
+    expect(amount?.value).toBe((10n ** 18n).toString())
+    expect(amount?.rawValue).toBe((10n ** 18n).toString())
+    expect(amount?.valueKey).toBe('evm-decoder.amount-raw-note')
+    // and the outer USDC address must not be repeated as the inner contract
+    expect(inner!.rows.some((row) => row.value.toLowerCase() === usdc)).toBe(false)
+  })
+
+  it('propagates unknown-target through a multicall recovered from a bytes parameter', async () => {
+    const innerTransfer = 'a9059cbb' + word('d8da6bf26964af9d7eed9e03e53415d37aa96045') + word('1')
+    const multicall = 'ac9650d8' + word('20') + word('1') + word('20') + word('44') + pad32(innerTransfer)
+    const data = '0x66666666' + word('20') + word((multicall.length / 2).toString(16)) + pad32(multicall)
+    db.set('66666666', 'wrap(bytes)')
+    const tx = { to: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', data, chainId: 1 }
+    await svc.prepare(tx)
+    const nestedMulticall = svc.render(tx).nested?.[0]
+    expect(nestedMulticall?.type).toBe('multicall')
+    expect(nestedMulticall?.targetUnknown).toBe(true)
+    // a multicall self-delegates, so its children inherit the same unknown target
+    expect(nestedMulticall?.nested?.[0].targetUnknown).toBe(true)
+  })
+
+  it('keeps the real target on a top-level call and its multicall children', async () => {
+    const innerTransfer = 'a9059cbb' + word('d8da6bf26964af9d7eed9e03e53415d37aa96045') + word('1')
+    const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+    const data = '0xac9650d8' + word('20') + word('1') + word('20') + word('44') + pad32(innerTransfer)
+    const tx = { to: usdc, data, chainId: 1 }
+    await svc.prepare(tx)
+    const r = svc.render(tx)
+    expect(r.targetUnknown).toBeUndefined()
+    expect(r.nested?.[0].targetUnknown).toBeUndefined()
+    const contract = r.nested?.[0].rows.find((row) => row.labelKey === 'evm-decoder.contract-label')
+    expect(contract?.value.toLowerCase()).toBe(usdc)
+    // known token on a known target still formats normally
+    const amount = r.nested?.[0].rows.find((row) => row.labelKey === 'evm-decoder.amount-label')
+    expect(amount?.value).toBe('0.000001 USDC')
+  })
+
   it('leaves a blocklisted 0x00000000 bytes parameter as raw hex (Gnosis execTransaction pattern)', async () => {
     // wrap2(bytes a, bytes b): a = decodable foo(...), b = 0x00000000… (must stay raw)
     const blocked = '00000000' + word('0')

@@ -1,6 +1,6 @@
 import { AbiDecoderService } from '../../services/evm/abi-decoder.service'
 import { ConfidenceLevel, DecodedParam, DisplayRow, EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
-import { isBlockedSelector, looksLikeCalldata, RendererContext, selectorOf, TransactionRenderer } from './base.renderer'
+import { contractRow, isBlockedSelector, looksLikeCalldata, RendererContext, selectorOf, TransactionRenderer } from './base.renderer'
 
 const CONFIDENCE_ORDER: ConfidenceLevel[] = ['high', 'medium', 'low', 'unknown']
 
@@ -69,7 +69,7 @@ export class GenericAbiRenderer implements TransactionRenderer {
       functionName: `${fn}(…)`,
       rows: [
         { labelKey: 'evm-decoder.function-label', value: fn, type: 'text' },
-        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        contractRow(tx),
         ...rows
       ],
       warningKey: collisionWarn ? 'evm-decoder.collision-warning' : 'evm-decoder.database-note',
@@ -85,12 +85,20 @@ export class GenericAbiRenderer implements TransactionRenderer {
    * decodes all work) and return it as a nested result. Returns null — leaving
    * the plain raw-hex row in place — for blocklisted selectors, non-calldata
    * shapes, or content that does not actually decode.
+   *
+   * The inner transaction deliberately carries NO `to`: the target of a call
+   * wrapped in a `bytes` argument is chosen at execution time (a Safe
+   * `initializer` runs on the new proxy, `execTransaction(to, …)` runs against
+   * its own `to` argument) and is never the outer contract. Inheriting `tx.to`
+   * here would both label the nested call with a contract it does not run on and
+   * let a known-token hit on the outer address denominate the inner amount in the
+   * wrong unit. `chainId` is still propagated — that one is genuinely known.
    */
   private tryDecodeBytesParam(tx: EvmTransactionInput, p: DecodedParam, ctx: RendererContext): RenderResult | null {
     if (p.value.kind !== 'bytes' || p.type !== 'bytes') return null
     if (!looksLikeCalldata(p.value.value)) return null
     if (isBlockedSelector(selectorOf(p.value.hex))) return null
-    const innerTx: EvmTransactionInput = { to: tx.to, data: p.value.hex, value: '0', chainId: tx.chainId }
+    const innerTx: EvmTransactionInput = { data: p.value.hex, value: '0', chainId: tx.chainId }
     const inner = ctx.renderInner(innerTx, { ...ctx, depth: ctx.depth + 1 })
     return inner.type === 'raw-hex' ? null : inner
   }

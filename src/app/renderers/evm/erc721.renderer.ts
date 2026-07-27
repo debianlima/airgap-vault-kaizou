@@ -1,6 +1,6 @@
 import { AbiDecoderService } from '../../services/evm/abi-decoder.service'
 import { EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
-import { selectorOf, TransactionRenderer } from './base.renderer'
+import { contractRow, selectorOf, TransactionRenderer } from './base.renderer'
 import { paramAddress, paramUint } from './erc20.renderer'
 
 const TRANSFER_FROM = '23b872dd'
@@ -41,7 +41,7 @@ export class Erc721Renderer implements TransactionRenderer {
       functionNameKey: 'evm-decoder.fn-transferfrom-ambiguous',
       rows: [
         { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-transferfrom-ambiguous', value: 'transferFrom', type: 'text' },
-        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        contractRow(tx),
         { labelKey: 'evm-decoder.from-label', value: from, type: 'address' },
         { labelKey: 'evm-decoder.to-label', value: to, type: 'address' },
         { labelKey: 'evm-decoder.amount-or-token-id-label', value: third.toString(), type: 'amount' }
@@ -67,7 +67,7 @@ export class Erc721Renderer implements TransactionRenderer {
       functionNameKey: 'evm-decoder.fn-nft-transfer',
       rows: [
         { labelKey: 'evm-decoder.function-label', valueKey: 'evm-decoder.fn-nft-transfer', value: 'NFT Transfer', type: 'text' },
-        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' },
+        contractRow(tx),
         { labelKey: 'evm-decoder.from-label', value: from, type: 'address' },
         { labelKey: 'evm-decoder.to-label', value: to, type: 'address' },
         { labelKey: 'evm-decoder.token-id-label', value: tokenId.toString(), type: 'text' }

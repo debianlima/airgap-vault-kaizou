@@ -1,6 +1,6 @@
 import { AbiDecoderService, bytesToHex } from '../../services/evm/abi-decoder.service'
 import { ConfidenceLevel, EvmTransactionInput, RenderResult } from '../../services/evm/abi-types'
-import { RendererContext, selectorOf, TransactionRenderer } from './base.renderer'
+import { contractRow, RendererContext, selectorOf, TransactionRenderer } from './base.renderer'
 
 const MULTICALL = 'ac9650d8'
 const MULTICALL_DEADLINE = '5ae401dc'
@@ -54,6 +54,11 @@ export class MulticallRenderer implements TransactionRenderer {
     for (const item of arrayParam.value.items) {
       if (item.kind !== 'bytes') continue
       const innerData = '0x' + bytesToHex(item.value)
+      // Unlike calldata pulled out of an arbitrary `bytes` argument, a multicall
+      // self-delegates: each inner call executes on the multicall contract itself,
+      // so inheriting `to` is factually correct here. If this multicall was itself
+      // recovered from a bytes param, `tx.to` is already undefined and the
+      // unknown-target state propagates to the children unchanged.
       inner.push(ctx.renderInner({ to: tx.to, data: innerData, value: '0', chainId: tx.chainId }, innerCtx))
     }
     const confidence = inheritConfidence(inner)
@@ -70,7 +75,7 @@ export class MulticallRenderer implements TransactionRenderer {
           value: `Multicall (${inner.length} calls)`,
           type: 'text'
         },
-        { labelKey: 'evm-decoder.contract-label', value: tx.to, type: 'address' }
+        contractRow(tx)
       ],
       warningKey: 'evm-decoder.multicall-warning',
       nested: inner,
