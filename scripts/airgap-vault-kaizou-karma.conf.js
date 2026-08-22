@@ -12,7 +12,7 @@ module.exports = function (config) {
     ],
     client: { clearContext: false },
     reporters: ['progress'],
-    port: 9878,
+    port: Number(process.env.AIRGAP_KAIZOU_KARMA_PORT || 9878),
     colors: true,
     logLevel: config.LOG_INFO,
     browsers: ['ChromeHeadlessNoSandbox'],

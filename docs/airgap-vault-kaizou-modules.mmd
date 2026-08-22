@@ -220,6 +220,7 @@ graph TD
   subgraph contratos["contratos"]
     E119["solflare-keystone.schema.json<br/>contrato formal da fronteira Solflare/Keystone"]
     E935["airgap-vault-kaizou-v6-readme.md<br/>histórico versionado da emenda v6 que libera e governa a atualização do README principal"]
+    E936["airgap-vault-kaizou-solana-release.schema.json<br/>contrato JSON Schema da release Kaizou com módulo Solana estático e gates de stake"]
   end
   subgraph docs["docs"]
     E122["airgap-vault-kaizou-competences.mmd<br/>diagrama Mermaid derivado do manifesto"]
@@ -408,9 +409,10 @@ graph TD
   subgraph scripts["scripts"]
     E239["airgap-vault-kaizou-generate-diagrams.py<br/>verificação e projeção mecânica da estrutura"]
     E240["airgap-vault-kaizou-verify-structure.py<br/>verificação e projeção mecânica da estrutura"]
-    E932["airgap-vault-kaizou-nonregression.js<br/>verificar mecanicamente que a integração Solflare está isolada a Solana e que fluxos de outras redes não foram alterados semanticamente"]
-    E933["airgap-vault-kaizou-karma.conf.js<br/>harness Karma reproduzível para homologação no WSL, respeitando CHROME_BIN e timeout suficiente para bundles do Vault"]
-    E934["airgap-vault-kaizou-karma-gate.js<br/>executar Karma de forma determinística no WSL e encerrar somente o Chrome temporário após TOTAL SUCCESS"]
+    E932["airgap-vault-kaizou-nonregression.js<br/>verificar mecanicamente que a integração Solflare/stake está isolada a Solana e que fluxos das demais redes permanecem no comportamento upstream"]
+    E933["airgap-vault-kaizou-karma.conf.js<br/>harness Karma reproduzível com porta exclusiva por job para impedir reconnect cruzado de browsers residuais"]
+    E934["airgap-vault-kaizou-karma-gate.js<br/>executar Karma de forma determinística no WSL com porta exclusiva por job e cleanup síncrono do Chrome temporário"]
+    E938["airgap-vault-kaizou-build-release-with-solana-module.js<br/>construir APK Kaizou em staging externo incluindo pacote Solana verificado como asset module estático"]
   end
   subgraph src["src"]
     E883["global.scss<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
@@ -723,7 +725,7 @@ graph TD
   end
   subgraph src_app_pages_deserialized_detail["src/app/pages/deserialized-detail"]
     E443["deserialized-detail.actions.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
-    E444["deserialized-detail.effects.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
+    E444["deserialized-detail.effects.ts<br/>tornar o fluxo de assinatura tolerante a detalhes Solana sem destinatário/token inferível, sem alterar semântica de outras redes"]
     E445["deserialized-detail.module.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
     E446["deserialized-detail.page.html<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
     E447["deserialized-detail.page.scss<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
@@ -731,6 +733,7 @@ graph TD
     E449["deserialized-detail.page.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
     E450["deserialized-detail.reducer.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
     E451["deserialized.detail.types.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
+    E937["deserialized-detail.effects.spec.ts<br/>regressão do crash ao assinar transação Solana sem destinatário/token inferível e isolamento das demais redes"]
   end
   subgraph src_app_pages_distribution_onboarding["src/app/pages/distribution-onboarding"]
     E452["distribution-onboarding.module.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]

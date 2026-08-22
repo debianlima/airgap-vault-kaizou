@@ -218,7 +218,10 @@ export class DeserializedDetailEffects {
         )
         .map(async ([wallet, request]: [AirGapWallet, IACMessageDefinitionObjectV3]): Promise<DeserializedUnsignedTransaction> => {
           let details: IAirGapTransaction[]
-          if (await this.checkIfSaplingTransaction(request.payload as UnsignedTransaction, request.protocol)) {
+          const walletProtocolIdentifier = await wallet.protocol.getIdentifier()
+          if (String(walletProtocolIdentifier) === 'solana') {
+            details = await wallet.protocol.getTransactionDetails(request.payload as UnsignedTransaction)
+          } else if (await this.checkIfSaplingTransaction(request.payload as UnsignedTransaction, request.protocol)) {
             details = await this.transactionService.getDetailsFromIACMessages([request], {
               overrideProtocol: await this.getSaplingProtocol(),
               data: {

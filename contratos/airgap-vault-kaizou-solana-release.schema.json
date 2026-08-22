@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "airgap-vault-kaizou-solana-release.schema.json",
+  "title": "AirGap Vault Kaizou Solana release contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "module",
+    "stake",
+    "homologation"
+  ],
+  "properties": {
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "developmentMode",
+        "releaseMode",
+        "staticAssetPath",
+        "requiredFiles",
+        "verifySignature"
+      ],
+      "properties": {
+        "developmentMode": {
+          "const": "external-project"
+        },
+        "releaseMode": {
+          "const": "static-asset-module"
+        },
+        "staticAssetPath": {
+          "const": "public/assets/protocol_modules/airgap-solana-module"
+        },
+        "requiredFiles": {
+          "const": [
+            "manifest.json",
+            "airgap-solana-module.bundle.js",
+            "module.sig"
+          ]
+        },
+        "verifySignature": {
+          "const": true
+        }
+      }
+    },
+    "stake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nativeInstructionTypes",
+        "ignoreForClassification",
+        "unknownProgramPolicy"
+      ],
+      "properties": {
+        "nativeInstructionTypes": {
+          "type": "array",
+          "uniqueItems": true,
+          "contains": {
+            "const": "Deactivate"
+          },
+          "items": {
+            "enum": [
+              "Initialize",
+              "Authorize",
+              "AuthorizeWithSeed",
+              "Delegate",
+              "Split",
+              "Withdraw",
+              "Deactivate",
+              "Merge"
+            ]
+          }
+        },
+        "ignoreForClassification": {
+          "const": [
+            "ComputeBudget111111111111111111111111111111"
+          ]
+        },
+        "unknownProgramPolicy": {
+          "const": "warn-preserve-bytes-and-allow-valid-signature"
+        }
+      }
+    },
+    "homologation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "android",
+        "solflare",
+        "regression"
+      ],
+      "properties": {
+        "android": {
+          "const": "Android 11 Google Play user non-root: module available on clean install without ZIP import and stake request signs"
+        },
+        "solflare": {
+          "const": "sol-sign-request -> Vault -> sol-signature preserves requestId and verifies Ed25519"
+        },
+        "regression": {
+          "const": "full upstream suite plus Kaizou Solflare and stake gates"
+        }
+      }
+    }
+  }
+}

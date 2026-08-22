@@ -1,4 +1,4 @@
-# Estado — 2026-08-21 — contrato v6
+# Estado — 2026-08-21 — contrato v7
 
 ## Decisões vigentes
 - Nome de distribuição da primeira release: `AirGap Vault Kaizou 1.0.0`; tag canônica `airgap-vault-kaizou-1.0.0`.
@@ -31,7 +31,7 @@
 - Não bloqueante ao contrato v6: broadcast Solana devnet não verificado porque `requestAirdrop` retornou erro e a fixture permaneceu com saldo zero. O fluxo offline/QR, a assinatura Ed25519 e a aceitação pela Solflare foram verificados.
 
 ## Trabalho compartilhado
-- Nenhum bloco ativo; U01 encerrada após homologação, publicação da branch e criação da release 1.0.0.
+- U02 — release com módulo Solana estático e fluxo de assinatura seguro para stake/transações sem destinatário inferível; previsão 2026-08-22T03:30:00-03:00.
 
 ## Competências ativas nesta unidade
 - keystone-solflare-ur — verificada pelo parser/keyring real da Solflare 2.34.0.
@@ -67,4 +67,4 @@
 - Android: API 30 Android 11 Google Play user/non-root; módulo Solana v0.1.3 verificado/instalado; conta `CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C` em `m/44'/501'/0'/0'`; helper temporário removido.
 
 ## Próxima unidade
-- Nenhuma unidade bloqueante. U01 homologada, encerrada e publicada como `AirGap Vault Kaizou 1.0.0`; broadcast devnet pode ser repetido futuramente quando houver saldo de teste.
+- U02 — release com módulo Solana estático e fluxo de assinatura seguro para stake/transações sem destinatário inferível; previsão 2026-08-22T03:30:00-03:00.

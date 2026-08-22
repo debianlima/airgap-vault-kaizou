@@ -1,5 +1,5 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 6
+versao_contrato: 7
 historico_emendas:
 - versao: 1
   data: '2026-08-21'
@@ -47,7 +47,34 @@ historico_emendas:
   - a introdução deve registrar origem em airgap-it/airgap-vault v3.34.4 commit aa50b7f0371ed2e681f358d22b546c7c000e05b7
   - a introdução deve resumir apenas as diferenças mecanicamente homologadas do fork e explicitar a proteção das redes não-Solana
   - a introdução deve atribuir as modificações Kaizou a trabalho colaborativo entre o administrador humano e um agente de IA ChatGPT, usando método orientado por manifesto, contrato, portões mecânicos e reconciliação
-trabalho_compartilhado: null
+- versao: 7
+  data: '2026-08-21'
+  origem: 'decisão explícita do usuário: desenvolvimento mantém módulo separado; APK de release Kaizou deve sair com módulo Solana disponível e stake funcional'
+  alteracoes:
+  - release Android usa mecanismo nativo de asset modules do Vault para incluir o módulo Solana já carregável no primeiro boot, sem importação manual de ZIP
+  - fonte do módulo permanece no projeto airgap-solana-module separado durante desenvolvimento
+  - build de release deve ocorrer em staging fora da árvore de trabalho e copiar somente manifest.json, bundle declarado e module.sig verificados do pacote do módulo
+  - fluxo deserialized-detail deve tolerar transações Solana sem destinatário/token inferível e permitir assinatura quando o módulo fornece fallback seguro
+  - homologação inclui QR real equivalente a ComputeBudget + StakeProgram.Deactivate, assinatura no Android 11 non-root e sol-signature aceita pela Solflare
+  - 'homologação de liquid staking inclui transação com programa customizado desconhecido: UI deve advertir que não foi totalmente decodificada, preservar bytes e ainda produzir assinatura válida sem crash'
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
+  unidade: U02
+  descricao: Release com módulo Solana estático no APK e fluxo de assinatura seguro para stake/transações Solana sem destinatário inferível.
+  agente: Meu Terminal Oracle
+  atualizado_em: '2026-08-21T23:57:25-03:00'
+  previsao_termino: '2026-08-22T03:30:00-03:00'
+  zona_exclusao:
+  - src/app/pages/deserialized-detail/**
+  - scripts/airgap-vault-kaizou-build-release-with-solana-module.js
+  - contratos/airgap-vault-kaizou-solana-release.schema.json
+  - manifesto.yaml
+  - estado.md
+  - docs/airgap-vault-kaizou-*.mmd
+  - scripts/airgap-vault-kaizou-nonregression.js
+  - scripts/airgap-vault-kaizou-karma.conf.js
+  - scripts/airgap-vault-kaizou-karma-gate.js
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -3596,12 +3623,12 @@ entradas:
   status: aceito
 - id: 444
   caminho: src/app/pages/deserialized-detail/deserialized-detail.effects.ts
-  proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
-  tipo: nao-classificado
+  proposito: tornar o fluxo de assinatura tolerante a detalhes Solana sem destinatário/token inferível, sem alterar semântica de outras redes
+  tipo: backend-integracao
   consome: []
   produz: null
-  aceite: git diff --quiet v3.34.4 -- src/app/pages/deserialized-detail/deserialized-detail.effects.ts
-  status: aceito
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 2 --include src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts && node scripts/airgap-vault-kaizou-nonregression.js
+  status: em_curso
 - id: 445
   caminho: src/app/pages/deserialized-detail/deserialized-detail.module.ts
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -7500,28 +7527,28 @@ entradas:
   status: aceito
 - id: 932
   caminho: scripts/airgap-vault-kaizou-nonregression.js
-  proposito: verificar mecanicamente que a integração Solflare está isolada a Solana e que fluxos de outras redes não foram alterados semanticamente
+  proposito: verificar mecanicamente que a integração Solflare/stake está isolada a Solana e que fluxos das demais redes permanecem no comportamento upstream
   tipo: teste-integracao
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  status: em_curso
 - id: 933
   caminho: scripts/airgap-vault-kaizou-karma.conf.js
-  proposito: harness Karma reproduzível para homologação no WSL, respeitando CHROME_BIN e timeout suficiente para bundles do Vault
+  proposito: harness Karma reproduzível com porta exclusiva por job para impedir reconnect cruzado de browsers residuais
   tipo: teste-integracao
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  status: aceito
+  status: em_curso
 - id: 934
   caminho: scripts/airgap-vault-kaizou-karma-gate.js
-  proposito: executar Karma de forma determinística no WSL e encerrar somente o Chrome temporário após TOTAL SUCCESS
+  proposito: executar Karma de forma determinística no WSL com porta exclusiva por job e cleanup síncrono do Chrome temporário
   tipo: teste-integracao
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  status: aceito
+  status: em_curso
 - id: 935
   caminho: contratos/airgap-vault-kaizou-v6-readme.md
   proposito: histórico versionado da emenda v6 que libera e governa a atualização do README principal
@@ -7530,6 +7557,30 @@ entradas:
   produz: null
   aceite: grep -Fq 'AirGap Vault Kaizou 1.0.0' contratos/airgap-vault-kaizou-v6-readme.md && grep -Fq 'aa50b7f0371ed2e681f358d22b546c7c000e05b7' contratos/airgap-vault-kaizou-v6-readme.md && grep -Fq 'ChatGPT' contratos/airgap-vault-kaizou-v6-readme.md
   status: aceito
+- id: 936
+  caminho: contratos/airgap-vault-kaizou-solana-release.schema.json
+  proposito: contrato JSON Schema da release Kaizou com módulo Solana estático e gates de stake
+  tipo: estrutura-contrato
+  consome: []
+  produz: null
+  aceite: python3 -m json.tool contratos/airgap-vault-kaizou-solana-release.schema.json >/dev/null
+  status: pendente
+- id: 937
+  caminho: src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts
+  proposito: regressão do crash ao assinar transação Solana sem destinatário/token inferível e isolamento das demais redes
+  tipo: teste-integracao
+  consome: []
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 2 --include src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts
+  status: pendente
+- id: 938
+  caminho: scripts/airgap-vault-kaizou-build-release-with-solana-module.js
+  proposito: construir APK Kaizou em staging externo incluindo pacote Solana verificado como asset module estático
+  tipo: deploy-android
+  consome: []
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-build-release-with-solana-module.js --verify-only
+  status: pendente
 infraestrutura:
   host_canonico: DESKTOP-KQAHRF0
   endereco_host: 172.16.0.110

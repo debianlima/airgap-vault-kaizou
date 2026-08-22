@@ -18,7 +18,9 @@ const allowedProductChanges = new Set([
   'src/app/services/iac/iac.service.spec.ts',
   'src/app/services/interaction/interaction.service.ts',
   'src/app/services/solflare-keystone/solflare-keystone.service.ts',
-  'src/app/services/solflare-keystone/solflare-keystone.service.spec.ts'
+  'src/app/services/solflare-keystone/solflare-keystone.service.spec.ts',
+  'src/app/pages/deserialized-detail/deserialized-detail.effects.ts',
+  'src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts'
 ])
 const changed = execFileSync(
   'git',
@@ -42,4 +44,9 @@ const share = fs.readFileSync(path.join(root, 'src/app/pages/account-share/accou
 if (!share.includes('<airgap-iac-qr') || !share.includes('*ngIf="!solflareSyncQr"')) throw new Error('existing IAC QR path not preserved')
 const signed = fs.readFileSync(path.join(root, 'src/app/pages/transaction-signed/transaction-signed.page.html'), 'utf8')
 if (!signed.includes('<airgap-iac-qr') || !signed.includes('!solflareSignatureQr')) throw new Error('existing signed IAC QR path not preserved')
+
+const detailsEffects = fs.readFileSync(path.join(root, 'src/app/pages/deserialized-detail/deserialized-detail.effects.ts'), 'utf8')
+if (!detailsEffects.includes("String(walletProtocolIdentifier) === 'solana'")) throw new Error('Solana detail guard missing')
+if (!detailsEffects.includes('details = await wallet.protocol.getTransactionDetails(request.payload as UnsignedTransaction)')) throw new Error('Solana direct detail path missing')
+if (!detailsEffects.includes('details = await this.transactionService.getDetailsFromIACMessages([request])')) throw new Error('upstream non-Solana detail path missing')
 console.log(`PASS: Solflare changes isolated; ${changed.length} product files differ from v3.34.4 and all are declared`)

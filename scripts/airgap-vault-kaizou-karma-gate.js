@@ -73,6 +73,14 @@ function terminateProcessGroup(child) {
   spawnSync('sleep', ['0.25'], { stdio: 'ignore' })
 }
 
+function getFreeKarmaPort() {
+  const result = spawnSync('python3', ['-c', 'import socket; s=socket.socket(); s.bind(("127.0.0.1",0)); print(s.getsockname()[1]); s.close()'], { encoding: 'utf8' })
+  if (result.status !== 0) throw new Error('could not allocate a free Karma port')
+  const port = Number(String(result.stdout).trim())
+  if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error(`invalid Karma port: ${result.stdout}`)
+  return port
+}
+
 function runOne(include, expected, suite = false) {
   return new Promise((resolve) => {
     killWindowsChrome()
@@ -81,10 +89,12 @@ function runOne(include, expected, suite = false) {
     const env = { ...process.env }
     if (chrome) env.CHROME_BIN = chrome.wrapper
     env.NODE_PATH = path.join(ROOT, 'node_modules')
+    const karmaPort = getFreeKarmaPort()
+    env.AIRGAP_KAIZOU_KARMA_PORT = String(karmaPort)
 
     const args = [NG, 'test', '--watch=false', '--progress=false', '--karma-config', KARMA]
     if (include) args.push('--include', include)
-    console.log(suite ? 'GATE START suite=full' : `GATE START include=${include} expected=${expected}`)
+    console.log(suite ? `GATE START suite=full port=${karmaPort}` : `GATE START include=${include} expected=${expected} port=${karmaPort}`)
     const child = spawn(process.execPath, args, { cwd: ROOT, env, detached: true, stdio: ['ignore', 'pipe', 'pipe'] })
 
     let output = ''
