@@ -5,6 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "release",
     "module",
     "stake",
     "homologation"
@@ -97,6 +98,34 @@
         },
         "regression": {
           "const": "full upstream suite plus Kaizou Solflare and stake gates"
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kaizouVersion",
+        "tag",
+        "solanaModuleVersion",
+        "solanaModuleProject",
+        "moduleEvolvesIndependently"
+      ],
+      "properties": {
+        "kaizouVersion": {
+          "const": "1.1.0"
+        },
+        "tag": {
+          "const": "airgap-vault-kaizou-1.1.0"
+        },
+        "solanaModuleVersion": {
+          "const": "0.1.4"
+        },
+        "solanaModuleProject": {
+          "const": "airgap-solana-module"
+        },
+        "moduleEvolvesIndependently": {
+          "const": true
         }
       }
     }

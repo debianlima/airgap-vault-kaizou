@@ -1,43 +1,38 @@
-# AirGap Vault Kaizou 1.0.0
+# AirGap Vault Kaizou 1.1.0
 
-> Fork comunitário do AirGap Vault com integração Solana/Solflare, preservando abaixo a documentação original do projeto upstream.
+> Fork comunitário do AirGap Vault com **Solana disponível diretamente na release**, integração Solflare e suporte de stake, preservando abaixo a documentação original do projeto upstream.
 
 ## Sobre o Kaizou
 
-**AirGap Vault Kaizou 1.0.0** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
+**AirGap Vault Kaizou 1.1.0** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
 
-O objetivo do Kaizou é acrescentar interoperabilidade Solana com a Solflare sem redefinir o comportamento das demais redes do Vault. A versão 1.0.0 mantém a base do AirGap Vault e adiciona, para Solana, o fluxo de integração compatível com o protocolo Keystone usado pela Solflare.
+A principal evolução desta release é disponibilizar **Solana no próprio Kaizou**. Durante o desenvolvimento, o projeto **airgap-solana-module** continua separado e evolui com versão/release próprias. Na distribuição Kaizou 1.1.0, o pacote assinado **airgap-solana-module 0.1.4** é incluído como **módulo estático** no APK, de forma que uma instalação limpa já oferece Solana sem importar um ZIP manualmente.
 
-### O que esta versão acrescenta
+### O que a versão 1.1.0 acrescenta
 
-- suporte ao módulo isolado de Solana no Vault;
-- opção **AirGap Solflare** na experiência de conta Solana;
-- sincronização por QR no formato **`crypto-multi-accounts`**;
-- assinatura externa no fluxo **`sol-sign-request` → assinatura offline no Vault → `sol-signature`**;
-- preservação do `requestId`, derivation path e master fingerprint durante a interoperabilidade;
-- validação da assinatura Ed25519 antes da homologação;
-- proteção de não-regressão para Bitcoin, Ethereum, BNB Smart Chain e os demais fluxos upstream, com suíte completa e gates mecânicos antes da publicação.
+- `airgap-solana-module 0.1.4` integrado ao APK como módulo estático, mantendo o módulo como projeto independente;
+- opção **AirGap Solflare** para contas Solana;
+- sincronização por QR `crypto-multi-accounts`;
+- assinatura `sol-sign-request` → assinatura offline → `sol-signature`, com requestId preservado;
+- suporte offline às instruções nativas do Solana Stake Program: Initialize, Authorize, AuthorizeWithSeed, Delegate, Split, Withdraw, Deactivate e Merge;
+- suporte seguro a transações Solana compostas com Compute Budget;
+- fallback para programas customizados de liquid staking/DeFi ainda não decodificados: o app avisa que não reconheceu toda a semântica, preserva os bytes originais e permite assinatura válida em vez de quebrar;
+- correção do fluxo de detalhes Solana para não entrar no enriquecimento ERC-20 do Angular Core;
+- proteção de não-regressão das demais redes por suíte upstream e gate mecânico de isolamento.
 
-A integração Kaizou é deliberadamente específica para Solana. Os protocolos não-Solana continuam seguindo os caminhos do AirGap Vault upstream, sem alteração semântica intencional causada pela ponte Solflare.
+A integração Kaizou continua deliberadamente restrita a Solana. Bitcoin, Ethereum, BNB Smart Chain e os demais protocolos permanecem nos caminhos upstream, sem alteração semântica intencional causada pelo patch Solflare/stake.
 
 ## Desenvolvimento colaborativo e método
 
-As **modificações Kaizou deste fork** foram desenvolvidas de forma colaborativa pelo administrador humano do projeto com apoio de um **agente de IA ChatGPT**. Essa atribuição se refere às alterações do fork Kaizou; não atribui ao ChatGPT a autoria do AirGap Vault original nem implica participação ou endosso dos mantenedores upstream nesse processo.
+As **modificações Kaizou deste fork** foram desenvolvidas de forma colaborativa pelo administrador humano do projeto com apoio de um **agente de IA ChatGPT**. Essa atribuição se refere às alterações do fork Kaizou; não atribui ao ChatGPT a autoria do AirGap Vault original nem implica participação ou endosso dos mantenedores upstream.
 
-O trabalho foi conduzido por um **método de manutenção orientado por manifesto, contrato, portões mecânicos e reconciliação**. Nesse método:
+O trabalho foi conduzido por um **método de manutenção orientado por manifesto, contrato, portões mecânicos e reconciliação**. A avaliação do agente de IA não substitui testes, builds, verificadores, validação criptográfica nem homologação de runtime.
 
-- o manifesto declara o que pode existir antes da geração;
-- contratos e emendas registram mudanças deliberadas de critério;
-- testes, builds, verificadores e validações criptográficas atuam como portões mecânicos;
-- a avaliação do agente de IA não substitui um portão;
-- a reconciliação compara a árvore real com a especificação declarada;
-- alterações de produto e documentação são versionadas junto com o estado do projeto.
+## Homologação da linha 1.1.0
 
-## Homologação desta release
+A homologação exige Android 11 `user`/non-root em instalação limpa, carregamento de Solana a partir do módulo estático sem importação manual, derivação de conta, `Stake Deactivate`, `Stake Withdraw`, fallback de programa customizado, produção de `sol-signature`, requestId preservado, Ed25519 válido e aceitação pelo parser/keyring real da Solflare 2.34.0. A suíte upstream completa, testes específicos e gates de não-regressão também fazem parte do aceite.
 
-A release 1.0.0 foi homologada no fluxo Android 11 user/non-root com o módulo Solana instalado, QR `crypto-multi-accounts`, `sol-sign-request`, `sol-signature`, preservação de requestId, verificação Ed25519 e aceitação pelo parser/keyring da Solflare 2.34.0. A suíte upstream completa e os testes específicos da integração também foram executados como gates de não-regressão.
-
-> O broadcast Solana devnet não faz parte do critério offline desta release e permaneceu não verificado por ausência de saldo de teste quando o faucet consultado falhou.
+> Broadcast Solana devnet continua fora do contrato offline/QR enquanto não houver saldo de teste verificável.
 
 ---
 

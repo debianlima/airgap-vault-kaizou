@@ -1,5 +1,5 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 7
+versao_contrato: 8
 historico_emendas:
 - versao: 1
   data: '2026-08-21'
@@ -57,6 +57,14 @@ historico_emendas:
   - fluxo deserialized-detail deve tolerar transações Solana sem destinatário/token inferível e permitir assinatura quando o módulo fornece fallback seguro
   - homologação inclui QR real equivalente a ComputeBudget + StakeProgram.Deactivate, assinatura no Android 11 non-root e sol-signature aceita pela Solflare
   - 'homologação de liquid staking inclui transação com programa customizado desconhecido: UI deve advertir que não foi totalmente decodificada, preservar bytes e ainda produzir assinatura válida sem crash'
+- versao: 8
+  data: '2026-08-22'
+  origem: decisão explícita do usuário para publicar AirGap Vault Kaizou 1.1.0 e airgap-solana-module 0.1.4 separadamente, com o módulo 0.1.4 integrado no APK Kaizou
+  alteracoes:
+  - versão da nova release Kaizou fixada em 1.1.0; tag canônica airgap-vault-kaizou-1.1.0
+  - release Kaizou 1.1.0 deve conter airgap-solana-module 0.1.4 como static asset module e não exigir importação manual de ZIP
+  - airgap-solana-module continua projeto e release independentes; integração no Kaizou não funde os ciclos de desenvolvimento
+  - README principal deve destacar Solana integrada como principal evolução da release 1.1.0 e preservar byte a byte o README upstream v3.34.4 abaixo da introdução Kaizou
 trabalho_compartilhado:
   projeto: airgap-vault-kaizou
   caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
@@ -75,6 +83,9 @@ trabalho_compartilhado:
   - scripts/airgap-vault-kaizou-nonregression.js
   - scripts/airgap-vault-kaizou-karma.conf.js
   - scripts/airgap-vault-kaizou-karma-gate.js
+  - package.json
+  - README.md
+  - lexico.yaml
   prorrogado_em: '2026-08-22T07:29:00-03:00'
 entradas:
 - id: 1
@@ -239,13 +250,13 @@ entradas:
   status: aceito
 - id: 21
   caminho: README.md
-  proposito: documentação principal do AirGap Vault Kaizou 1.0.0 com atribuição upstream, diferenças do fork e método colaborativo
+  proposito: documentação principal do AirGap Vault Kaizou 1.1.0 com Solana integrada, origem upstream e método colaborativo
   tipo: nao-classificado
   consome: []
   produz: null
-  aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes(); u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u); t=r.decode(); assert '# AirGap Vault Kaizou 1.0.0'
-    in t; assert 'airgap-it/airgap-vault' in t; assert 'aa50b7f0371ed2e681f358d22b546c7c000e05b7' in t; assert 'ChatGPT' in t; assert 'manifesto' in t and 'portões mecânicos' in t"
-  status: aceito
+  aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes(); u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u); t=r.decode(); assert '# AirGap Vault Kaizou 1.1.0'
+    in t; assert 'airgap-solana-module 0.1.4' in t; assert 'módulo estático' in t; assert 'airgap-it/airgap-vault' in t; assert 'ChatGPT' in t"
+  status: em_curso
 - id: 22
   caminho: android/.gitignore
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -1901,7 +1912,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-verify-structure.py --all
-  status: aceito
+  status: em_curso
 - id: 229
   caminho: manifesto.yaml
   proposito: governança canônica do fork
@@ -1920,12 +1931,12 @@ entradas:
   status: aceito
 - id: 231
   caminho: package.json
-  proposito: adicionar registry Solana Keystone necessário à ponte Solflare
+  proposito: dependências do fork e versão de distribuição AirGap Vault Kaizou 1.1.0
   tipo: dependencias
   consome: []
   produz: null
-  aceite: yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  aceite: node -e "const p=require('./package.json'); if(p.version!=='1.1.0')process.exit(1)" && yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
+  status: em_curso
 - id: 232
   caminho: patch-dependency-versions.js
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -7564,8 +7575,9 @@ entradas:
   tipo: estrutura-contrato
   consome: []
   produz: null
-  aceite: python3 -m json.tool contratos/airgap-vault-kaizou-solana-release.schema.json >/dev/null
-  status: pendente
+  aceite: python3 -m json.tool contratos/airgap-vault-kaizou-solana-release.schema.json >/dev/null && python3 -c "import json; d=json.load(open('contratos/airgap-vault-kaizou-solana-release.schema.json')); p=d['properties']['release']['properties'];
+    assert p['kaizouVersion']['const']=='1.1.0'; assert p['solanaModuleVersion']['const']=='0.1.4'"
+  status: em_curso
 - id: 937
   caminho: src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts
   proposito: regressão do crash ao assinar transação Solana sem destinatário/token inferível e isolamento das demais redes

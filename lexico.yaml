@@ -35,3 +35,18 @@
   proibidos:
   - v1.0.0
   - v3.34.4-kaizou.1
+- conceito: nome de release 1.1.0
+  canonico: AirGap Vault Kaizou 1.1.0
+  proibidos:
+  - AirGap Vault Kaizou 110
+  - iGap Vault Caizu 110
+- conceito: tag de release 1.1.0
+  canonico: airgap-vault-kaizou-1.1.0
+  proibidos:
+  - v1.1.0
+  - airgap-vault-kaizou-1.0.1
+- conceito: módulo Solana integrado na release 1.1.0
+  canonico: airgap-solana-module 0.1.4
+  proibidos:
+  - airgap-solana-module 0.1.3
+  - Solana embutida no código do Vault

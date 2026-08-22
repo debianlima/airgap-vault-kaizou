@@ -1,4 +1,4 @@
-# Estado — 2026-08-21 — contrato v7
+# Estado — 2026-08-22 — contrato v8
 
 ## Decisões vigentes
 - Nome de distribuição da primeira release: `AirGap Vault Kaizou 1.0.0`; tag canônica `airgap-vault-kaizou-1.0.0`.
@@ -20,6 +20,7 @@
 - Nenhuma.
 
 ## Decisões fechadas nesta emenda
+- Emenda v8: publicar `AirGap Vault Kaizou 1.1.0` com `airgap-solana-module 0.1.4` integrado como módulo estático; o módulo permanece projeto/release independente.
 - Emenda v6: README principal pode receber introdução Kaizou verificável, preservando byte a byte o README upstream v3.34.4 abaixo dela.
 - Emenda v5: gate Karma mecânico aprova somente `TOTAL: N SUCCESS` e limpa o processo/browser do job antes do próximo.
 - Emenda v4: harness Karma do Kaizou usa Chrome atual via `CHROME_BIN` porque o Chromium 115 upstream perde heartbeat no WSL.
