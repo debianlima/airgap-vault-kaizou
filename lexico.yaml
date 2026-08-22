@@ -25,3 +25,13 @@
   canonico: sol-signature
   proibidos:
   - solana-signature
+- conceito: nome de release 1.0.0
+  canonico: AirGap Vault Kaizou 1.0.0
+  proibidos:
+  - AirGap Vault Kaizou 100
+  - iGap Vault Caizu 100
+- conceito: tag de release 1.0.0
+  canonico: airgap-vault-kaizou-1.0.0
+  proibidos:
+  - v1.0.0
+  - v3.34.4-kaizou.1

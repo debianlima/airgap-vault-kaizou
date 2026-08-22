@@ -1,6 +1,7 @@
 # Estado — 2026-08-21 — contrato v5
 
 ## Decisões vigentes
+- Nome de distribuição da primeira release: `AirGap Vault Kaizou 1.0.0`; tag canônica `airgap-vault-kaizou-1.0.0`.
 - Hospedagem canônica: servidor 110 (`DESKTOP-KQAHRF0`), WSL, em `/home/anderson/airgap-solana-work/airgap-vault-kaizou`; a VPS é somente ponte.
 - `workflow-infra.md` é global ao ambiente e não pertence ao repositório `airgap-vault-kaizou`.
 - Fork público canônico: `debianlima/airgap-vault-kaizou`, derivado de `airgap-it/airgap-vault` tag `v3.34.4`.
