@@ -9,6 +9,11 @@ import { assertNever } from '../../utils/utils'
 import { ErrorCategory, handleErrorLocal } from '../error-handler/error-handler.service'
 import { NavigationService } from '../navigation/navigation.service'
 import { InteractionType, VaultStorageKey, VaultStorageService } from '../storage/storage.service'
+import {
+  SOLFLARE_KEYSTONE_PROTOCOL,
+  SolflareKeystoneService,
+  extractSignatureForPublicKey
+} from '../solflare-keystone/solflare-keystone.service'
 
 export enum InteractionCommunicationType {
   QR = 'qr',
@@ -41,7 +46,8 @@ export class InteractionService {
   constructor(
     private readonly navigationService: NavigationService,
     private readonly deepLinkService: DeeplinkService,
-    private readonly storageService: VaultStorageService
+    private readonly storageService: VaultStorageService,
+    private readonly solflareKeystoneService: SolflareKeystoneService
   ) {
     this.storageService.get(VaultStorageKey.INTERACTION_TYPE).then((type) => (this.interactionType = type))
   }
@@ -114,16 +120,35 @@ export class InteractionService {
       this.navigationService
         .routeWithState('/account-share', {
           interactionUrl: interactionOptions.iacMessage,
-          companionApp: interactionOptions.companionApp
+          companionApp: interactionOptions.companionApp,
+          wallet: interactionOptions.wallets?.[0]
         })
         .catch(handleErrorLocal(ErrorCategory.IONIC_NAVIGATION))
     } else if (interactionOptions.operationType === InteractionOperationType.TRANSACTION_BROADCAST) {
+      let solflareSignatureQr: string | undefined
+      const response = interactionOptions.iacMessage?.length === 1 ? interactionOptions.iacMessage[0] : undefined
+      const context = response ? this.solflareKeystoneService.getRequest(response.id) : undefined
+      const wallet = interactionOptions.wallets?.length === 1 ? interactionOptions.wallets[0] : undefined
+      const signedTransaction = interactionOptions.signedTxs?.length === 1 ? interactionOptions.signedTxs[0] : undefined
+
+      if (
+        response?.protocol === SOLFLARE_KEYSTONE_PROTOCOL &&
+        context &&
+        wallet &&
+        signedTransaction
+      ) {
+        const signature = extractSignatureForPublicKey(signedTransaction, wallet.publicKey)
+        solflareSignatureQr = this.solflareKeystoneService.encodeSignature(signature, context.requestIdHex)
+        this.solflareKeystoneService.forgetRequest(response.id)
+      }
+
       this.navigationService
         .routeWithState('/transaction-signed', {
           interactionUrl: interactionOptions.iacMessage,
           wallets: interactionOptions.wallets,
           signedTxs: interactionOptions.signedTxs,
           transactions: interactionOptions.transactions,
+          solflareSignatureQr,
           translationKey: 'transaction-signed'
         })
         .catch(handleErrorLocal(ErrorCategory.IONIC_NAVIGATION))

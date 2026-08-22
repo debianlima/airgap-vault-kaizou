@@ -63,4 +63,10 @@ describe('IACService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy()
   })
+
+  it('routes Solflare sol-sign-request before the generic V3 and V2 handlers', () => {
+    const handlerNames: string[] = (service as any).handlers.map((handler) => handler.name)
+    expect(handlerNames[0]).toBe('SolflareSignRequestHandler')
+    expect(handlerNames.slice(1, 3)).toEqual(['SerializerV3Handler', 'SerializerV2Handler'])
+  })
 })

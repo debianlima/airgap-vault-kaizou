@@ -25,6 +25,7 @@ import { SelectAccountPage } from 'src/app/pages/select-account/select-account.p
 import { RawTypedEthereumTransaction } from '@airgap/ethereum/v0/types/transaction-ethereum'
 import { IACMessageType, IACMessageDefinitionObjectV3, MessageSignRequest } from '@airgap/serializer'
 import { BitcoinSegwitTransactionSignRequest } from '@airgap/bitcoin'
+import { SOLFLARE_KEYSTONE_PROTOCOL, SolflareKeystoneService, SolflareSignRequestHandler } from '../solflare-keystone/solflare-keystone.service'
 
 @Injectable({
   providedIn: 'root'
@@ -40,10 +41,17 @@ export class IACService extends BaseIACService {
     private readonly secretsService: SecretsService,
     private readonly interactionService: InteractionService,
     private readonly modalController: ModalController,
+    private readonly solflareKeystoneService: SolflareKeystoneService,
     @Inject(APP_CONFIG) appConfig: AppConfig,
     protected readonly platform: Platform
   ) {
     super(uiEventElementsService, clipboard, secretsService.isReady(), [], deeplinkService, appConfig, platform)
+
+    this.handlers.unshift(
+      new SolflareSignRequestHandler(this.solflareKeystoneService, async (wrapper) => {
+        await this.handleUnsignedTransactions(wrapper, IACMessageTransport.QR_SCANNER, () => undefined)
+      })
+    )
 
     this.serializerMessageHandlers[IACMessageType.TransactionSignRequest] = this.handleUnsignedTransactions.bind(this)
     this.serializerMessageHandlers[IACMessageType.MessageSignRequest] = this.handleMessageSignRequest.bind(this)
@@ -211,6 +219,33 @@ export class IACService extends BaseIACService {
 
       if (correctWallet && !unsignedTransaction.publicKey) {
         unsignedTransaction.publicKey = correctWallet.publicKey // PSBT txs don't include a public key, so we need to set it
+      }
+    }
+
+    // SOL: Keystone/Solflare requests identify the offline account by master fingerprint and exact derivation path.
+    if (
+      !correctWallet &&
+      signTransactionRequest.protocol === SOLFLARE_KEYSTONE_PROTOCOL &&
+      metadata?.sourceFingerprint &&
+      metadata?.derivationPath
+    ) {
+      const secret = this.secretsService.findByFingerprint(metadata.sourceFingerprint)
+      if (secret) {
+        const matches = await Promise.all(
+          secret.wallets.map(async (wallet: AirGapWallet): Promise<AirGapWallet | undefined> => {
+            const protocolIdentifier = await wallet.protocol.getIdentifier()
+            const matchesRequest =
+              protocolIdentifier === SOLFLARE_KEYSTONE_PROTOCOL &&
+              wallet.masterFingerprint === metadata.sourceFingerprint &&
+              wallet.derivationPath === metadata.derivationPath
+            return matchesRequest ? wallet : undefined
+          })
+        )
+        correctWallet = matches.find((wallet) => wallet !== undefined)
+      }
+
+      if (correctWallet && !unsignedTransaction.publicKey) {
+        unsignedTransaction.publicKey = correctWallet.publicKey
       }
     }
 

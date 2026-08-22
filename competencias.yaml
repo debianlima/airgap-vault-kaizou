@@ -1,0 +1,29 @@
+- id: keystone-solflare-ur
+  nome: Interoperabilidade Keystone/Solflare UR
+  ativa_em:
+  - backend-integracao
+  - teste-integracao
+  fonte: KeystoneHQ/keystone3-firmware@6ab436a2c34a5bcce2e72aae1e6ff8ee43bf057f + Solflare extension 2.34.0 instalada
+  melhora: compatibilidade com crypto-multi-accounts, sol-sign-request e sol-signature
+  portao: Solflare 2.34.0 importa sync QR e aceita sol-signature gerada após request real
+  evidencia: QR AirGap V2 físico foi rejeitado; firmware Keystone e parser Solflare exigem UR types Keystone
+  instalada_em: '2026-08-21'
+- id: angular-ionic-integration
+  nome: Integração Angular/Ionic no Vault
+  ativa_em:
+  - ui-integracao
+  - backend-integracao
+  fonte: airgap-it/airgap-vault@v3.34.4 e precedente MetaMask do @airgap/angular-core 0.0.62
+  melhora: reuso de navegação, assinatura e QR existentes
+  portao: yarn build + testes unitários + fluxo UI no APK Android
+  evidencia: pontos account-address/account-share/IAC/transaction-signed localizados no upstream
+  instalada_em: '2026-08-21'
+- id: android-vault-runtime
+  nome: Runtime Android do Vault
+  ativa_em:
+  - deploy-android
+  fonte: laboratório Android/KVM homologado em workflow-infra.md
+  melhora: build, instalação e smoke test no Android 11 non-root
+  portao: APK instala no AVD non-root e percorre sync→scan→sign→response
+  evidencia: Vault v3.34.4 já homologado no mesmo laboratório durante U14
+  instalada_em: '2026-08-21'

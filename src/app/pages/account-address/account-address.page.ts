@@ -25,6 +25,13 @@ export const airgapwallet = {
   qrType: QRType.V3
 }
 
+export const airgapsolflare: CompanionApp = {
+  icon: 'airgap-wallet-app-logo.svg',
+  name: 'AirGap Solflare',
+  qrType: QRType.BC_UR,
+  integration: 'solflare-keystone'
+}
+
 const bluewallet = {
   icon: 'bluewallet.png',
   name: 'BlueWallet',
@@ -79,6 +86,7 @@ export interface CompanionApp {
   name: string
   qrType: QRType
   urlScheme?: string
+  integration?: 'solflare-keystone'
 }
 
 @Component({
@@ -166,6 +174,9 @@ export class AccountAddressPage {
         case MainProtocolSymbols.AE:
           this.syncOptions = [airgapwallet, superherowallet]
           break
+        case 'solana' as ProtocolSymbols:
+          this.syncOptions = [airgapwallet, airgapsolflare]
+          break
 
         default:
           this.syncOptions = [airgapwallet]
@@ -178,12 +189,21 @@ export class AccountAddressPage {
   }
 
   public async share(companionApp: CompanionApp = airgapwallet): Promise<void> {
-    await this.waitWalletShareUrl()
+    if (companionApp.integration === 'solflare-keystone') {
+      await this.interactionService.startInteraction({
+        operationType: InteractionOperationType.WALLET_SYNC,
+        iacMessage: [],
+        companionApp,
+        wallets: [this.wallet]
+      })
+      return
+    }
 
-    this.interactionService.startInteraction({
+    await this.waitWalletShareUrl()
+    await this.interactionService.startInteraction({
       operationType: InteractionOperationType.WALLET_SYNC,
       iacMessage: this.shareObject,
-      companionApp: companionApp
+      companionApp
     })
   }
 

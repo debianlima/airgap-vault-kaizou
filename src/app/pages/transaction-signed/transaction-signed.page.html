@@ -11,8 +11,9 @@
   <h3 [innerHTML]="heading"></h3>
 
   <ion-row class="ion-justify-content-center ion-padding-top">
+    <airgap-qr *ngIf="solflareSignatureQr" [level]="'L'" [qrdata]="solflareSignatureQr" [size]="300"></airgap-qr>
     <airgap-iac-qr
-      *ngIf="interactionUrl && qrType === 0"
+      *ngIf="interactionUrl && qrType === 0 && !solflareSignatureQr"
       [level]="'L'"
       [messageDefinitionObjects]="interactionUrl"
       [size]="300"

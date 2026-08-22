@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "solflare-keystone.schema.json",
+  "title": "AirGap Vault Kaizou Solflare Keystone Bridge",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sync",
+    "signRequest",
+    "signResponse"
+  ],
+  "properties": {
+    "sync": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "urType",
+        "protocol",
+        "publicKeyHex",
+        "derivationPath",
+        "masterFingerprintHex"
+      ],
+      "properties": {
+        "urType": {
+          "const": "crypto-multi-accounts"
+        },
+        "protocol": {
+          "const": "solana"
+        },
+        "publicKeyHex": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "derivationPath": {
+          "type": "string",
+          "pattern": "^m(?:/[0-9]+'?)+$"
+        },
+        "masterFingerprintHex": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{8}$"
+        }
+      }
+    },
+    "signRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "urType",
+        "requestIdHex",
+        "derivationPath",
+        "masterFingerprintHex",
+        "signType"
+      ],
+      "properties": {
+        "urType": {
+          "const": "sol-sign-request"
+        },
+        "requestIdHex": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]+$"
+        },
+        "derivationPath": {
+          "type": "string"
+        },
+        "masterFingerprintHex": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{8}$"
+        },
+        "signType": {
+          "const": 1
+        }
+      }
+    },
+    "signResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "urType",
+        "requestIdHex",
+        "signatureHex"
+      ],
+      "properties": {
+        "urType": {
+          "const": "sol-signature"
+        },
+        "requestIdHex": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]+$"
+        },
+        "signatureHex": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{128}$"
+        }
+      }
+    }
+  },
+  "description": "Integração Solflare/Keystone exclusiva de Solana; qualquer protocolo não-Solana deve seguir os caminhos upstream v3.34.4 sem alteração semântica.",
+  "x-non-regression": {
+    "scope": "all non-solana protocols and existing QR/IAC flows",
+    "requirements": [
+      "Solflare branch must be guarded by protocol identifier solana or Keystone Solana UR type",
+      "existing MetaMask, BC_UR, V2 and V3 behavior remains unchanged for other protocols",
+      "full upstream build and test suite must pass"
+    ]
+  }
+}

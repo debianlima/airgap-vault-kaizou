@@ -2127,10 +2127,28 @@
     hdkey "^2.0.1"
     uuid "^8.3.2"
 
+"@keystonehq/bc-ur-registry-sol@0.9.5":
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry-sol/-/bc-ur-registry-sol-0.9.5.tgz#f7c9395c38e4734cd49c45318d9342894a05a51b"
+  integrity sha512-HZeeph9297ZHjAziE9wL/u2W1dmV0p1H9Bu9g1bLJazP4F6W2fjCK9BAoCiKEsMBqadk6KI6r6VD67fmDzWyug==
+  dependencies:
+    "@keystonehq/bc-ur-registry" "^0.7.0"
+    bs58check "^2.1.2"
+    uuid "^8.3.2"
+
 "@keystonehq/bc-ur-registry@^0.6.0", "@keystonehq/bc-ur-registry@0.6.3":
   version "0.6.3"
   resolved "https://registry.npmjs.org/@keystonehq/bc-ur-registry/-/bc-ur-registry-0.6.3.tgz"
   integrity sha512-xwOYrRgqfV5wANpHjmO1ilB2bloY2kMxf8xiZ4CG0U5Zkfwa/9wUaqN60xFaG862w/6wnMOHvLDxDm47xNSDlw==
+  dependencies:
+    "@ngraveio/bc-ur" "^1.1.5"
+    bs58check "^2.1.2"
+    tslib "^2.3.0"
+
+"@keystonehq/bc-ur-registry@^0.7.0":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@keystonehq/bc-ur-registry/-/bc-ur-registry-0.7.1.tgz#a7529e55a43896c94443e18ec5fba2dc90076ff8"
+  integrity sha512-6eVIjNt/P+BmuwcYccbPYVS85473SFNplkqWF/Vb3ePCzLX00tn0WZBO1FGpS4X4nfXtceTfvUeNvQKoTGtXrw==
   dependencies:
     "@ngraveio/bc-ur" "^1.1.5"
     bs58check "^2.1.2"

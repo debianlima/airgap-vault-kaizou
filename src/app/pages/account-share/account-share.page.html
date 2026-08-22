@@ -15,8 +15,10 @@
         [innerHTML]="'wallet-share.heading' | translate: { walletName: walletName }"
       ></p>
 
-      <ion-row class="ion-justify-content-center ion-padding-bottom" *ngIf="interactionUrl">
+      <ion-row class="ion-justify-content-center ion-padding-bottom" *ngIf="solflareSyncQr || interactionUrl">
+        <airgap-qr *ngIf="solflareSyncQr" [level]="'L'" [qrdata]="solflareSyncQr" [size]="300"></airgap-qr>
         <airgap-iac-qr
+          *ngIf="!solflareSyncQr"
           [messageDefinitionObjects]="interactionUrl"
           [qrFormatPreference]="companionApp.qrType"
           [level]="'L'"

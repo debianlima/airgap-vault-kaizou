@@ -1,9 +1,11 @@
 import { ClipboardService } from '@airgap/angular-core'
 import { IACMessageDefinitionObjectV3 } from '@airgap/serializer'
 import { Component } from '@angular/core'
+import { AirGapWallet } from '@airgap/coinlib-core'
 import { NavigationService } from '../../services/navigation/navigation.service'
 import { airgapwallet, CompanionApp } from '../account-address/account-address.page'
 import { ErrorCategory, handleErrorLocal } from './../../services/error-handler/error-handler.service'
+import { SolflareKeystoneService } from '../../services/solflare-keystone/solflare-keystone.service'
 
 @Component({
   selector: 'airgap-account-share',
@@ -15,13 +17,31 @@ export class AccountSharePage {
   public companionApp: CompanionApp
   public walletName: string
   public splits: string[] = []
+  public solflareSyncQr?: string
 
   displayRawData: boolean = false
 
-  constructor(private readonly navigationService: NavigationService, private readonly clipboardService: ClipboardService) {
-    this.interactionUrl = this.navigationService.getState().interactionUrl
-    this.companionApp = this.navigationService.getState().companionApp ?? airgapwallet
+  constructor(
+    private readonly navigationService: NavigationService,
+    private readonly clipboardService: ClipboardService,
+    private readonly solflareKeystoneService: SolflareKeystoneService
+  ) {
+    const state = this.navigationService.getState()
+    this.interactionUrl = state.interactionUrl
+    this.companionApp = state.companionApp ?? airgapwallet
     this.walletName = this.companionApp.name
+
+    if (this.companionApp.integration === 'solflare-keystone') {
+      const wallet: AirGapWallet | undefined = state.wallet
+      if (!wallet || !wallet.masterFingerprint) {
+        throw new Error('AirGap Solflare sync requires a wallet with master fingerprint')
+      }
+      this.solflareSyncQr = this.solflareKeystoneService.encodeAccountSync(
+        wallet.publicKey,
+        wallet.derivationPath,
+        wallet.masterFingerprint
+      )
+    }
   }
 
   public done(): void {
@@ -29,6 +49,6 @@ export class AccountSharePage {
   }
 
   public copyToClipboard(): void {
-    this.clipboardService.copyAndShowToast(JSON.stringify(this.interactionUrl))
+    this.clipboardService.copyAndShowToast(this.solflareSyncQr ?? JSON.stringify(this.interactionUrl))
   }
 }

@@ -19,6 +19,7 @@ enum TransactionQRType {
 export class TransactionSignedPage {
   public signedTxs: string[]
   public interactionUrl: string
+  public solflareSignatureQr?: string
 
   public splits: string[]
 
@@ -36,6 +37,7 @@ export class TransactionSignedPage {
 
   constructor(public navigationService: NavigationService, private readonly translateService: TranslateService) {
     this.interactionUrl = this.navigationService.getState().interactionUrl
+    this.solflareSignatureQr = this.navigationService.getState().solflareSignatureQr
     this.wallets = this.navigationService.getState().wallets
     this.signedTxs = this.navigationService.getState().signedTxs
     this.translationKey = this.navigationService.getState().translationKey

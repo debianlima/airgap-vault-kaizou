@@ -1,0 +1,27 @@
+- conceito: fork adaptado
+  canonico: airgap-vault-kaizou
+  proibidos:
+  - airgap-vault-patched
+  - airgap-vault-mod
+- conceito: companion Solflare
+  canonico: AirGap Solflare
+  proibidos:
+  - Solflare AirGap
+  - AirGap Solfire
+- conceito: serviço de interoperabilidade
+  canonico: SolflareKeystoneService
+  proibidos:
+  - KeystonePatchService
+  - SolflareBridgeService
+- conceito: UR de sincronização
+  canonico: crypto-multi-accounts
+  proibidos:
+  - account-share-response
+- conceito: pedido de assinatura
+  canonico: sol-sign-request
+  proibidos:
+  - solana-sign-request
+- conceito: resposta de assinatura
+  canonico: sol-signature
+  proibidos:
+  - solana-signature
