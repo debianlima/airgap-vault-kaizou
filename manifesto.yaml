@@ -63,8 +63,8 @@ trabalho_compartilhado:
   unidade: U02
   descricao: Release com módulo Solana estático no APK e fluxo de assinatura seguro para stake/transações Solana sem destinatário inferível.
   agente: Meu Terminal Oracle
-  atualizado_em: '2026-08-21T23:57:25-03:00'
-  previsao_termino: '2026-08-22T03:30:00-03:00'
+  atualizado_em: '2026-08-22T07:29:00-03:00'
+  previsao_termino: '2026-08-22T11:30:00-03:00'
   zona_exclusao:
   - src/app/pages/deserialized-detail/**
   - scripts/airgap-vault-kaizou-build-release-with-solana-module.js
@@ -75,6 +75,7 @@ trabalho_compartilhado:
   - scripts/airgap-vault-kaizou-nonregression.js
   - scripts/airgap-vault-kaizou-karma.conf.js
   - scripts/airgap-vault-kaizou-karma-gate.js
+  prorrogado_em: '2026-08-22T07:29:00-03:00'
 entradas:
 - id: 1
   caminho: .browserslistrc
