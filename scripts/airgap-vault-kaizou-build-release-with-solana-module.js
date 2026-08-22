@@ -91,7 +91,7 @@ const gradleEnv = { ...env, ANDROID_HOME: androidHome, ANDROID_SDK_ROOT: android
 run(path.join(sourceRoot, 'android', 'gradlew'), ['--project-dir', path.join(sourceRoot, 'android'), 'assembleDebug'], sourceRoot, gradleEnv)
 const apk = path.join(sourceRoot, 'android', 'app', 'build', 'outputs', 'apk', 'debug', 'app-debug.apk')
 if (!fs.existsSync(apk)) fail('APK not generated')
-const zipCheck = spawnSync('python3', ['-c', 'import sys,zipfile; p=sys.argv[1]; z=zipfile.ZipFile(p); bad=z.testzip(); print("\n".join(z.namelist())); sys.exit(0 if bad is None else 2)', apk], { encoding: 'utf8' })
+const zipCheck = spawnSync('python3', ['-c', 'import sys,zipfile; p=sys.argv[1]; z=zipfile.ZipFile(p); bad=z.testzip(); print(chr(10).join(z.namelist())); sys.exit(0 if bad is None else 2)', apk], { encoding: 'utf8' })
 if (zipCheck.status !== 0) fail(`APK ZIP integrity check failed: ${zipCheck.stderr || zipCheck.stdout}`)
 const listing = zipCheck.stdout
 for (const name of requiredFiles) {
