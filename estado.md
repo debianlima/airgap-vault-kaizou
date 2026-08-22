@@ -28,10 +28,10 @@
 - Bootstrap v1 do fork e fronteiras da integração Keystone/Solflare.
 
 ## Pendências técnicas não humanas
-- Não bloqueante ao contrato v5: broadcast Solana devnet não verificado porque `requestAirdrop` retornou erro e a fixture permaneceu com saldo zero. O fluxo offline/QR, a assinatura Ed25519 e a aceitação pela Solflare foram verificados.
+- Não bloqueante ao contrato v6: broadcast Solana devnet não verificado porque `requestAirdrop` retornou erro e a fixture permaneceu com saldo zero. O fluxo offline/QR, a assinatura Ed25519 e a aceitação pela Solflare foram verificados.
 
 ## Trabalho compartilhado
-- U01 — integração AirGap Solflare/Keystone no fork público; agente Meu Terminal Oracle; previsão 2026-08-21T23:30:00-03:00.
+- Nenhum bloco ativo; U01 encerrada após homologação, publicação da branch e criação da release 1.0.0.
 
 ## Competências ativas nesta unidade
 - keystone-solflare-ur — verificada pelo parser/keyring real da Solflare 2.34.0.
@@ -48,10 +48,14 @@
 - infraestrutura-homologacao: 2 reprovações no ciclo final por processos Chrome/Karma residuais/Chromium 115; runner v5 corrigido e rodada final canônica concluída.
 
 ## Divergências da última reconciliação
-- corrigidas: estados das 31 entradas abertas promovidos somente após seus portões; `estado.md` reescrito; diagramas derivados serão regenerados nesta mesma passada.
+- corrigidas: emenda v6 aplicada; README upstream preservado byte a byte; bloco U01 encerrado; release e assets verificados; diagramas derivados regenerados.
 - pendentes de autorização: nenhuma.
 
 ## Entradas aceitas
+- Release pública: `AirGap Vault Kaizou 1.0.0` em `https://github.com/debianlima/airgap-vault-kaizou/releases/tag/airgap-vault-kaizou-1.0.0`.
+- Tag `airgap-vault-kaizou-1.0.0` aponta para `d6dfc49c1d8d17ee08ea99558f7465cacfb000d8`, commit que contém a emenda v6 e o README Kaizou.
+- Asset remoto `airgap-vault-kaizou-1.0.0.apk`: 90.483.591 bytes, SHA-256 `f014e3031de68d3fcec9a06da78f99e850db2305916b3a5657763a93dbcb7976`; download pós-publicação conferido contra o hash local.
+- APK publicado é o build homologado debug-signed (`CN=Android Debug`), identificado explicitamente como artefato de teste e não binário oficial de loja.
 - README principal: introdução Kaizou adicionada por emenda v6; corpo original de `airgap-it/airgap-vault` v3.34.4 preservado byte a byte.
 - Origem documentada: `airgap-it/airgap-vault` tag `v3.34.4`, commit `aa50b7f0371ed2e681f358d22b546c7c000e05b7`.
 - Processo documentado: modificações Kaizou desenvolvidas colaborativamente pelo administrador humano com apoio de agente de IA ChatGPT, pelo método orientado por manifesto, contrato, portões mecânicos e reconciliação.
@@ -63,4 +67,4 @@
 - Android: API 30 Android 11 Google Play user/non-root; módulo Solana v0.1.3 verificado/instalado; conta `CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C` em `m/44'/501'/0'/0'`; helper temporário removido.
 
 ## Próxima unidade
-- Nenhuma unidade bloqueante. U01 homologada e publicada no fork; broadcast devnet pode ser repetido futuramente quando houver saldo de teste.
+- Nenhuma unidade bloqueante. U01 homologada, encerrada e publicada como `AirGap Vault Kaizou 1.0.0`; broadcast devnet pode ser repetido futuramente quando houver saldo de teste.

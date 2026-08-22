@@ -47,31 +47,7 @@ historico_emendas:
   - a introdução deve registrar origem em airgap-it/airgap-vault v3.34.4 commit aa50b7f0371ed2e681f358d22b546c7c000e05b7
   - a introdução deve resumir apenas as diferenças mecanicamente homologadas do fork e explicitar a proteção das redes não-Solana
   - a introdução deve atribuir as modificações Kaizou a trabalho colaborativo entre o administrador humano e um agente de IA ChatGPT, usando método orientado por manifesto, contrato, portões mecânicos e reconciliação
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: U01
-  descricao: integração AirGap Solflare/Keystone no fork público
-  agente: Meu Terminal Oracle
-  atualizado_em: '2026-08-21T21:46:00-03:00'
-  previsao_termino: '2026-08-21T23:30:00-03:00'
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - lexico.yaml
-  - competencias.yaml
-  - contratos/**
-  - scripts/airgap-vault-kaizou-*
-  - docs/airgap-vault-kaizou-*
-  - package.json
-  - yarn.lock
-  - src/app/services/solflare-keystone/**
-  - src/app/services/iac/iac.service.ts
-  - src/app/services/interaction/interaction.service.ts
-  - src/app/pages/account-address/**
-  - src/app/pages/account-share/**
-  - src/app/pages/transaction-signed/**
-  prorrogado_em: '2026-08-21T21:46:00-03:00'
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
