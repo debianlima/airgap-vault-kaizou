@@ -65,28 +65,7 @@ historico_emendas:
   - release Kaizou 1.1.0 deve conter airgap-solana-module 0.1.4 como static asset module e não exigir importação manual de ZIP
   - airgap-solana-module continua projeto e release independentes; integração no Kaizou não funde os ciclos de desenvolvimento
   - README principal deve destacar Solana integrada como principal evolução da release 1.1.0 e preservar byte a byte o README upstream v3.34.4 abaixo da introdução Kaizou
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: U02
-  descricao: Release com módulo Solana estático no APK e fluxo de assinatura seguro para stake/transações Solana sem destinatário inferível.
-  agente: Meu Terminal Oracle
-  atualizado_em: '2026-08-22T07:29:00-03:00'
-  previsao_termino: '2026-08-22T11:30:00-03:00'
-  zona_exclusao:
-  - src/app/pages/deserialized-detail/**
-  - scripts/airgap-vault-kaizou-build-release-with-solana-module.js
-  - contratos/airgap-vault-kaizou-solana-release.schema.json
-  - manifesto.yaml
-  - estado.md
-  - docs/airgap-vault-kaizou-*.mmd
-  - scripts/airgap-vault-kaizou-nonregression.js
-  - scripts/airgap-vault-kaizou-karma.conf.js
-  - scripts/airgap-vault-kaizou-karma-gate.js
-  - package.json
-  - README.md
-  - lexico.yaml
-  prorrogado_em: '2026-08-22T07:29:00-03:00'
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc

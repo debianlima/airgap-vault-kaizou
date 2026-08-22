@@ -30,7 +30,7 @@
 - O APK homologado é debug-signed (`CN=Android Debug`) e será identificado como artefato de teste/homologação, não como binário oficial de loja.
 
 ## Trabalho compartilhado
-- U02 ativa apenas para publicação: release Kaizou 1.1.0 com módulo Solana 0.1.4 integrado; previsão 2026-08-22T11:30:00-03:00; sem colisão.
+- Nenhum bloco ativo; U02 encerrada após homologação, publicação e verificação remota da release 1.1.0.
 
 ## Competências ativas nesta unidade
 - `keystone-solflare-ur` — verificada pelo parser/keyring real da Solflare 2.34.0.
@@ -50,10 +50,15 @@
 - `runtime-android`: automação de onboarding gerou diálogos ANR enquanto `BiometricPrompt` roubava foco; após autenticação o armazenamento/derivação concluíram. Não houve crash funcional no fluxo de stake homologado.
 
 ## Divergências da última reconciliação
-- corrigidas: critérios v8 aplicados; dez entradas U02 promovidas somente após seus portões; diagramas derivados regenerados.
+- corrigidas: critérios v8 aplicados; dez entradas U02 promovidas após seus portões; release/tag/assets remotos verificados; bloco U02 encerrado; diagramas derivados regenerados.
 - pendentes de autorização: nenhuma.
 
 ## Entradas aceitas
+- Release pública: `AirGap Vault Kaizou 1.1.0` em `https://github.com/debianlima/airgap-vault-kaizou/releases/tag/airgap-vault-kaizou-1.1.0`.
+- Tag `airgap-vault-kaizou-1.1.0` aponta para `68ef7061c68f8c6d2f2dbd03b8782c46a3f6c6a4`; branch remota confirmou o mesmo SHA no momento da publicação.
+- Asset remoto `airgap-vault-kaizou-1.1.0.apk`: 85.943.730 bytes, SHA-256 `6fdc4258b9e51d6736d0718530a774edf53557d3355fc61d5e3716213263fb32`; download pós-publicação conferido contra o hash local.
+- Checksum remoto `airgap-vault-kaizou-1.1.0.apk.sha256` também foi baixado e contém exatamente o SHA-256 homologado.
+- Módulo independente correspondente: `https://github.com/debianlima/airgap-solana-module/releases/tag/v0.1.4`, ZIP SHA-256 `23856107a0b5a856c0599c3c386c461b61d82adfa59752fe8b93f3d5a7f0922e`.
 - 938/938 entradas do manifesto em `aceito`.
 - README 1.1.0 preserva byte a byte o README de `airgap-it/airgap-vault` v3.34.4 abaixo da introdução Kaizou.
 - `airgap-solana-module 0.1.4` publicado separadamente; bundle SHA-256 `ce577b0fc7671b594e35b847547a5d654fe374d480956498aa3eb118c7e7044b`; ZIP SHA-256 `23856107a0b5a856c0599c3c386c461b61d82adfa59752fe8b93f3d5a7f0922e`.
@@ -69,4 +74,4 @@
 - Gates locais finais: stake effects `2/2`; cinco specs Solflare `3/3 + 2/2 + 2/2 + 2/2 + 1/1`; suíte completa `TOTAL: 88 SUCCESS`; não-regressão PASS (16 arquivos de produto declarados); TypeScript PASS; `yarn build` PASS; estrutura/diagramas PASS.
 
 ## Próxima unidade
-- Publicar `AirGap Vault Kaizou 1.1.0`, verificar tag/asset remoto e então encerrar U02.
+- Nenhuma unidade bloqueante. Broadcast devnet e ícone Solana podem ser tratados futuramente em unidades próprias sem reabrir U02.
