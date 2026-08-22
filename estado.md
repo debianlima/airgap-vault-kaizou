@@ -51,10 +51,11 @@
 
 ## Entradas aceitas
 - 934/934 entradas do manifesto em `aceito`.
+- Commit funcional homologado e publicado: `6804defb356fcbd024a3f71e1f2e95aec23a8487` em `origin/feature/airgap-solflare`; SHA remoto confirmado igual ao local.
 - Integração runtime: `crypto-multi-accounts` aceito pela Solflare 2.34.0; `sol-sign-request` processado pelo APK; `sol-signature` preservou requestId e foi aceito pelo `BaseKeyring.requestSignature()` real.
 - Criptografia: assinatura de 64 bytes verificada por Ed25519 contra a mensagem Solana devnet original.
 - Não-regressão: `TOTAL: 86 SUCCESS` na suíte completa upstream; cinco specs Solflare `3/3 + 2/2 + 2/2 + 2/2 + 1/1`; `airgap-vault-kaizou-nonregression.js` PASS; TypeScript PASS; `yarn build` PASS.
 - Android: API 30 Android 11 Google Play user/non-root; módulo Solana v0.1.3 verificado/instalado; conta `CgWJeEWkiYqosy1ba7a3wn9HAQuHyK48xs3LM4SSDc1C` em `m/44'/501'/0'/0'`; helper temporário removido.
 
 ## Próxima unidade
-- Nenhuma unidade bloqueante. U01 pronta para commit e push; broadcast devnet pode ser repetido futuramente quando houver saldo de teste.
+- Nenhuma unidade bloqueante. U01 homologada e publicada no fork; broadcast devnet pode ser repetido futuramente quando houver saldo de teste.
