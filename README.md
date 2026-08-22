@@ -1,3 +1,50 @@
+# AirGap Vault Kaizou 1.0.0
+
+> Fork comunitário do AirGap Vault com integração Solana/Solflare, preservando abaixo a documentação original do projeto upstream.
+
+## Sobre o Kaizou
+
+**AirGap Vault Kaizou 1.0.0** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
+
+O objetivo do Kaizou é acrescentar interoperabilidade Solana com a Solflare sem redefinir o comportamento das demais redes do Vault. A versão 1.0.0 mantém a base do AirGap Vault e adiciona, para Solana, o fluxo de integração compatível com o protocolo Keystone usado pela Solflare.
+
+### O que esta versão acrescenta
+
+- suporte ao módulo isolado de Solana no Vault;
+- opção **AirGap Solflare** na experiência de conta Solana;
+- sincronização por QR no formato **`crypto-multi-accounts`**;
+- assinatura externa no fluxo **`sol-sign-request` → assinatura offline no Vault → `sol-signature`**;
+- preservação do `requestId`, derivation path e master fingerprint durante a interoperabilidade;
+- validação da assinatura Ed25519 antes da homologação;
+- proteção de não-regressão para Bitcoin, Ethereum, BNB Smart Chain e os demais fluxos upstream, com suíte completa e gates mecânicos antes da publicação.
+
+A integração Kaizou é deliberadamente específica para Solana. Os protocolos não-Solana continuam seguindo os caminhos do AirGap Vault upstream, sem alteração semântica intencional causada pela ponte Solflare.
+
+## Desenvolvimento colaborativo e método
+
+As **modificações Kaizou deste fork** foram desenvolvidas de forma colaborativa pelo administrador humano do projeto com apoio de um **agente de IA ChatGPT**. Essa atribuição se refere às alterações do fork Kaizou; não atribui ao ChatGPT a autoria do AirGap Vault original nem implica participação ou endosso dos mantenedores upstream nesse processo.
+
+O trabalho foi conduzido por um **método de manutenção orientado por manifesto, contrato, portões mecânicos e reconciliação**. Nesse método:
+
+- o manifesto declara o que pode existir antes da geração;
+- contratos e emendas registram mudanças deliberadas de critério;
+- testes, builds, verificadores e validações criptográficas atuam como portões mecânicos;
+- a avaliação do agente de IA não substitui um portão;
+- a reconciliação compara a árvore real com a especificação declarada;
+- alterações de produto e documentação são versionadas junto com o estado do projeto.
+
+## Homologação desta release
+
+A release 1.0.0 foi homologada no fluxo Android 11 user/non-root com o módulo Solana instalado, QR `crypto-multi-accounts`, `sol-sign-request`, `sol-signature`, preservação de requestId, verificação Ed25519 e aceitação pelo parser/keyring da Solflare 2.34.0. A suíte upstream completa e os testes específicos da integração também foram executados como gates de não-regressão.
+
+> O broadcast Solana devnet não faz parte do critério offline desta release e permaneceu não verificado por ausência de saldo de teste quando o faucet consultado falhou.
+
+---
+
+## README original preservado
+
+A partir daqui, o README de `airgap-it/airgap-vault` tag `v3.34.4` é mantido sem alterações.
+
 # AirGap Vault
 
 <p align="left">

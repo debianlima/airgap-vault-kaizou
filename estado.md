@@ -1,4 +1,4 @@
-# Estado — 2026-08-21 — contrato v5
+# Estado — 2026-08-21 — contrato v6
 
 ## Decisões vigentes
 - Nome de distribuição da primeira release: `AirGap Vault Kaizou 1.0.0`; tag canônica `airgap-vault-kaizou-1.0.0`.
@@ -20,6 +20,7 @@
 - Nenhuma.
 
 ## Decisões fechadas nesta emenda
+- Emenda v6: README principal pode receber introdução Kaizou verificável, preservando byte a byte o README upstream v3.34.4 abaixo dela.
 - Emenda v5: gate Karma mecânico aprova somente `TOTAL: N SUCCESS` e limpa o processo/browser do job antes do próximo.
 - Emenda v4: harness Karma do Kaizou usa Chrome atual via `CHROME_BIN` porque o Chromium 115 upstream perde heartbeat no WSL.
 - Emenda v3: localização canônica no servidor 110/WSL; VPS somente ponte; `workflow-infra.md` externo ao projeto.
@@ -51,7 +52,10 @@
 - pendentes de autorização: nenhuma.
 
 ## Entradas aceitas
-- 934/934 entradas do manifesto em `aceito`.
+- README principal: introdução Kaizou adicionada por emenda v6; corpo original de `airgap-it/airgap-vault` v3.34.4 preservado byte a byte.
+- Origem documentada: `airgap-it/airgap-vault` tag `v3.34.4`, commit `aa50b7f0371ed2e681f358d22b546c7c000e05b7`.
+- Processo documentado: modificações Kaizou desenvolvidas colaborativamente pelo administrador humano com apoio de agente de IA ChatGPT, pelo método orientado por manifesto, contrato, portões mecânicos e reconciliação.
+- 935/935 entradas do manifesto em `aceito`.
 - Commit funcional homologado e publicado: `6804defb356fcbd024a3f71e1f2e95aec23a8487` em `origin/feature/airgap-solflare`; SHA remoto confirmado igual ao local.
 - Integração runtime: `crypto-multi-accounts` aceito pela Solflare 2.34.0; `sol-sign-request` processado pelo APK; `sol-signature` preservou requestId e foi aceito pelo `BaseKeyring.requestSignature()` real.
 - Criptografia: assinatura de 64 bytes verificada por Ed25519 contra a mensagem Solana devnet original.

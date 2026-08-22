@@ -1,5 +1,5 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 5
+versao_contrato: 6
 historico_emendas:
 - versao: 1
   data: '2026-08-21'
@@ -38,6 +38,15 @@ historico_emendas:
   - gate só aprova quando Karma emite TOTAL com contagem esperada e sem FAILED/ERROR de teste
   - após sucesso, runner encerra apenas o Chrome de perfil temporário criado para aquele gate
   - substituir yarn test direto pelos gates versionados nos critérios das entradas tocadas; conteúdo dos testes e do app não muda
+- versao: 6
+  data: '2026-08-21'
+  origem: pedido explícito do usuário para atualizar o README principal preservando as informações originais e documentando o Kaizou, sua origem e o desenvolvimento colaborativo com agente de IA ChatGPT
+  alteracoes:
+  - README.md deixa de exigir identidade byte a byte com o upstream e passa a aceitar uma introdução Kaizou antes do conteúdo original
+  - o corpo original do README de v3.34.4 deve permanecer byte a byte preservado após a introdução Kaizou
+  - a introdução deve registrar origem em airgap-it/airgap-vault v3.34.4 commit aa50b7f0371ed2e681f358d22b546c7c000e05b7
+  - a introdução deve resumir apenas as diferenças mecanicamente homologadas do fork e explicitar a proteção das redes não-Solana
+  - a introdução deve atribuir as modificações Kaizou a trabalho colaborativo entre o administrador humano e um agente de IA ChatGPT, usando método orientado por manifesto, contrato, portões mecânicos e reconciliação
 trabalho_compartilhado:
   projeto: airgap-vault-kaizou
   caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
@@ -226,11 +235,12 @@ entradas:
   status: aceito
 - id: 21
   caminho: README.md
-  proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
+  proposito: documentação principal do AirGap Vault Kaizou 1.0.0 com atribuição upstream, diferenças do fork e método colaborativo
   tipo: nao-classificado
   consome: []
   produz: null
-  aceite: git diff --quiet v3.34.4 -- README.md
+  aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes(); u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u); t=r.decode(); assert '# AirGap Vault Kaizou 1.0.0'
+    in t; assert 'airgap-it/airgap-vault' in t; assert 'aa50b7f0371ed2e681f358d22b546c7c000e05b7' in t; assert 'ChatGPT' in t; assert 'manifesto' in t and 'portões mecânicos' in t"
   status: aceito
 - id: 22
   caminho: android/.gitignore
@@ -7535,6 +7545,14 @@ entradas:
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  status: aceito
+- id: 935
+  caminho: contratos/airgap-vault-kaizou-v6-readme.md
+  proposito: histórico versionado da emenda v6 que libera e governa a atualização do README principal
+  tipo: estrutura-contrato
+  consome: []
+  produz: null
+  aceite: grep -Fq 'AirGap Vault Kaizou 1.0.0' contratos/airgap-vault-kaizou-v6-readme.md && grep -Fq 'aa50b7f0371ed2e681f358d22b546c7c000e05b7' contratos/airgap-vault-kaizou-v6-readme.md && grep -Fq 'ChatGPT' contratos/airgap-vault-kaizou-v6-readme.md
   status: aceito
 infraestrutura:
   host_canonico: DESKTOP-KQAHRF0
