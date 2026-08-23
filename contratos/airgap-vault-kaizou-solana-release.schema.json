@@ -91,13 +91,13 @@
       ],
       "properties": {
         "android": {
-          "const": "Android 11 Google Play user non-root: module available on clean install without ZIP import and stake request signs"
+          "const": "Android 11 Google Play user non-root: module 0.1.5 available on clean install without ZIP import; stake remains functional and a Keystone-supported liquidity-pool request is classified offline rather than unrecognized"
         },
         "solflare": {
           "const": "sol-sign-request -> Vault -> sol-signature preserves requestId and verifies Ed25519"
         },
         "regression": {
-          "const": "full upstream suite plus Kaizou Solflare and stake gates"
+          "const": "full upstream suite plus Kaizou Solflare/stake/liquidity-pool gates and non-Solana isolation gate"
         }
       }
     },
@@ -113,13 +113,13 @@
       ],
       "properties": {
         "kaizouVersion": {
-          "const": "1.1.0"
+          "const": "1.1.1"
         },
         "tag": {
-          "const": "airgap-vault-kaizou-1.1.0"
+          "const": "airgap-vault-kaizou-1.1.1"
         },
         "solanaModuleVersion": {
-          "const": "0.1.4"
+          "const": "0.1.5"
         },
         "solanaModuleProject": {
           "const": "airgap-solana-module"

@@ -10,6 +10,10 @@ const repoRoot = path.resolve(__dirname, '..')
 const moduleDist = path.resolve(process.env.AIRGAP_KAIZOU_SOLANA_MODULE_DIST || path.join(repoRoot, '..', 'airgap-solana-module', 'dist'))
 const requiredFiles = ['manifest.json', 'airgap-solana-module.bundle.js', 'module.sig']
 const staticRelative = path.join('src', 'assets', 'protocol_modules', 'airgap-solana-module')
+const releaseContract = JSON.parse(fs.readFileSync(path.join(repoRoot, 'contratos', 'airgap-vault-kaizou-solana-release.schema.json'), 'utf8'))
+const releaseProperties = releaseContract.properties.release.properties
+const expectedKaizouVersion = releaseProperties.kaizouVersion.const
+const expectedSolanaModuleVersion = releaseProperties.solanaModuleVersion.const
 
 function fail(message) {
   console.error(`FAIL: ${message}`)
@@ -29,6 +33,7 @@ function verifyModule() {
   const manifestBytes = fs.readFileSync(manifestPath)
   const manifest = JSON.parse(manifestBytes.toString('utf8'))
   if (manifest.name !== 'airgap-solana-module') fail(`unexpected module name: ${manifest.name}`)
+  if (manifest.version !== expectedSolanaModuleVersion) fail(`unexpected Solana module version: ${manifest.version}; expected ${expectedSolanaModuleVersion}`)
   if (!Array.isArray(manifest.include) || manifest.include.length !== 1 || manifest.include[0] !== 'airgap-solana-module.bundle.js') {
     fail(`unexpected module include list: ${JSON.stringify(manifest.include)}`)
   }
@@ -49,9 +54,11 @@ function run(command, args, cwd, env = process.env) {
   if (result.status !== 0) fail(`${command} exited ${result.status}`)
 }
 
+const kaizouPackage = JSON.parse(fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'))
+if (kaizouPackage.version !== expectedKaizouVersion) fail(`unexpected Kaizou package version: ${kaizouPackage.version}; expected ${expectedKaizouVersion}`)
 const manifest = verifyModule()
 if (process.argv.includes('--verify-only')) {
-  console.log(`PASS: release contract verified; static_path=${staticRelative.replaceAll(path.sep, '/')}`)
+  console.log(`PASS: release contract verified; kaizou=${expectedKaizouVersion}; solana_module=${expectedSolanaModuleVersion}; static_path=${staticRelative.replaceAll(path.sep, '/')}`)
   process.exit(0)
 }
 

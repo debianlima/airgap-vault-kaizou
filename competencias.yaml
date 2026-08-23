@@ -27,3 +27,29 @@
   portao: APK instala no AVD non-root e percorre sync→scan→sign→response
   evidencia: Vault v3.34.4 já homologado no mesmo laboratório durante U14
   instalada_em: '2026-08-21'
+- id: skill-projeto
+  nome: airgap-wallet-engineering-skill
+  tipo_competencia: projeto
+  ativa_em:
+  - "*"
+  fonte: /home/anderson/airgap-solana-work/airgap-wallet-engineering-skill/SKILL.md
+  versao: 0.1.0
+  origem:
+    projeto_de_origem: airgap-wallet-engineering-skill
+    derivacao: original
+    commit_divergencia: null
+    plataforma:
+    - windows
+    - wsl2
+    - android
+    pressupostos:
+    - AirGap Vault v3.34.4
+    - modulo isolado AirGap
+    - transporte offline Keystone UR para Solana
+  escopo_comum: arquitetura, protocolo, transporte offline, integração host wallet, homologação, nonregression e release da integração que originou a Skill
+  escopo_proprio: integração Angular/Ionic, asset module estático, runtime Android e release do AirGap Vault Kaizou
+  melhora: reutiliza no host o aprendizado homologado da integração AirGap/Solana sem generalizá-lo para futuras moedas
+  portao: cada aprendizado aplicado deve rastrear homologação mecânica ou externa que o produziu
+  evidencia: decisão explícita do usuário em 2026-08-23 de manter a Skill atual vinculada ao módulo e ao Kaizou
+  instalada_em: 2026-08-23
+  vinculada_por: usuário, em 2026-08-23

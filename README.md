@@ -1,26 +1,24 @@
-# AirGap Vault Kaizou 1.1.0
+# AirGap Vault Kaizou 1.1.1
 
-> Fork comunitário do AirGap Vault com **Solana disponível diretamente na release**, integração Solflare e suporte de stake, preservando abaixo a documentação original do projeto upstream.
+> Fork comunitário do AirGap Vault com **Solana disponível diretamente na linha Kaizou**, integração Solflare, stake preservado e classificação offline ampliada para o escopo Keystone Solana, mantendo abaixo a documentação original do projeto upstream.
 
 ## Sobre o Kaizou
 
-**AirGap Vault Kaizou 1.1.0** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
+**AirGap Vault Kaizou 1.1.1** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
 
-A principal evolução desta release é disponibilizar **Solana no próprio Kaizou**. Durante o desenvolvimento, o projeto **airgap-solana-module** continua separado e evolui com versão/release próprias. Na distribuição Kaizou 1.1.0, o pacote assinado **airgap-solana-module 0.1.4** é incluído como **módulo estático** no APK, de forma que uma instalação limpa já oferece Solana sem importar um ZIP manualmente.
+A linha 1.1.1 integra o pacote assinado **airgap-solana-module 0.1.5** como **módulo estático** no APK. O módulo continua sendo desenvolvido e versionado separadamente do Kaizou; a distribuição apenas incorpora os artefatos assinados verificados.
 
-### O que a versão 1.1.0 acrescenta
+### O que a versão 1.1.1 acrescenta
 
-- `airgap-solana-module 0.1.4` integrado ao APK como módulo estático, mantendo o módulo como projeto independente;
-- opção **AirGap Solflare** para contas Solana;
-- sincronização por QR `crypto-multi-accounts`;
-- assinatura `sol-sign-request` → assinatura offline → `sol-signature`, com requestId preservado;
-- suporte offline às instruções nativas do Solana Stake Program: Initialize, Authorize, AuthorizeWithSeed, Delegate, Split, Withdraw, Deactivate e Merge;
-- suporte seguro a transações Solana compostas com Compute Budget;
-- fallback para programas customizados de liquid staking/DeFi ainda não decodificados: o app avisa que não reconheceu toda a semântica, preserva os bytes originais e permite assinatura válida em vez de quebrar;
-- correção do fluxo de detalhes Solana para não entrar no enriquecimento ERC-20 do Angular Core;
-- proteção de não-regressão das demais redes por suíte upstream e gate mecânico de isolamento.
+- `airgap-solana-module 0.1.5` integrado ao APK como módulo estático, mantendo o módulo como projeto independente;
+- classificação offline compatível com as famílias System, Vote, Stake, SPL Token, SPL Token Swap v3, SPL Token Lending, Squads v4, Jupiter v6 e Compute Budget tratadas pelo parser Keystone fixado pelo módulo;
+- regressão de liquidity pool: transação coberta por SPL Token Swap v3 deixa de cair em `Solana transaction not recognized offline`;
+- detalhes ricos de transferência e **stake permanecem preservados**, sem mudança semântica do fluxo já homologado;
+- transações Solana válidas fora da matriz Keystone usam fallback genérico estruturado com bytes originais preservados;
+- opção **AirGap Solflare**, sincronização `crypto-multi-accounts` e assinatura `sol-sign-request` → `sol-signature` continuam preservadas;
+- proteção de não-regressão das demais redes permanece obrigatória por suíte upstream e gate mecânico de isolamento.
 
-A integração Kaizou continua deliberadamente restrita a Solana. Bitcoin, Ethereum, BNB Smart Chain e os demais protocolos permanecem nos caminhos upstream, sem alteração semântica intencional causada pelo patch Solflare/stake.
+A integração Kaizou continua deliberadamente restrita a Solana. Bitcoin, Ethereum, BNB Smart Chain e os demais protocolos permanecem nos caminhos upstream, sem alteração semântica intencional causada por esta emenda.
 
 ## Desenvolvimento colaborativo e método
 
@@ -28,9 +26,9 @@ As **modificações Kaizou deste fork** foram desenvolvidas de forma colaborativ
 
 O trabalho foi conduzido por um **método de manutenção orientado por manifesto, contrato, portões mecânicos e reconciliação**. A avaliação do agente de IA não substitui testes, builds, verificadores, validação criptográfica nem homologação de runtime.
 
-## Homologação da linha 1.1.0
+## Homologação da linha 1.1.1
 
-A homologação exige Android 11 `user`/non-root em instalação limpa, carregamento de Solana a partir do módulo estático sem importação manual, derivação de conta, `Stake Deactivate`, `Stake Withdraw`, fallback de programa customizado, produção de `sol-signature`, requestId preservado, Ed25519 válido e aceitação pelo parser/keyring real da Solflare 2.34.0. A suíte upstream completa, testes específicos e gates de não-regressão também fazem parte do aceite.
+A homologação exige módulo estático `0.1.5` assinado, regressão completa de stake, classificação offline de liquidity pool suportado pela matriz Keystone, produção de `sol-signature` com requestId preservado, verificação Ed25519, build Android e gate de isolamento que mantém os protocolos não-Solana nos caminhos existentes.
 
 > Broadcast Solana devnet continua fora do contrato offline/QR enquanto não houver saldo de teste verificável.
 

@@ -1,5 +1,5 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 8
+versao_contrato: 9
 historico_emendas:
 - versao: 1
   data: '2026-08-21'
@@ -65,6 +65,16 @@ historico_emendas:
   - release Kaizou 1.1.0 deve conter airgap-solana-module 0.1.4 como static asset module e não exigir importação manual de ZIP
   - airgap-solana-module continua projeto e release independentes; integração no Kaizou não funde os ciclos de desenvolvimento
   - README principal deve destacar Solana integrada como principal evolução da release 1.1.0 e preservar byte a byte o README upstream v3.34.4 abaixo da introdução Kaizou
+- versao: 9
+  data: '2026-08-23'
+  origem: decisão do usuário de manter a Skill atual vinculada ao módulo e ao Kaizou e integrar no Kaizou todo o escopo Solana suportado pelo parser Keystone, sem alterar outras redes
+  alteracoes:
+  - AirGap Vault Kaizou passa à versão de desenvolvimento 1.1.1 porque 1.1.0 já foi publicada e permanece imutável
+  - release candidata integra exatamente airgap-solana-module 0.1.5 como static asset module assinado
+  - pacote 0.1.5 deve classificar offline as famílias System, Vote, Stake, SPL Token, SPL Token Swap v3, SPL Token Lending, Squads v4, Jupiter v6 e Compute Budget tratadas pelo parser Keystone fixado
+  - stake já homologado deve permanecer semanticamente inalterado e a regressão específica de liquidity pool não pode exibir Solana transaction not recognized offline
+  - fluxos, arquivos e branches de protocolos não-Solana não podem sofrer alteração semântica
+  - a mesma airgap-wallet-engineering-skill 0.1.0 fica vinculada aos dois projetos; próximo módulo de outra moeda deve derivar uma skill nova da atual
 trabalho_compartilhado: null
 entradas:
 - id: 1
@@ -229,13 +239,13 @@ entradas:
   status: aceito
 - id: 21
   caminho: README.md
-  proposito: documentação principal do AirGap Vault Kaizou 1.1.0 com Solana integrada, origem upstream e método colaborativo
+  proposito: documentação principal do AirGap Vault Kaizou 1.1.1 com airgap-solana-module 0.1.5, origem upstream e método colaborativo
   tipo: nao-classificado
   consome: []
   produz: null
-  aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes(); u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u); t=r.decode(); assert '# AirGap Vault Kaizou 1.1.0'
-    in t; assert 'airgap-solana-module 0.1.4' in t; assert 'módulo estático' in t; assert 'airgap-it/airgap-vault' in t; assert 'ChatGPT' in t"
-  status: aceito
+  aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes(); u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u); t=r.decode(); assert '# AirGap Vault Kaizou 1.1.1'
+    in t; assert 'airgap-solana-module 0.1.5' in t; assert 'módulo estático' in t; assert 'airgap-it/airgap-vault' in t; assert 'ChatGPT' in t"
+  status: em_curso
 - id: 22
   caminho: android/.gitignore
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -1011,7 +1021,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-verify-structure.py --all
-  status: aceito
+  status: em_curso
 - id: 119
   caminho: contratos/solflare-keystone.schema.json
   proposito: contrato formal da fronteira Solflare/Keystone
@@ -1195,7 +1205,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-verify-structure.py --all
-  status: aceito
+  status: em_curso
 - id: 142
   caminho: fastlane/metadata/android/en-US/full_description.txt
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -1891,7 +1901,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-verify-structure.py --all
-  status: aceito
+  status: em_curso
 - id: 229
   caminho: manifesto.yaml
   proposito: governança canônica do fork
@@ -1910,12 +1920,12 @@ entradas:
   status: aceito
 - id: 231
   caminho: package.json
-  proposito: dependências do fork e versão de distribuição AirGap Vault Kaizou 1.1.0
+  proposito: dependências do fork e versão de desenvolvimento AirGap Vault Kaizou 1.1.1
   tipo: dependencias
   consome: []
   produz: null
-  aceite: node -e "const p=require('./package.json'); if(p.version!=='1.1.0')process.exit(1)" && yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  aceite: node -e "const p=require('./package.json'); if(p.version!=='1.1.1')process.exit(1)" && yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
+  status: em_curso
 - id: 232
   caminho: patch-dependency-versions.js
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -7550,13 +7560,13 @@ entradas:
   status: aceito
 - id: 936
   caminho: contratos/airgap-vault-kaizou-solana-release.schema.json
-  proposito: contrato JSON Schema da release Kaizou com módulo Solana estático e gates de stake
+  proposito: contrato JSON Schema da release Kaizou 1.1.1 com módulo Solana 0.1.5 estático, stake preservado e regressão de liquidity pool
   tipo: estrutura-contrato
   consome: []
   produz: null
   aceite: python3 -m json.tool contratos/airgap-vault-kaizou-solana-release.schema.json >/dev/null && python3 -c "import json; d=json.load(open('contratos/airgap-vault-kaizou-solana-release.schema.json')); p=d['properties']['release']['properties'];
-    assert p['kaizouVersion']['const']=='1.1.0'; assert p['solanaModuleVersion']['const']=='0.1.4'"
-  status: aceito
+    assert p['kaizouVersion']['const']=='1.1.1'; assert p['solanaModuleVersion']['const']=='0.1.5'"
+  status: em_curso
 - id: 937
   caminho: src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts
   proposito: regressão do crash ao assinar transação Solana sem destinatário/token inferível e isolamento das demais redes
@@ -7567,12 +7577,12 @@ entradas:
   status: aceito
 - id: 938
   caminho: scripts/airgap-vault-kaizou-build-release-with-solana-module.js
-  proposito: construir APK Kaizou em staging externo incluindo pacote Solana verificado como asset module estático
+  proposito: verificar e construir APK Kaizou em staging externo incluindo exatamente o pacote Solana 0.1.5 assinado como asset module estático
   tipo: deploy-android
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-build-release-with-solana-module.js --verify-only
-  status: aceito
+  status: em_curso
 infraestrutura:
   host_canonico: DESKTOP-KQAHRF0
   endereco_host: 172.16.0.110
