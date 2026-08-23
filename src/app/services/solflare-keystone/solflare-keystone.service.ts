@@ -101,6 +101,81 @@ export function unsignedTransactionFromMessage(signData: Uint8Array): string {
   return Buffer.from(transaction).toString('base64')
 }
 
+function isCompleteSolanaMessage(data: Uint8Array): boolean {
+  try {
+    const message = Buffer.from(data)
+    const headerOffset = messageHeaderOffset(message)
+    if (message.length < headerOffset + 3) return false
+
+    let cursor = headerOffset + 3
+    const keyCount = decodeShortVec(message, cursor)
+    cursor = keyCount.next + keyCount.value * 32
+    if (cursor + 32 > message.length) return false
+    cursor += 32
+
+    const instructionCount = decodeShortVec(message, cursor)
+    cursor = instructionCount.next
+    for (let i = 0; i < instructionCount.value; i++) {
+      if (cursor >= message.length) return false
+      cursor += 1
+
+      const accountCount = decodeShortVec(message, cursor)
+      cursor = accountCount.next + accountCount.value
+      if (cursor > message.length) return false
+
+      const dataLength = decodeShortVec(message, cursor)
+      cursor = dataLength.next + dataLength.value
+      if (cursor > message.length) return false
+    }
+
+    if (headerOffset === 1) {
+      const lookupCount = decodeShortVec(message, cursor)
+      cursor = lookupCount.next
+      for (let i = 0; i < lookupCount.value; i++) {
+        if (cursor + 32 > message.length) return false
+        cursor += 32
+
+        const writableCount = decodeShortVec(message, cursor)
+        cursor = writableCount.next + writableCount.value
+        if (cursor > message.length) return false
+
+        const readonlyCount = decodeShortVec(message, cursor)
+        cursor = readonlyCount.next + readonlyCount.value
+        if (cursor > message.length) return false
+      }
+    }
+
+    return cursor === message.length
+  } catch {
+    return false
+  }
+}
+
+function isCompleteSerializedTransaction(signData: Uint8Array): boolean {
+  try {
+    const transaction = Buffer.from(signData)
+    const signatures = decodeShortVec(transaction, 0)
+    if (signatures.value < 1) return false
+    const messageStart = signatures.next + signatures.value * 64
+    if (messageStart >= transaction.length) return false
+
+    const message = transaction.subarray(messageStart)
+    if (!isCompleteSolanaMessage(message)) return false
+    const headerOffset = messageHeaderOffset(message)
+    return message[headerOffset] === signatures.value
+  } catch {
+    return false
+  }
+}
+
+export function unsignedTransactionFromSignData(signData: Uint8Array): string {
+  const bytes = Buffer.from(signData)
+  if (isCompleteSerializedTransaction(bytes)) {
+    return bytes.toString('base64')
+  }
+  return unsignedTransactionFromMessage(bytes)
+}
+
 export function extractSignatureForPublicKey(signedTransactionBase64: string, publicKeyHex: string): Uint8Array {
   assertHex(publicKeyHex, 32, 'Solana public key')
   const serialized = Buffer.from(signedTransactionBase64, 'base64')
@@ -138,8 +213,9 @@ export function extractSignatureForPublicKey(signedTransactionBase64: string, pu
 function decodeSignRequestFromCbor(cbor: Uint8Array): SolflareDecodedSignRequest {
   const dataItem = RegistryExtend.decodeToDataItem(Buffer.from(cbor))
   const request = SolSignRequest.fromDataItem(dataItem)
-  if (request.getSignType() !== SignType.Transaction) {
-    throw new Error(`Unsupported Solflare Solana sign type: ${request.getSignType()}`)
+  const signType = request.getSignType()
+  if (signType !== SignType.Transaction && signType !== SignType.Message) {
+    throw new Error(`Unsupported Solflare Solana sign type: ${signType}`)
   }
   const requestId = request.getRequestId()
   if (!requestId || requestId.length !== 16) throw new Error('Solflare sign request must contain a 16-byte requestId')
@@ -272,7 +348,7 @@ export class SolflareSignRequestHandler implements IACMessageHandler<IACMessageD
           type: IACMessageType.TransactionSignRequest,
           payload: {
             transaction: {
-              transaction: unsignedTransactionFromMessage(request.signData),
+              transaction: unsignedTransactionFromSignData(request.signData),
               encoding: 'base64'
             },
             publicKey: '',

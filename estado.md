@@ -36,14 +36,15 @@
 
 ## Falhas de portão por tipo de entrada
 - `backend-integracao`: release 1.1.1 falhou no caso real do usuário com QR Solflare dinâmico, exibindo `Incompatible code`.
-- `teste-integracao`: o agregador `--all` esperava 3 specs Solflare após a U10 adicionar a quarta regressão; declaração já exigia 4 e o runner precisa acompanhar o conjunto declarado.
+- `teste-integracao`: o agregador `--all` esperava 3 specs Solflare após a U10 adicionar regressões; o runner foi alinhado ao conjunto declarado.
+- `teste-integracao`: ChromeLauncher usou porta DevTools fixa 9222 e colidiu com outro Chrome no Windows; a configuração deve solicitar porta efêmera para que o gate seja isolado.
 
 ## Divergências da última reconciliação
 - corrigidas: contrato v10 declara a correção antes da geração; nenhuma divergência de árvore foi criada.
 - pendentes de autorização: nenhuma.
 
 ## Entradas aceitas
-- 930/938 permanecem aceitas; entradas 21, 141, 228, 231, 801, 802, 934 e 936 estão `em_curso` nas U10/U11.
+- 929/938 permanecem aceitas; entradas 21, 141, 228, 231, 801, 802, 933, 934 e 936 estão `em_curso` nas U10/U11.
 
 ## Próxima unidade
 - U11 — primeiro gate: `SignType.Message` multipart deve falhar no handler atual e passar somente após a correção; depois repetir o vídeo real no Android runtime.

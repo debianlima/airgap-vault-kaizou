@@ -7560,7 +7560,7 @@ entradas:
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 5 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  status: aceito
+  status: em_curso
 - id: 934
   caminho: scripts/airgap-vault-kaizou-karma-gate.js
   proposito: executar Karma de forma determinística no WSL com porta exclusiva por job e cleanup síncrono do Chrome temporário

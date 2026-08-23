@@ -10,6 +10,7 @@ const ROOT = path.resolve(__dirname, '..')
 const NG = path.join(ROOT, 'node_modules', '@angular', 'cli', 'bin', 'ng')
 const KARMA = path.join(ROOT, 'scripts', 'airgap-vault-kaizou-karma.conf.js')
 const WIN_CHROME_WSL = '/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'
+const PUPPETEER_CHROME = require(path.join(ROOT, 'node_modules', 'puppeteer')).executablePath()
 const PROFILE_ROOT = '/mnt/e/airgap-vault-kaizou-workspace/cache'
 const DEFAULT_TIMEOUT_MS = 180000
 
@@ -43,6 +44,7 @@ function shellQuote(value) {
 }
 
 function makeChromeWrapper(tag) {
+  if (fs.existsSync(PUPPETEER_CHROME)) return undefined
   if (!fs.existsSync(WIN_CHROME_WSL)) return undefined
   fs.mkdirSync(PROFILE_ROOT, { recursive: true })
   const profileWsl = path.join(PROFILE_ROOT, `airgap-vault-kaizou-karma-${tag}`)
@@ -88,6 +90,7 @@ function runOne(include, expected, suite = false) {
     const chrome = makeChromeWrapper(tag)
     const env = { ...process.env }
     if (chrome) env.CHROME_BIN = chrome.wrapper
+    else if (fs.existsSync(PUPPETEER_CHROME)) env.CHROME_BIN = PUPPETEER_CHROME
     env.NODE_PATH = path.join(ROOT, 'node_modules')
     const karmaPort = getFreeKarmaPort()
     env.AIRGAP_KAIZOU_KARMA_PORT = String(karmaPort)
