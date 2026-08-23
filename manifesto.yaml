@@ -7631,6 +7631,17 @@ procedencia_externa:
   licenca: Apache-2.0
   alteracoes: adaptar somente a normalização host para preservar transação serializada completa ou criar envelope de assinaturas quando signData for mensagem; sem copiar parser Rust
   teste_de_aceite: src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+- entrada: 802
+  problema: converter o endereço Solana Base58 exibido pela conta para os 32 bytes Ed25519 que o contrato Keystone crypto-multi-accounts e a seleção de assinatura exigem
+  degraus_tentados:
+  - '1: busca no repositório não encontrou codec Base58 próprio; `wallet.receivingPublicAddress` é a fonte que coincide mecanicamente com o signer real homologado'
+  - '2: airgap-wallet-engineering-skill v0.2.0 exige preservar a fronteira host/protocolo e testar com oráculo determinístico'
+  - '6: pacote bs58 4.0.1 já presente transitivamente no lock fornece codec Base58 puro e licenciado MIT; passa a ser dependência direta para evitar depender de transitividade'
+  adotado_de: https://github.com/cryptocoinjs/bs58/tree/v4.0.1
+  acessado_em: '2026-08-23'
+  licenca: MIT
+  alteracoes: expor helper host que decodifica endereço Solana Base58 e exige exatamente 32 bytes; account-share e interaction reutilizam o mesmo helper para impedir divergência entre pareamento e resposta
+  teste_de_aceite: src/app/pages/account-share/account-share.page.spec.ts
 infraestrutura:
   host_canonico: DESKTOP-KQAHRF0
   endereco_host: 172.16.0.110

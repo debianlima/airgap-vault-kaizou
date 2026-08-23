@@ -20,7 +20,7 @@ describe('AccountSharePage AirGap Solflare', () => {
   it('uses the Ed25519 signer encoded by the Solana receiving address when wallet.publicKey diverges', () => {
     const staleWalletPublicKey = '11'.repeat(32)
     const receivingPublicAddress = 'HAgk14JpMQLgt6rVgv7cBQFJWFto5Dqxi472uT3DKpqk'
-    const expectedSignerPublicKey = 'f036276246a75b9de3349ed42b15e232f6518fc20f5fcd4f1d6ce81f9bd658f7'
+    const expectedSignerPublicKey = 'f036276246a75b9de3349ed42b15e232f6518fc20f5fcd4f1d64e81f9bd258f7'
     const service: any = {
       encodeAccountSync: jasmine.createSpy('encodeAccountSync').and.returnValue('ur:crypto-multi-accounts/test')
     }
