@@ -611,7 +611,7 @@ graph TD
     E369["account-share.page.html<br/>renderizar QR Keystone bruto quando companion AirGap Solflare estiver ativo"]
     E370["account-share.page.scss<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
     E371["account-share.page.spec.ts<br/>provar QR crypto-multi-accounts"]
-    E372["account-share.page.ts<br/>preparar QR bruto crypto-multi-accounts para AirGap Solflare"]
+    E372["account-share.page.ts<br/>preparar QR crypto-multi-accounts para AirGap Solflare usando a chave pública Ed25519 correspondente ao endereço de recebimento da conta"]
   end
   subgraph src_app_pages_account_share_select["src/app/pages/account-share-select"]
     E358["account-share-select-routing.module.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
@@ -1206,7 +1206,7 @@ graph TD
   end
   subgraph src_app_services_interaction["src/app/services/interaction"]
     E779["interaction.service.spec.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
-    E780["interaction.service.ts<br/>preservar contexto externo de Solflare/Keystone na resposta"]
+    E780["interaction.service.ts<br/>preservar contexto externo de Solflare/Keystone e extrair a assinatura pela chave Ed25519 correspondente ao endereço de recebimento da conta"]
   end
   subgraph src_app_services_lifehash["src/app/services/lifehash"]
     E781["lifehash.service.spec.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]

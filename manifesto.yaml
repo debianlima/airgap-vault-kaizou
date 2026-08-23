@@ -1,6 +1,14 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 12
+versao_contrato: 13
 historico_emendas:
+- versao: 13
+  data: '2026-08-23'
+  origem: homologação Android 1.1.2 revelou que o QR crypto-multi-accounts usava `wallet.publicKey`, enquanto a chave Ed25519 realmente derivada para assinatura coincide com `wallet.receivingPublicAddress`; o request chegava ao detalhe mas falhava com `Cannot sign with non signer key`
+  alteracoes:
+  - o QR de pareamento Solflare deve anunciar a chave pública Solana decodificada do endereço de recebimento da conta, não um `wallet.publicKey` divergente
+  - a extração da assinatura de resposta deve localizar o signer usando a mesma chave pública derivada do endereço de recebimento
+  - a regressão deve provar divergência deliberada entre `wallet.publicKey` e o endereço/signer e ainda assim obter crypto-multi-accounts com a chave de assinatura correta
+  - a release alvo permanece Kaizou 1.1.2 com módulo Solana 0.1.5; nenhuma semântica não-Solana muda
 - versao: 12
   data: '2026-08-23'
   origem: usuário criou e vinculou `android-container-avd-lab` ao projeto de gerenciamento de skills e ao workflow-infra da 110 durante a homologação Kaizou 1.1.2
@@ -1119,7 +1127,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-generate-diagrams.py --check
-  status: aceito
+  status: em_curso
 - id: 128
   caminho: e2e/protractor.conf.js
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -3070,16 +3078,16 @@ entradas:
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 2 --include src/app/pages/account-share/account-share.page.spec.ts
-  status: aceito
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/pages/account-share/account-share.page.spec.ts
+  status: em_curso
 - id: 372
   caminho: src/app/pages/account-share/account-share.page.ts
-  proposito: preparar QR bruto crypto-multi-accounts para AirGap Solflare
+  proposito: preparar QR crypto-multi-accounts para AirGap Solflare usando a chave pública Ed25519 correspondente ao endereço de recebimento da conta
   tipo: ui-integracao
   consome: []
   produz: null
   aceite: yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  status: em_curso
 - id: 373
   caminho: src/app/pages/accounts-list/accounts-list-edit-popover/accounts-list-edit-popover.component.html
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -6338,12 +6346,12 @@ entradas:
   status: aceito
 - id: 780
   caminho: src/app/services/interaction/interaction.service.ts
-  proposito: preservar contexto externo de Solflare/Keystone na resposta
+  proposito: preservar contexto externo de Solflare/Keystone e extrair a assinatura pela chave Ed25519 correspondente ao endereço de recebimento da conta
   tipo: backend-integracao
   consome: []
   produz: null
   aceite: yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  status: em_curso
 - id: 781
   caminho: src/app/services/lifehash/lifehash.service.spec.ts
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -7551,7 +7559,7 @@ entradas:
   consome: []
   produz: null
   aceite: yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  status: em_curso
 - id: 932
   caminho: scripts/airgap-vault-kaizou-nonregression.js
   proposito: verificar mecanicamente que a integração Solflare/stake está isolada a Solana e que fluxos das demais redes permanecem no comportamento upstream

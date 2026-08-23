@@ -89,7 +89,8 @@
         "solflare",
         "regression",
         "dynamicQr",
-        "solflareSignType"
+        "solflareSignType",
+        "pairingSignerKey"
       ],
       "properties": {
         "android": {
@@ -106,6 +107,9 @@
         },
         "solflareSignType": {
           "const": "real Solflare dynamic QR may encode SolSignRequest SignType.Message or SignType.Transaction; both must route to transaction signing without Incompatible code"
+        },
+        "pairingSignerKey": {
+          "const": "crypto-multi-accounts and sol-signature signer selection use the Ed25519 public key encoded by the Solana receiving address; stale or divergent wallet.publicKey must not be advertised as the signer"
         }
       }
     },

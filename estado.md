@@ -1,4 +1,4 @@
-# Estado — 2026-08-23 — contrato v12
+# Estado — 2026-08-23 — contrato v13
 
 ## Decisões vigentes
 - AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.5` permanece o módulo integrado e não muda nesta unidade.
@@ -20,9 +20,11 @@
 - U10/U11: regressões foram escritas antes das correções; `SignType.Message` real e `VersionedTransaction` serializada completa são cobertos.
 - U11: o vídeo real foi decodificado sem OCR; 4 frames fountain reconstruíram `sol-sign-request` completo, requestId válido, path Solana e mensagem v0.
 - U12: a skill 0.2.0 foi recarregada; o workflow-infra 110 permanece fonte do inventário e a nova subskill fornece apenas procedimento do laboratório.
+- U13: homologação Android provou divergência real entre o `wallet.publicKey` anunciado pelo QR e a chave pública derivada da seed/endereço; signing chegou ao módulo mas falhou com `Cannot sign with non signer key`.
+- U13 RED confirmado: `account-share.page.spec.ts` executou 3 specs e falhou 1/3 porque `encodeAccountSync` recebeu `wallet.publicKey=11…11` em vez da chave Ed25519 `f036…58f7` decodificada do endereço Solana de teste.
 
 ## Pendências técnicas não humanas
-- Concluir a homologação Android do APK 1.1.2 no runtime Google Play API 30 user/non-root, reproduzindo o QR dinâmico real sem `Incompatible code`, assinando e verificando a resposta.
+- Corrigir sob teste-first o QR de pareamento/extração de resposta para usar a chave Ed25519 do endereço de recebimento e repetir a homologação Android 1.1.2 até `sol-signature` verificável.
 - Repetir stake/cold restart exigidos pelo contrato, fechar as entradas v12 e publicar a release somente após todos os portões passarem.
 
 ## Trabalho compartilhado
@@ -47,7 +49,7 @@
 - pendentes de autorização: nenhuma.
 
 ## Entradas aceitas
-- 927/938 permanecem aceitas; entradas 21, 118, 141, 228, 229, 231, 801, 802, 933, 934 e 936 estão `em_curso` nas U10/U11/U12.
+- 922/938 permanecem aceitas; entradas 21, 118, 127, 141, 228, 229, 231, 371, 372, 780, 801, 802, 931, 933, 934 e 936 estão `em_curso` nas U10/U11/U12/U13.
 
 ## Próxima unidade
-- U12 — concluir o gate Android com a nova subskill de laboratório e só então aceitar/publicar 1.1.2.
+- U13 — primeiro gate: regressão de pareamento deve falhar quando `wallet.publicKey` diverge do endereço/signer; só depois corrigir QR e resposta e retomar o gate Android.
