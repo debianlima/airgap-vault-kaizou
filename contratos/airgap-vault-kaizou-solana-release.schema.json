@@ -87,7 +87,8 @@
       "required": [
         "android",
         "solflare",
-        "regression"
+        "regression",
+        "dynamicQr"
       ],
       "properties": {
         "android": {
@@ -98,6 +99,9 @@
         },
         "regression": {
           "const": "full upstream suite plus Kaizou Solflare/stake/liquidity-pool gates and non-Solana isolation gate"
+        },
+        "dynamicQr": {
+          "const": "animated sol-sign-request fountain fragments accumulate until complete; signData may be a Solana message or a complete serialized transaction; complete transactions are preserved byte-for-byte rather than double-prefixed"
         }
       }
     },
@@ -113,10 +117,10 @@
       ],
       "properties": {
         "kaizouVersion": {
-          "const": "1.1.1"
+          "const": "1.1.2"
         },
         "tag": {
-          "const": "airgap-vault-kaizou-1.1.1"
+          "const": "airgap-vault-kaizou-1.1.2"
         },
         "solanaModuleVersion": {
           "const": "0.1.5"

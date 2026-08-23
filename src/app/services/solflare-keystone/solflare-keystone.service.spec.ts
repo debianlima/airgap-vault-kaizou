@@ -75,6 +75,36 @@ describe('SolflareKeystoneService', () => {
     expect(serialized.subarray(65).equals(message)).toBeTrue()
   })
 
+  it('accumulates multipart Solflare UR and preserves a complete serialized versioned transaction', async () => {
+    const signer = Buffer.from(publicKeyHex, 'hex')
+    const recipient = Buffer.alloc(32, 7)
+    const blockhash = Buffer.alloc(32, 9)
+    const versionedMessage = Buffer.concat([
+      Buffer.from([0x80, 1, 0, 1]),
+      Buffer.from([2]),
+      signer,
+      recipient,
+      blockhash,
+      Buffer.from([0, 0])
+    ])
+    const serializedTransaction = Buffer.concat([Buffer.from([1]), Buffer.alloc(64), versionedMessage])
+    const request = SolSignRequest.constructSOLRequest(serializedTransaction, path, fingerprint, SignType.Transaction, requestId)
+    const frames = request.toUREncoder(120).encodeWhole().map((frame) => frame.toUpperCase())
+    expect(frames.length).toBeGreaterThan(1)
+
+    const handler = new SolflareSignRequestHandler(service, async () => undefined)
+    let status: IACHandlerStatus = IACHandlerStatus.PARTIAL
+    for (const frame of frames) {
+      status = await handler.receive(frame)
+    }
+    expect(status).toBe(IACHandlerStatus.SUCCESS)
+
+    const handled = await handler.getResult()
+    const handledPayload = handled?.result[0].payload as any
+    expect(handledPayload.transaction.encoding).toBe('base64')
+    expect(Buffer.from(handledPayload.transaction.transaction, 'base64').equals(serializedTransaction)).toBeTrue()
+  })
+
   it('extracts the signature matching the required signer and encodes sol-signature with the same requestId', () => {
     const secondSignerHex = 'ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7'
     const keys = Buffer.concat([Buffer.from(publicKeyHex, 'hex'), Buffer.from(secondSignerHex, 'hex')])

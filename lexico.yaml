@@ -65,3 +65,13 @@
   proibidos:
   - airgap-solana-module 0.1.4 como módulo da linha 1.1.1
   - Solana embutida no código do Vault
+- conceito: nome de release de desenvolvimento 1.1.2
+  canonico: AirGap Vault Kaizou 1.1.2
+  proibidos:
+  - AirGap Vault Kaizou 112
+  - iGap Vault Caizu 112
+- conceito: tag candidata de release 1.1.2
+  canonico: airgap-vault-kaizou-1.1.2
+  proibidos:
+  - v1.1.2
+  - airgap-vault-kaizou-1.1.1-hotfix
