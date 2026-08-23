@@ -88,7 +88,8 @@
         "android",
         "solflare",
         "regression",
-        "dynamicQr"
+        "dynamicQr",
+        "solflareSignType"
       ],
       "properties": {
         "android": {
@@ -102,6 +103,9 @@
         },
         "dynamicQr": {
           "const": "animated sol-sign-request fountain fragments accumulate until complete; signData may be a Solana message or a complete serialized transaction; complete transactions are preserved byte-for-byte rather than double-prefixed"
+        },
+        "solflareSignType": {
+          "const": "real Solflare dynamic QR may encode SolSignRequest SignType.Message or SignType.Transaction; both must route to transaction signing without Incompatible code"
         }
       }
     },

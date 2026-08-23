@@ -1,5 +1,5 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 10
+versao_contrato: 11
 historico_emendas:
 - versao: 1
   data: '2026-08-21'
@@ -75,6 +75,15 @@ historico_emendas:
   - stake já homologado deve permanecer semanticamente inalterado e a regressão específica de liquidity pool não pode exibir Solana transaction not recognized offline
   - fluxos, arquivos e branches de protocolos não-Solana não podem sofrer alteração semântica
   - a mesma airgap-wallet-engineering-skill 0.1.0 fica vinculada aos dois projetos; próximo módulo de outra moeda deve derivar uma skill nova da atual
+- versao: 11
+  data: '2026-08-23'
+  origem: decodificação mecânica do vídeo real enviado pelo usuário; o UR é sol-sign-request multipart e usa SignType.Message
+  alteracoes:
+  - o vídeo real decodifica em fountain UR com seqLen 3; quatro frames distintos bastaram para reconstruir o payload completo sem erro
+  - o request real usa SignType.Message (valor 2), caminho 44'/501'/0'/0', fingerprint da carteira e mensagem Solana v0 com dois signatários obrigatórios
+  - SolflareSignRequestHandler deve aceitar SignType.Transaction e SignType.Message; ambos representam solicitação de assinatura de transação Solana e convergem para o mesmo envelope de transação não assinada do Vault
+  - rejeitar SignType.Message produz exatamente o alerta genérico Incompatible code após o UR completar; esse é o defeito observado na release 1.1.1
+  - a release continua 1.1.2 e o módulo integrado continua 0.1.5; a correção é exclusivamente na ponte host Solflare/Keystone
 - versao: 10
   data: '2026-08-23'
   origem: captura real fornecida pelo usuário de QR dinâmico Solflare rejeitado pelo Vault Kaizou 1.1.1 como Incompatible code
@@ -6490,15 +6499,15 @@ entradas:
   status: aceito
 - id: 801
   caminho: src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  proposito: provar roundtrip Keystone/Solflare, QR fountain multipart e signData mensagem/transação completa
+  proposito: provar roundtrip Keystone/Solflare, QR fountain multipart, SignType.Message e SignType.Transaction, e signData mensagem/transação completa
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 4 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 5 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: em_curso
 - id: 802
   caminho: src/app/services/solflare-keystone/solflare-keystone.service.ts
-  proposito: codificar crypto-multi-accounts, acumular sol-sign-request multipart, normalizar signData mensagem/transação completa e codificar sol-signature
+  proposito: codificar crypto-multi-accounts, acumular sol-sign-request multipart, aceitar SignType.Message/Transaction, normalizar signData mensagem/transação completa e codificar sol-signature
   tipo: backend-integracao
   consome: []
   produz: null
@@ -7550,7 +7559,7 @@ entradas:
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 4 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 5 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: aceito
 - id: 934
   caminho: scripts/airgap-vault-kaizou-karma-gate.js
@@ -7558,8 +7567,8 @@ entradas:
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 4 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  status: aceito
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 5 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  status: em_curso
 - id: 935
   caminho: contratos/airgap-vault-kaizou-v6-readme.md
   proposito: histórico versionado da emenda v6 que libera e governa a atualização do README principal
