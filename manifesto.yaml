@@ -1,6 +1,13 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 11
+versao_contrato: 12
 historico_emendas:
+- versao: 12
+  data: '2026-08-23'
+  origem: usuário criou e vinculou `android-container-avd-lab` ao projeto de gerenciamento de skills e ao workflow-infra da 110 durante a homologação Kaizou 1.1.2
+  alteracoes:
+  - recarregar `airgap-wallet-engineering-skill` da versão de trabalho 0.1.1 para 0.2.0 antes de continuar o gate Android
+  - ativar a nova subskill `android-container-avd-lab` apenas para montagem/reparo do laboratório; `android-airgap-runtime` continua responsável pela homologação do APK
+  - nenhum critério funcional, versão do módulo Solana ou versão alvo Kaizou muda nesta emenda
 - versao: 1
   data: '2026-08-21'
   origem: bootstrap do fork público solicitado pelo usuário
@@ -1040,7 +1047,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-verify-structure.py --all
-  status: aceito
+  status: em_curso
 - id: 119
   caminho: contratos/solflare-keystone.schema.json
   proposito: contrato formal da fronteira Solflare/Keystone
@@ -1928,7 +1935,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-verify-structure.py --all
-  status: aceito
+  status: em_curso
 - id: 230
   caminho: ngcc.config.js
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap

@@ -33,7 +33,7 @@
   ativa_em:
   - "*"
   fonte: /home/anderson/airgap-solana-work/airgap-wallet-engineering-skill/SKILL.md
-  versao: 0.1.1
+  versao: 0.2.0
   origem:
     projeto_de_origem: airgap-wallet-engineering-skill
     derivacao: original
@@ -46,9 +46,9 @@
     - AirGap Vault v3.34.4
     - modulo isolado AirGap
     - transporte offline Keystone UR para Solana
-  escopo_comum: arquitetura, protocolo, transporte offline, integração host wallet, homologação, nonregression e release da integração que originou a Skill
+  escopo_comum: arquitetura, protocolo, transporte offline, integração host wallet, montagem/reparo do laboratório Android Docker/KVM/AVD, homologação, nonregression e release da integração que originou a Skill
   escopo_proprio: integração Angular/Ionic, asset module estático, runtime Android e release do AirGap Vault Kaizou
-  melhora: reutiliza no host o aprendizado homologado da integração AirGap/Solana sem generalizá-lo para futuras moedas
+  melhora: reutiliza no host o aprendizado homologado da integração AirGap/Solana e o procedimento de laboratório Android sem generalizá-los para futuras moedas
   portao: cada aprendizado aplicado deve rastrear homologação mecânica ou externa que o produziu
   evidencia: decisão explícita do usuário em 2026-08-23 de manter a Skill atual vinculada ao módulo e ao Kaizou
   instalada_em: 2026-08-23
