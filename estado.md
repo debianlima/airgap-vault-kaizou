@@ -36,7 +36,7 @@
 - Nenhuma para a release `1.1.2` e para a homologação pós-release R03.
 
 ## Trabalho compartilhado
-- ponteiro: `manifesto.yaml.trabalho_compartilhado` — R05 ativa; atualização de idioma dos comentários externos em curso.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; R05 liberada após verificação remota dos comentários.
 
 ## Competências ativas nesta unidade
 - `desenvolvedor-de-software` v14 — busca externa, documentação e entrega.
@@ -61,5 +61,5 @@
 - 1–942.
 
 ## Próxima unidade
-- R05 em curso: corrigir os três comentários GitHub para inglês como idioma principal e terminar cada um com `Automatic translation (PT-BR)`.
+- R05 concluída: três discussões em inglês foram atualizadas com comentário principal em inglês e seção final `Automatic translation (PT-BR)`; 3/3 verificadas pela API GitHub como `debianlima`.
 - Nenhuma obrigatória para R04; detalhes internos do processo ficam reservados até a publicação dos artigos.

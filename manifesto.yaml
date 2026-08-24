@@ -430,24 +430,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: R05
-  descricao: corrigir idioma dos comentários externos e adicionar tradução automática
-    PT-BR
-  agente: terminal-oracle
-  atualizado_em: '2026-08-24T19:23:44-03:00'
-  previsao_inicio: '2026-08-24T19:23:44-03:00'
-  previsao_termino: '2026-08-24T20:08:44-03:00'
-  competencias:
-  - airgap-wallet-engineering-skill@0.2.6
-  - telemetry-data-visualization@2
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - logs/R05-2026-08-24-comment-language.log
-  - docs/airgap-vault-kaizou-*.mmd
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8082,7 +8065,7 @@ entradas:
     logs/R05-2026-08-24-comment-language.log && grep -q 'comments_updated=3/3' logs/R05-2026-08-24-comment-language.log
     && grep -q 'primary_language=en' logs/R05-2026-08-24-comment-language.log && grep
     -q 'automatic_translation=pt-BR' logs/R05-2026-08-24-comment-language.log
-  status: em_curso
+  status: aceito
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação

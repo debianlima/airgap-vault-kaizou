@@ -10,3 +10,13 @@ perfil_maquina=terminal
 tokens=indisponivel
 custo=indisponivel
 origem_coletor=git+relogio+github-api
+primary_language=en
+automatic_translation=pt-BR
+comments_updated=3/3
+comment_url=https://github.com/airgap-it/airgap-vault/issues/80#issuecomment-5402057663
+comment_url=https://github.com/KeystoneHQ/keystone3-firmware/issues/1118#issuecomment-5402058540
+comment_url=https://github.com/ExpertVagabond/coldstar-colosseum/issues/1#issuecomment-5402059348
+R05_COMMENT_LANGUAGE_PASS
+telemetria_fim=2026-08-24T19:25:02-03:00
+duracao_ms=76000
+status=sucesso
