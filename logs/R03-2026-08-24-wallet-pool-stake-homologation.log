@@ -1,0 +1,46 @@
+R03 wallet/pool/stake post-release homologation
+Date: 2026-08-24
+Release: https://github.com/debianlima/airgap-vault-kaizou/releases/tag/airgap-vault-kaizou-1.1.2
+Release tag target: 9a546eed4882f29e29dc28624e907fbd1f3922d0
+APK SHA-256: 6885cc59cc9f0050bb0e2614ac4a0a4c165aa0011f086e3e8b68881dd3742a45
+Android: API 30; build type user; release-keys; ro.debuggable=0; ro.secure=1; adb root denied
+Installed APK SHA-256: 6885cc59cc9f0050bb0e2614ac4a0a4c165aa0011f086e3e8b68881dd3742a45
+broadcast=false
+
+Wallet/account addition
+secret=Kaizou Test
+account0.address=HAgk14JpMQLgt6rVgv7cBQFJWFto5Dqxi472uT3DKpqk
+account0.path=m/44'/501'/0'/0'
+account1.address=GKreMsHvt8A79VApjboYDq3J4ZCXSJRYYQk9BscMbi1H
+account1.path=m/44'/501'/0'/1'
+account0_retained=true
+account1_added=true
+accounts_distinct=true
+app_process_restart_persistence=true
+
+PancakeSwap V3 Solana CLMM
+case=open-position/add-liquidity
+scope_note=this is adding/opening a concentrated-liquidity position in an existing pool; it is not creation of a new on-chain pool
+fixture_source=@pancakeswap/solana-core-sdk 0.2.1 cache already adopted by project provenance
+review_reached=true
+review_marker=Solana custom program review required
+requestId=aaaaaaaabbbb4ccc8dddeeeeeeeeeeee requestId_match=true siglen=64 ed25519=true msgsha=ccd461d835e0cc7026610fb395f130638e40366add41845f9c6441f5f6a05ee4
+signed=true
+
+Stake
+case=StakeProgram.Delegate synthetic offline
+review_reached=true
+review_display=generic Solana FROM/TO summary; fixture bytes are mechanically StakeProgram.Delegate
+requestId=44444444555546668777888888888888 requestId_match=true siglen=64 ed25519=true msgsha=8b9d59667c3583b05b2d00cd5c7ed36d8c7da5ef7802bd6cba3dacd863afee8a
+signed=true
+
+Intermediate automation notes
+- Scanner callback initialization was asynchronous; retry after callback registration succeeded without product change.
+- Pancake signing reached interaction-selection-settings on first use; selecting QR_CODE then CONTINUE produced the expected sol-signature.
+- A direct location assignment during one persistence probe invalidated Angular view state; repeating via actual UI navigation proved both accounts persisted. This was an automation artifact, not a product failure.
+
+transactions_signed=2/2
+wallet_addition_pass=true
+pancake_open_position_signature_pass=true
+stake_delegate_signature_pass=true
+R03_WALLET_POOL_STAKE_PASS

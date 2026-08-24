@@ -28,13 +28,13 @@
 - GitHub Release `https://github.com/debianlima/airgap-vault-kaizou/releases/tag/airgap-vault-kaizou-1.1.2` foi criada com APK e arquivo `.sha256`.
 - O APK publicado foi baixado novamente via GitHub API autenticada; tamanho `85663983` bytes e SHA-256 remoto/local/esperado são idênticos: `6885cc59cc9f0050bb0e2614ac4a0a4c165aa0011f086e3e8b68881dd3742a45`.
 
-- R03 declarado: homologar pós-release no APK publicado 1.1.2 a adição de segunda conta Solana, PancakeSwap V3 CLMM open-position/add-liquidity e StakeProgram.Delegate, com requestId+64 bytes+Ed25519 e `broadcast=false`.
+- R03 homologado no APK publicado 1.1.2: segunda conta Solana adicionada e persistente; PancakeSwap V3 CLMM open-position/add-liquidity e StakeProgram.Delegate foram assinados 2/2 com requestId correto, 64 bytes e Ed25519 válido; `broadcast=false`.
 
 ## Pendências técnicas não humanas
-- Nenhuma para a release `1.1.2`.
+- Nenhuma para a release `1.1.2` e para a homologação pós-release R03.
 
 ## Trabalho compartilhado
-- ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; R03 liberada após aceite.
 
 ## Competências ativas nesta unidade
 - `desenvolvedor-de-software` v11 — fechamento e entrega.

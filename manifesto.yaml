@@ -395,23 +395,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: R03
-  descricao: homologar pós-release adição de conta, Pancake CLMM open-position/add-liquidity
-    e stake delegate no APK publicado 1.1.2
-  agente: terminal-oracle
-  atualizado_em: '2026-08-24T10:37:47-03:00'
-  previsao_inicio: '2026-08-24T10:37:47-03:00'
-  previsao_termino: '2026-08-24T12:37:47-03:00'
-  competencias:
-  - airgap-wallet-engineering-skill
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - logs/R03-2026-08-24-wallet-pool-stake-homologation.log
-  - docs/airgap-vault-kaizou-*.mmd
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8016,7 +8000,7 @@ entradas:
   aceite: test -s logs/R03-2026-08-24-wallet-pool-stake-homologation.log && grep -q
     'R03_WALLET_POOL_STAKE_PASS' logs/R03-2026-08-24-wallet-pool-stake-homologation.log
     && grep -q 'broadcast=false' logs/R03-2026-08-24-wallet-pool-stake-homologation.log
-  status: em_curso
+  status: aceito
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação
