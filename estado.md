@@ -53,6 +53,7 @@
 - `sincronizacao`: catálogo `offline-transport` 0.1.1 divergia do canônico 0.1.2; catálogo foi corrigido e `REFERENCE_AUDIT=PASS`.
 
 ## Divergências da última reconciliação
+- reconciliada em R04: `origin/master` continha duas edições manuais de README (`697ae743`, `ea006078`); foi preservado o título 1.1.2 e o newline final, enquanto `1.1.3`/remoção do método foram superados pela decisão explícita posterior do operador para a documentação experimental 1.1.2.
 - corrigidas: versão da skill/catálogo, critérios 802/933, release contract U26, propósito do build 0.1.6, índice `offline-transport` 0.1.2 e estado pós-publicação.
 - pendentes de autorização: nenhuma.
 
