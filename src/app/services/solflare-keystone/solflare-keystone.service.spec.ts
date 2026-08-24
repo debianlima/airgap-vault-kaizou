@@ -241,7 +241,7 @@ describe('SolflareKeystoneService', () => {
       path,
       fingerprint,
       SignType.Message,
-      `${idPrefix}0e8400-e29b-41d4-a716-446655440000`
+      `${idPrefix.repeat(8)}-e29b-41d4-a716-446655440000`
     )
     const stale = [1, 2, 3, 4, 5].map((fill, index) => makeRequest(fill, String(index + 1)).toUREncoder(80).encodeWhole())
     const targetMessage = Buffer.concat([Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), signer, Buffer.alloc(32, 9), Buffer.from([0, 0])])
