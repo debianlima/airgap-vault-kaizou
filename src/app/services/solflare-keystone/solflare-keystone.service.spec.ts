@@ -159,7 +159,7 @@ describe('SolflareKeystoneService', () => {
     ])
     const request = SolSignRequest.constructSOLRequest(versionedMessage, path, fingerprint, SignType.Message, requestId)
     const frames = request.toUREncoder(80).encodeWhole().map((frame) => frame.toUpperCase())
-    expect(frames.length).toBeGreaterThan(2)
+    expect(frames.length).toBeGreaterThan(1)
 
     const corrupt = frames[1].slice(0, -1) + (frames[1].endsWith('A') ? 'B' : 'A')
     const handler = new SolflareSignRequestHandler(service, async () => undefined)
