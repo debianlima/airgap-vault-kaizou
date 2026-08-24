@@ -24,8 +24,6 @@ A integração Kaizou continua deliberadamente restrita a Solana. Bitcoin, Ether
 
 As **modificações Kaizou deste fork** foram desenvolvidas de forma colaborativa pelo administrador humano do projeto com apoio de um **agente de IA ChatGPT**. Essa atribuição se refere às alterações do fork Kaizou; não atribui ao ChatGPT a autoria do AirGap Vault original nem implica participação ou endosso dos mantenedores upstream.
 
-O trabalho foi conduzido por um **método de manutenção orientado por manifesto, contrato, portões mecânicos e reconciliação**. A avaliação do agente de IA não substitui testes, builds, verificadores, validação criptográfica nem homologação de runtime.
-
 ## Homologação da linha 1.1.1
 
 A homologação exige módulo estático `0.1.5` assinado, regressão completa de stake, classificação offline de liquidity pool suportado pela matriz Keystone, produção de `sol-signature` com requestId preservado, verificação Ed25519, build Android e gate de isolamento que mantém os protocolos não-Solana nos caminhos existentes.
