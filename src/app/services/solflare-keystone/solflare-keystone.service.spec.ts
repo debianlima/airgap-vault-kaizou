@@ -177,6 +177,85 @@ describe('SolflareKeystoneService', () => {
     expect(serialized.subarray(129).equals(versionedMessage)).toBeTrue()
   })
 
+  it('normalizes harmless whitespace and case before decoding Solflare fountain frames', async () => {
+    const message = Buffer.concat([
+      Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), Buffer.from(publicKeyHex, 'hex'), Buffer.alloc(32, 9), Buffer.from([0, 0])
+    ])
+    const request = SolSignRequest.constructSOLRequest(message, path, fingerprint, SignType.Message, requestId)
+    const frames = request.toUREncoder(80).encodeWhole()
+    expect(frames.length).toBeGreaterThan(1)
+
+    const handler = new SolflareSignRequestHandler(service, async () => undefined)
+    let status = IACHandlerStatus.PARTIAL
+    for (const frame of frames) {
+      status = await handler.receive(` \n${frame.toUpperCase()}\t `)
+    }
+    expect(status).toBe(IACHandlerStatus.SUCCESS)
+    const handled = await handler.getResult()
+    expect(Buffer.from((handled?.result[0].payload as any).transaction.transaction, 'base64').subarray(65).equals(message)).toBeTrue()
+  })
+
+  it('isolates a stale partial request so a later valid request can complete', async () => {
+    const signer = Buffer.from(publicKeyHex, 'hex')
+    const targetMessage = Buffer.concat([Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), signer, Buffer.alloc(32, 9), Buffer.from([0, 0])])
+    const staleMessage = Buffer.concat([Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), signer, Buffer.alloc(32, 8), Buffer.from([0, 0])])
+    const target = SolSignRequest.constructSOLRequest(targetMessage, path, fingerprint, SignType.Message, requestId)
+    const stale = SolSignRequest.constructSOLRequest(staleMessage, path, fingerprint, SignType.Message, '650e8400-e29b-41d4-a716-446655440000')
+    const targetFrames = target.toUREncoder(80).encodeWhole()
+    const staleFrames = stale.toUREncoder(80).encodeWhole()
+    expect(targetFrames.length).toBeGreaterThan(1)
+    expect(staleFrames.length).toBeGreaterThan(1)
+
+    const handler = new SolflareSignRequestHandler(service, async () => undefined)
+    expect(await handler.receive(staleFrames[0])).toBe(IACHandlerStatus.PARTIAL)
+    let status = IACHandlerStatus.PARTIAL
+    for (const frame of targetFrames) status = await handler.receive(frame)
+    for (let i = 0; i < 5 && status !== IACHandlerStatus.SUCCESS; i++) status = await handler.receive(targetFrames[i % targetFrames.length])
+    expect(status).toBe(IACHandlerStatus.SUCCESS)
+    const handled = await handler.getResult()
+    expect(Buffer.from((handled?.result[0].payload as any).transaction.transaction, 'base64').subarray(65).equals(targetMessage)).toBeTrue()
+  })
+
+  it('keeps two independently complete interleaved requests ambiguous instead of auto-selecting one', async () => {
+    const signer = Buffer.from(publicKeyHex, 'hex')
+    const messageA = Buffer.concat([Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), signer, Buffer.alloc(32, 9), Buffer.from([0, 0])])
+    const messageB = Buffer.concat([Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), signer, Buffer.alloc(32, 8), Buffer.from([0, 0])])
+    const requestA = SolSignRequest.constructSOLRequest(messageA, path, fingerprint, SignType.Message, requestId)
+    const requestB = SolSignRequest.constructSOLRequest(messageB, path, fingerprint, SignType.Message, '750e8400-e29b-41d4-a716-446655440000')
+    const a = requestA.toUREncoder(80).encodeWhole()
+    const b = requestB.toUREncoder(80).encodeWhole()
+    const handler = new SolflareSignRequestHandler(service, async () => undefined)
+    let status = IACHandlerStatus.PARTIAL
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+      if (i < a.length) status = await handler.receive(a[i])
+      if (i < b.length) status = await handler.receive(b[i])
+    }
+    expect(status).toBe(IACHandlerStatus.PARTIAL)
+    expect(await handler.getResult()).toBeUndefined()
+  })
+
+  it('bounds stale concurrent Solflare streams and still completes the newest valid request', async () => {
+    const signer = Buffer.from(publicKeyHex, 'hex')
+    const makeRequest = (fill: number, idPrefix: string) => SolSignRequest.constructSOLRequest(
+      Buffer.concat([Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), signer, Buffer.alloc(32, fill), Buffer.from([0, 0])]),
+      path,
+      fingerprint,
+      SignType.Message,
+      `${idPrefix}0e8400-e29b-41d4-a716-446655440000`
+    )
+    const stale = [1, 2, 3, 4, 5].map((fill, index) => makeRequest(fill, String(index + 1)).toUREncoder(80).encodeWhole())
+    const targetMessage = Buffer.concat([Buffer.from([0x80, 1, 0, 0]), Buffer.from([1]), signer, Buffer.alloc(32, 9), Buffer.from([0, 0])])
+    const targetFrames = SolSignRequest.constructSOLRequest(targetMessage, path, fingerprint, SignType.Message, requestId).toUREncoder(80).encodeWhole()
+    const handler = new SolflareSignRequestHandler(service, async () => undefined)
+    for (const frames of stale) expect(await handler.receive(frames[0])).toBe(IACHandlerStatus.PARTIAL)
+    let status = IACHandlerStatus.PARTIAL
+    for (const frame of targetFrames) status = await handler.receive(frame)
+    for (let i = 0; i < 8 && status !== IACHandlerStatus.SUCCESS; i++) status = await handler.receive(targetFrames[i % targetFrames.length])
+    expect(status).toBe(IACHandlerStatus.SUCCESS)
+    const handled = await handler.getResult()
+    expect(Buffer.from((handled?.result[0].payload as any).transaction.transaction, 'base64').subarray(65).equals(targetMessage)).toBeTrue()
+  })
+
   it('extracts the signature matching the required signer and encodes sol-signature with the same requestId', () => {
     const secondSignerHex = 'ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7'
     const keys = Buffer.concat([Buffer.from(publicKeyHex, 'hex'), Buffer.from(secondSignerHex, 'hex')])

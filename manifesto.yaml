@@ -1,6 +1,23 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 23
+versao_contrato: 24
 historico_emendas:
+- versao: 24
+  data: '2026-08-24'
+  origem: U23 homologou em simulação um coletor multipart resiliente; usuário autorizou
+    implementação no runtime, testes, homologação e atualização da skill
+  alteracoes:
+  - SolflareSignRequestHandler deve normalizar trim/case sem alterar payload semântico
+  - frames multipart devem ser roteados por fingerprint Fountain type+seqLen+messageLen+checksum
+    para decoders independentes
+  - checksum/truncamento/sequence mismatch são PARTIAL retryable e não contaminam
+    streams válidos
+  - frames duplicados são deduplicados por stream; no máximo 4 streams ativos com
+    expiração de incompletos e eviction do mais antigo
+  - um request completo só é emitido se não houver outro stream completo e nenhum
+    stream concorrente observado na janela de settle; dois completos concorrentes
+    permanecem PARTIAL/ambiguous até reset/session boundary
+  - RED de runtime deve cobrir whitespace/case, stale foreign stream, interleaving
+    de dois requests completos e limite de streams antes da implementação
 - versao: 23
   data: '2026-08-24'
   origem: usuário pediu simular uma sequência de coleta QR mais resiliente usando
@@ -319,7 +336,22 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
+  unidade: U25
+  descricao: implementar coletor Solflare multipart resiliente homologado na U23 e
+    homologar APK/runtime
+  agente: terminal-oracle
+  atualizado_em: '2026-08-24T05:57:42-03:00'
+  previsao_termino: '2026-08-24T07:57:42-03:00'
+  zona_exclusao:
+  - manifesto.yaml
+  - estado.md
+  - src/app/services/solflare-keystone/solflare-keystone.service.ts
+  - src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  - scripts/airgap-vault-kaizou-karma-gate.js
+  - docs/airgap-vault-kaizou-*.mmd
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -6746,17 +6778,18 @@ entradas:
   status: aceito
 - id: 801
   caminho: src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  proposito: provar roundtrip Keystone/Solflare, QR fountain multipart, SignType.Message
-    e SignType.Transaction, e signData mensagem/transação completa
+  proposito: provar roundtrip Keystone/Solflare, QR fountain multipart, SignType.Message/Transaction,
+    tolerância a corrupção, normalização de captura e isolamento/bound de streams
+    concorrentes
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 6 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 10 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: em_curso
 - id: 802
   caminho: src/app/services/solflare-keystone/solflare-keystone.service.ts
-  proposito: codificar crypto-multi-accounts, acumular sol-sign-request multipart,
-    aceitar SignType.Message/Transaction, normalizar signData mensagem/transação completa
+  proposito: codificar crypto-multi-accounts, coletar sol-sign-request multipart com
+    isolamento por fingerprint Fountain, dedupe/bounds, aceitar SignType.Message/Transaction
     e codificar sol-signature
   tipo: backend-integracao
   consome: []
@@ -7821,7 +7854,7 @@ entradas:
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 6 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 10 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: em_curso
 - id: 935
   caminho: contratos/airgap-vault-kaizou-v6-readme.md

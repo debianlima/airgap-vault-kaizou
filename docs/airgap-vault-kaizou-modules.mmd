@@ -1255,8 +1255,8 @@ graph TD
     E800["share-url.service.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
   end
   subgraph src_app_services_solflare_keystone["src/app/services/solflare-keystone"]
-    E801["solflare-keystone.service.spec.ts<br/>provar roundtrip Keystone/Solflare, QR fountain multipart, SignType.Message e SignType.Transaction, e signData mensagem/transação completa"]
-    E802["solflare-keystone.service.ts<br/>codificar crypto-multi-accounts, acumular sol-sign-request multipart, aceitar SignType.Message/Transaction, normalizar signData mensagem/transação completa e codificar sol-signature"]
+    E801["solflare-keystone.service.spec.ts<br/>provar roundtrip Keystone/Solflare, QR fountain multipart, SignType.Message/Transaction, tolerância a corrupção, normalização de captura e isolamento/bound de streams concorrentes"]
+    E802["solflare-keystone.service.ts<br/>codificar crypto-multi-accounts, coletar sol-sign-request multipart com isolamento por fingerprint Fountain, dedupe/bounds, aceitar SignType.Message/Transaction e codificar sol-signature"]
   end
   subgraph src_app_services_startup_checks["src/app/services/startup-checks"]
     E803["startup-checks.service.spec.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
