@@ -34,6 +34,9 @@
 - U17 GREEN de software: `IACService.findMatchingWallet` agora preserva `wallet`/`secret` indefinidos sem desreferenciar `correctWallet`; gates IAC 3/3, account-share 3/3, interaction 1/1, Solflare 5/5, nonregression e estrutura passaram.
 
 - U18 — matriz adversarial source-to-wire: contrato fixou >=30 cenários, 6 execuções por cenário (1 aquecimento descartado + 5 medições), 100% de invariantes e mediana+MAD; fontes externas viram apenas formas de falha, nunca transações privadas copiadas.
+- U18 preflight: primeira invocação abortou antes do caso 1 porque o harness tentou resolver `@solana/web3.js` no `node_modules` do host Kaizou; o projeto não declara essa dependência. Correção do harness: carregar a versão 1.98.4 pertencente ao source/bundle exato do `airgap-solana-module` 0.1.5. A tentativa não conta como medição.
+
+- U18 medição RED: 47 cenários × 6 execuções (1 aquecimento + 5 medidas); 41 PASS, 6 FAIL, `semantic_pass_rate=0.8723404255`, mediana de latência por caso 18.1235 ms e MAD 4.3179 ms. Três ALT usavam programa custom desconhecido e esperavam classificação errada (`generic-solana` é o comportamento contratual), um caso de pressão de contas excedeu o limite de serialização antes do signer, e a corrupção do signature-count rejeitou com erro estável diferente do regex. O defeito de produto candidato é um payload truncado não canônico que `VersionedTransaction.deserialize` aceita e reserializa com bytes diferentes; o módulo 0.1.5 também o assina. Sweep confirmou cortes de 1 e 17 bytes aceitos/reconstruídos, enquanto outros cortes rejeitam.
 
 ## Pendências técnicas não humanas
 - U17 software GREEN; executar portões globais, reconstruir APK final e repetir homologação Android integral antes do fechamento/release.
