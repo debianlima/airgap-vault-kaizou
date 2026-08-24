@@ -1,6 +1,20 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 21
+versao_contrato: 22
 historico_emendas:
+- versao: 22
+  data: '2026-08-24'
+  origem: replay fresco da captura real Solflare no APK U21 mostrou simultaneamente
+    `No account found` e alerta genérico `Incompatible code`; log STORE_RESULT revelou
+    um fragmento fountain com checksum inválido retornando IACHandlerStatus.UNSUPPORTED
+    antes de fragmentos seguintes completarem o mesmo request
+  alteracoes:
+  - fragmento reconhecido pelo prefixo ur:sol-sign-request que falha checksum/decodificação
+    fountain durante request multipart deve ser tratado como PARTIAL/retry, não UNSUPPORTED
+  - um frame corrompido não pode abrir alerta genérico se frames válidos posteriores
+    completam o mesmo request
+  - teste sintético deve corromper um frame de request multipart sem copiar dados
+    reais do usuário e provar recuperação completa
+  - gate Solflare sobe de 5 para 6 specs
 - versao: 21
   data: '2026-08-24'
   origem: airgap-solana-module v0.1.6 foi publicado e a matriz adversarial voltou
@@ -287,20 +301,18 @@ historico_emendas:
 trabalho_compartilhado:
   projeto: airgap-vault-kaizou
   caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: U21
-  descricao: portões finais, APK com módulo 0.1.6, homologação Android e publicação
-    1.1.2
+  unidade: U22
+  descricao: tolerar frame fountain Solflare corrompido sem classificar request válido
+    como Incompatible code
   agente: terminal-oracle
-  atualizado_em: '2026-08-24T03:01:26-03:00'
-  previsao_termino: '2026-08-24T05:01:26-03:00'
+  atualizado_em: '2026-08-24T04:26:40-03:00'
+  previsao_termino: '2026-08-24T06:26:40-03:00'
   zona_exclusao:
-  - README.md
   - manifesto.yaml
-  - competencias.yaml
   - estado.md
-  - contratos/airgap-vault-kaizou-solana-release.schema.json
-  - scripts/airgap-vault-kaizou-*.js
-  - logs/U18-2026-08-24-solana-signing-simulation.log
+  - src/app/services/solflare-keystone/solflare-keystone.service.ts
+  - src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  - scripts/airgap-vault-kaizou-karma-gate.js
   - docs/airgap-vault-kaizou-*.mmd
 entradas:
 - id: 1
@@ -6733,7 +6745,7 @@ entradas:
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 5 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 6 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: em_curso
 - id: 802
   caminho: src/app/services/solflare-keystone/solflare-keystone.service.ts
@@ -7803,7 +7815,7 @@ entradas:
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 5 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 6 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: em_curso
 - id: 935
   caminho: contratos/airgap-vault-kaizou-v6-readme.md

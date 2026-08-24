@@ -145,6 +145,38 @@ describe('SolflareKeystoneService', () => {
     expect(serialized.subarray(129).equals(versionedMessage)).toBeTrue()
   })
 
+  it('ignores a corrupted multipart fountain frame and completes from later valid Solflare frames', async () => {
+    const signer = Buffer.from(publicKeyHex, 'hex')
+    const secondSigner = Buffer.alloc(32, 0x22)
+    const blockhash = Buffer.alloc(32, 9)
+    const versionedMessage = Buffer.concat([
+      Buffer.from([0x80, 2, 0, 0]),
+      Buffer.from([2]),
+      signer,
+      secondSigner,
+      blockhash,
+      Buffer.from([0, 0])
+    ])
+    const request = SolSignRequest.constructSOLRequest(versionedMessage, path, fingerprint, SignType.Message, requestId)
+    const frames = request.toUREncoder(80).encodeWhole().map((frame) => frame.toUpperCase())
+    expect(frames.length).toBeGreaterThan(2)
+
+    const corrupt = frames[1].slice(0, -1) + (frames[1].endsWith('A') ? 'B' : 'A')
+    const handler = new SolflareSignRequestHandler(service, async () => undefined)
+    expect(await handler.receive(frames[0])).toBe(IACHandlerStatus.PARTIAL)
+    expect(await handler.receive(corrupt)).toBe(IACHandlerStatus.PARTIAL)
+
+    let status: IACHandlerStatus = IACHandlerStatus.PARTIAL
+    for (const frame of frames.slice(1)) {
+      status = await handler.receive(frame)
+      if (status === IACHandlerStatus.SUCCESS) break
+    }
+    expect(status).toBe(IACHandlerStatus.SUCCESS)
+    const handled = await handler.getResult()
+    const serialized = Buffer.from((handled?.result[0].payload as any).transaction.transaction, 'base64')
+    expect(serialized.subarray(129).equals(versionedMessage)).toBeTrue()
+  })
+
   it('extracts the signature matching the required signer and encodes sol-signature with the same requestId', () => {
     const secondSignerHex = 'ad8f57924dce62f9040f93b4f6ce3c3d39afde7e29bcb4013dad59db7913c4c7'
     const keys = Buffer.concat([Buffer.from(publicKeyHex, 'hex'), Buffer.from(secondSignerHex, 'hex')])

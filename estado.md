@@ -1,4 +1,4 @@
-# Estado — 2026-08-24 — contrato v21
+# Estado — 2026-08-24 — contrato v22
 
 ## Decisões vigentes
 - AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.6` passa a ser o módulo integrado após U18 encontrar e corrigir canonicalidade no signer.
@@ -44,6 +44,8 @@
 
 - U20 final: matriz adversarial no `airgap-solana-module 0.1.6` fechou 47/47 PASS, 6 execuções por cenário (1 aquecimento + 5 medidas), `semantic_pass_rate=1.0`, mediana 19.983 ms e MAD 3.7831 ms; 9 rejeições adversariais esperadas passaram e não houve mutação/aceite/rejeição inesperados.
 - `airgap-solana-module v0.1.6` publicado; ZIP remoto verificado byte-idêntico ao local, SHA-256 `2515d1536938d7aca2709a63b9264e2439438cf441b4d45abe34acd6e1185150`.
+
+- U22 RED definido: um fragmento `ur:sol-sign-request` com checksum inválido no meio de um fountain multipart deve ser ignorado como `PARTIAL`; frames válidos posteriores precisam completar o request sem alerta genérico `Incompatible code`.
 
 ## Pendências técnicas não humanas
 - U21: executar portões globais no módulo 0.1.6, reconstruir APK final, homologar Android integralmente e publicar 1.1.2.
