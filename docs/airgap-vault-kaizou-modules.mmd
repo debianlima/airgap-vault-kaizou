@@ -1089,8 +1089,8 @@ graph TD
     E700["tab-scan.module.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
     E701["tab-scan.page.html<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
     E702["tab-scan.page.scss<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
-    E703["tab-scan.page.spec.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
-    E704["tab-scan.page.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
+    E703["tab-scan.page.spec.ts<br/>provar que TabScanPage preserva cache visual de partes mas encaminha leituras QR duplicadas ao IACService para dedupe/settle stream-aware do coletor Solflare"]
+    E704["tab-scan.page.ts<br/>integrar scanner físico com coletor multipart stream-aware; duplicata não aumenta partes visuais mas continua sendo entregue ao IACService enquanto o handler decide PARTIAL/SUCCESS"]
   end
   subgraph src_app_pages_tab_secrets["src/app/pages/tab-secrets"]
     E709["tab-secrets-routing.module.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]

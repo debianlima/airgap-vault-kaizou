@@ -1,6 +1,21 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 24
+versao_contrato: 25
 historico_emendas:
+- versao: 25
+  data: '2026-08-24'
+  origem: homologação Android U25 reproduziu stale partial + target completo ficando
+    preso em 100%; TabScanPage descarta duplicatas antes do handler e portanto impede
+    o settle por eventos que o coletor resiliente usa
+  alteracoes:
+  - promover tab-scan page/spec de upstream preservado para adaptação deliberada de
+    integração Solflare
+  - frame QR duplicado continua não aumentando o cache visual de partes, mas deve
+    alcançar IACService enquanto o request está PARTIAL para o handler fazer dedupe/settle
+    por stream
+  - RED de integração deve provar que duas leituras idênticas são encaminhadas ao
+    IACService; produto só muda depois do RED commitado
+  - homologação Android deve repetir normalize+corrupt, stale+target, 5 stale+target
+    e dois completos interleaved no APK reconstruído
 - versao: 24
   data: '2026-08-24'
   origem: U23 homologou em simulação um coletor multipart resiliente; usuário autorizou
@@ -339,18 +354,17 @@ historico_emendas:
 trabalho_compartilhado:
   projeto: airgap-vault-kaizou
   caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: U25
-  descricao: implementar coletor Solflare multipart resiliente homologado na U23 e
-    homologar APK/runtime
+  unidade: U26
+  descricao: corrigir integração scanner->coletor para duplicatas chegarem ao settle
+    stream-aware e homologar Android
   agente: terminal-oracle
-  atualizado_em: '2026-08-24T05:57:42-03:00'
-  previsao_termino: '2026-08-24T07:57:42-03:00'
+  atualizado_em: '2026-08-24T06:26:08-03:00'
+  previsao_termino: '2026-08-24T08:26:08-03:00'
   zona_exclusao:
   - manifesto.yaml
   - estado.md
-  - src/app/services/solflare-keystone/solflare-keystone.service.ts
-  - src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  - scripts/airgap-vault-kaizou-karma-gate.js
+  - src/app/pages/tab-scan/tab-scan.page.ts
+  - src/app/pages/tab-scan/tab-scan.page.spec.ts
   - docs/airgap-vault-kaizou-*.mmd
 entradas:
 - id: 1
@@ -5986,20 +6000,24 @@ entradas:
   status: aceito
 - id: 703
   caminho: src/app/pages/tab-scan/tab-scan.page.spec.ts
-  proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
-  tipo: nao-classificado
+  proposito: provar que TabScanPage preserva cache visual de partes mas encaminha
+    leituras QR duplicadas ao IACService para dedupe/settle stream-aware do coletor
+    Solflare
+  tipo: teste-integracao
   consome: []
   produz: null
-  aceite: git diff --quiet v3.34.4 -- src/app/pages/tab-scan/tab-scan.page.spec.ts
-  status: aceito
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 1 --include src/app/pages/tab-scan/tab-scan.page.spec.ts
+  status: em_curso
 - id: 704
   caminho: src/app/pages/tab-scan/tab-scan.page.ts
-  proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
-  tipo: nao-classificado
+  proposito: integrar scanner físico com coletor multipart stream-aware; duplicata
+    não aumenta partes visuais mas continua sendo entregue ao IACService enquanto
+    o handler decide PARTIAL/SUCCESS
+  tipo: integracao-qr
   consome: []
   produz: null
-  aceite: git diff --quiet v3.34.4 -- src/app/pages/tab-scan/tab-scan.page.ts
-  status: aceito
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 1 --include src/app/pages/tab-scan/tab-scan.page.spec.ts
+  status: em_curso
 - id: 705
   caminho: src/app/pages/tab-secrets/tab-secret-popover/tab-secret-popover.component.html
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap

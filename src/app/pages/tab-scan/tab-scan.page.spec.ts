@@ -1,28 +1,32 @@
-/*
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'
-import { async, ComponentFixture, TestBed } from '@angular/core/testing'
+import { IACHandlerStatus } from '@airgap/angular-core'
 
 import { TabScanPage } from './tab-scan.page'
 
-describe('TabScanPage', () => {
-  let component: TabScanPage
-  let fixture: ComponentFixture<TabScanPage>
+describe('TabScanPage resilient QR forwarding', () => {
+  it('forwards a duplicate QR reading to IACService while keeping the visual part cache deduplicated', () => {
+    const scanner = { scan: jasmine.createSpy('scan'), destroy: jasmine.createSpy('destroy') }
+    const platform = { is: () => true, ready: async () => undefined }
+    const permissionsProvider = {}
+    const securityUtils = {}
+    const iacService = {
+      resetHandlers: jasmine.createSpy('resetHandlers'),
+      handleRequest: jasmine.createSpy('handleRequest').and.returnValue(Promise.resolve(IACHandlerStatus.PARTIAL))
+    }
+    const ngZone = { run: (fn: () => void) => fn() }
+    const component = new TabScanPage(
+      platform as any,
+      scanner as any,
+      permissionsProvider as any,
+      securityUtils as any,
+      iacService as any,
+      ngZone as any
+    )
+    const frame = 'ur:sol-sign-request/1-2/lpadsynthetic'
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [TabScanPage],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents()
-  }))
+    component.checkScan(frame)
+    component.checkScan(frame)
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TabScanPage)
-    component = fixture.componentInstance
-    fixture.detectChanges()
-  })
-
-  it('should create', () => {
-    expect(component).toBeTruthy()
+    expect(iacService.handleRequest).toHaveBeenCalledTimes(2)
+    expect((component as any).parts.size).toBe(1)
   })
 })
-*/
