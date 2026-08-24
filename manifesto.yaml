@@ -1,6 +1,14 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 15
+versao_contrato: 16
 historico_emendas:
+- versao: 16
+  data: '2026-08-23'
+  origem: usuário determinou preservar nas skills de engenharia AirGap o método source-to-wire que levou à correção da assinatura e recarregá-lo antes de fechar a release Kaizou 1.1.2
+  alteracoes:
+  - recarregar `airgap-wallet-engineering-skill` de 0.2.0 para 0.2.2; 0.2.2 inclui o aprendizado homologado de assinatura U15 e o procedimento source-to-wire produtor->wallet->captura->verificador
+  - manter `protocol-research`, `external-wallet-interoperability` e `cryptographic-boundaries` ativas quando a forma de assinatura depender de dApp/programa externo
+  - registrar que a homologação controlada Android já provou sol-signature/requestId/Ed25519, stake, TokenSwapV3 e cold restart; permanece pendente somente o replay do QR real do usuário e os portões finais de release
+  - nenhum comportamento funcional do produto muda nesta emenda; trata-se de recarga de competência e reconciliação do snapshot
 - versao: 15
   data: '2026-08-23'
   origem: pesquisa solicitada pelo usuário sobre PancakeSwap V3/Solana e Solflare confirmou que o fluxo de carteira é transacional e que a assinatura de transação Solana é uma assinatura destacada dos bytes da mensagem; `SignType.Message` precisa preservar essa semântica em vez de depender de heurística do payload
@@ -1103,7 +1111,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-generate-diagrams.py --check
-  status: aceito
+  status: em_curso
 - id: 123
   caminho: docs/airgap-vault-kaizou-concurrency.mmd
   proposito: diagrama Mermaid derivado do manifesto
@@ -1111,7 +1119,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-generate-diagrams.py --check
-  status: aceito
+  status: em_curso
 - id: 124
   caminho: docs/airgap-vault-kaizou-dependencies.mmd
   proposito: diagrama Mermaid derivado do manifesto
@@ -1119,7 +1127,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-generate-diagrams.py --check
-  status: aceito
+  status: em_curso
 - id: 125
   caminho: docs/airgap-vault-kaizou-flow.mmd
   proposito: diagrama Mermaid derivado do manifesto
@@ -1127,7 +1135,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-generate-diagrams.py --check
-  status: aceito
+  status: em_curso
 - id: 126
   caminho: docs/airgap-vault-kaizou-modules.mmd
   proposito: diagrama Mermaid derivado do manifesto
@@ -1135,7 +1143,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-generate-diagrams.py --check
-  status: aceito
+  status: em_curso
 - id: 127
   caminho: docs/airgap-vault-kaizou-progress.mmd
   proposito: diagrama Mermaid derivado do manifesto

@@ -1,17 +1,17 @@
-# Estado — 2026-08-23 — contrato v15
+# Estado — 2026-08-23 — contrato v16
 
 ## Decisões vigentes
 - AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.5` permanece o módulo integrado e não muda nesta unidade.
 - O QR real do usuário é `sol-sign-request` fountain/multipart com `SignType.Message`; o handler deve aceitar `SignType.Message` e `SignType.Transaction` e preservar corretamente mensagem ou transação serializada completa.
 - Stake e protocolos não-Solana permanecem semanticamente inalterados.
-- `airgap-wallet-engineering-skill` foi recarregada para a versão de trabalho 0.2.0 antes da continuação do gate Android.
+- `airgap-wallet-engineering-skill` foi recarregada para a versão de trabalho 0.2.2 antes do fechamento da homologação; 0.2.2 inclui o método source-to-wire e os aprendizados de assinatura homologados em U15.
 - `android-container-avd-lab` atua somente na montagem/reparo do laboratório; `android-airgap-runtime` continua responsável pela homologação do APK.
 
 ## Decisões superadas
 - Kaizou 1.1.1 como linha de desenvolvimento corrente — permanece release publicada, substituída por 1.1.2 para a correção do host.
 - Hipótese de que todo pedido real Solflare chega como `SignType.Transaction` — superada pelo vídeo real do usuário: o payload reconstrói como `SignType.Message` (valor 2).
 - Hipótese de que todo `SignType.Transaction` recebido do Solflare contém somente bytes de mensagem — superada pelo comportamento do firmware Keystone e do wallet-adapter Keystone.
-- `airgap-wallet-engineering-skill` v0.1.1 como versão ativa desta unidade — superada por 0.2.0 após criação da subskill de laboratório Android.
+- `airgap-wallet-engineering-skill` v0.1.1 como versão ativa — superada por 0.2.0 após criação da subskill de laboratório Android; 0.2.0 foi superada por 0.2.2 após homologação U15 e formalização source-to-wire.
 
 ## Decisões humanas pendentes
 - Nenhuma.
@@ -27,10 +27,12 @@
 - U15: evidência pública Solflare/Solana + caso PancakeSwap V3 fixa `SignType.Message` como mensagem transacional Solana, preservada byte-a-byte, com resposta Ed25519 destacada em `sol-signature`; o teste RED deve provar que o `signType` não é descartado.
 - U15 RED confirmado: o gate dedicado falhou em compilação porque `SolflareDecodedSignRequest` não expunha `signType`; o contrato v15 exige preservar `Transaction=1` e `Message=2` até a conversão para transação local.
 - U15 GREEN de software: `signType` passou a ser preservado no decode; `Message` usa wrapping explícito da mensagem e `Transaction` mantém a detecção de transação completa. Gate dedicado 5/5, agregador 6 grupos, suite 92/92, build, verify-only, nonregression, README, estrutura e diagramas passaram.
+- U15 homologação Android controlada: APK `e66994a8…e61d` clean-installed byte-idêntico; pairing anunciou signer `f036…58f7`; `sol-signature` preservou requestId e passou Ed25519 independente; Stake Deactivate repetiu requestId+Ed25519; TokenSwapV3 retornou `keystone-classified` com `unknownProgramIds: []`; cold restart preservou `Kaizou Test`.
+- U16: `airgap-wallet-engineering-skill` 0.2.2 foi recarregada; `protocol-research` agora exige source-to-wire do produtor até a wallet e concordância com captura real antes de alterar canonicalização/signing.
 
 ## Pendências técnicas não humanas
-- Corrigir sob teste-first o QR de pareamento/extração de resposta para usar a chave Ed25519 do endereço de recebimento e repetir a homologação Android 1.1.2 até `sol-signature` verificável.
-- Repetir stake/cold restart exigidos pelo contrato, fechar as entradas v12 e publicar a release somente após todos os portões passarem.
+- Repassar no APK U15 o QR dinâmico real do usuário como gate de parser/roteamento; a conta/fingerprint do vídeo não pertence à conta de homologação e não será usada como prova de assinatura.
+- Reexecutar os portões finais de release após esse replay, fechar entradas `em_curso` e só então publicar 1.1.2.
 
 ## Trabalho compartilhado
 - ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; nenhuma zona de exclusão ativa.
@@ -39,7 +41,7 @@
 - `keystone-solflare-ur` — contrato real `sol-sign-request`/`sol-signature`, fountain e sign types.
 - `angular-ionic-integration` — caminho IAC do scanner para `deserialized-detail`.
 - `android-vault-runtime` — build/instalação/smoke no Android user/non-root.
-- `skill-projeto` — `airgap-wallet-engineering-skill` v0.2.0; subskill ativa no laboratório: `android-container-avd-lab`.
+- `skill-projeto` — `airgap-wallet-engineering-skill` v0.2.2; signing externo ativa `protocol-research` source-to-wire + `external-wallet-interoperability` + `cryptographic-boundaries`; `android-container-avd-lab` só monta/repara laboratório.
 
 ## Competências instaladas para unidades futuras
 - As competências existentes permanecem; `android-container-avd-lab` está disponível via skill de projeto somente quando a tarefa tocar montagem/reparo de container/AVD.
@@ -50,11 +52,11 @@
 - `deploy-android`: uma retomada encontrou AVD com locks residuais; a nova subskill exige provar ausência de owner antes de limpar lock e iniciar nova instância.
 
 ## Divergências da última reconciliação
-- corrigidas: contrato v12 e `competencias.yaml` agora apontam para `airgap-wallet-engineering-skill` 0.2.0; diagrams regenerados; nenhuma zona de exclusão ativa.
+- corrigidas: contrato v16 e `competencias.yaml` agora apontam para `airgap-wallet-engineering-skill` 0.2.2; source-to-wire recarregado; nenhuma zona de exclusão ativa.
 - pendentes de autorização: nenhuma.
 
 ## Entradas aceitas
 - 921/938 permanecem aceitas; entradas 21, 118, 127, 141, 228, 229, 231, 371, 372, 779, 780, 801, 802, 931, 933, 934 e 936 estão `em_curso` nas U10/U11/U12/U13/U14.
 
 ## Próxima unidade
-- U15 — software GREEN; reconstruir/reinstalar APK e concluir homologação Android com request controlado da conta de teste, stake e cold restart; só depois atualizar skills e publicar 1.1.2.
+- U16 — replay do QR real no APK U15, portões finais, aceite das entradas `em_curso` e publicação da release 1.1.2.
