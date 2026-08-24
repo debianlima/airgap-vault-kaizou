@@ -1,4 +1,4 @@
-# Estado — 2026-08-24 — contrato v28
+# Estado — 2026-08-24 — contrato v29
 
 ## Decisões vigentes
 - AirGap Vault Kaizou `1.1.2` está publicado com `airgap-solana-module 0.1.6` estático e verificado por assinatura/hash antes do build.
@@ -34,11 +34,11 @@
 - Nenhuma para a release `1.1.2` e para a homologação pós-release R03.
 
 ## Trabalho compartilhado
-- ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; R03 liberada após aceite.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — R04 ativa; `README.md`, `manifesto.yaml`, `estado.md`, log R04 e diagramas reservados até o fechamento.
 
 ## Competências ativas nesta unidade
-- `desenvolvedor-de-software` v11 — fechamento e entrega.
-- `github-incremental-reconciliation` v5 — auditoria de referências/GitHub e sincronização incremental.
+- `desenvolvedor-de-software` v14 — busca externa, documentação e entrega.
+- `telemetry-data-visualization` v2 — telemetria mínima da unidade e procedência dos eventos.
 - `airgap-wallet-engineering-skill` 0.2.6 — QR/signing/runtime homologados.
 
 ## Competências instaladas para unidades futuras
@@ -58,4 +58,4 @@
 - 1–942.
 
 ## Próxima unidade
-- Nenhuma obrigatória para `1.1.2`; próxima mudança exige nova entrada/unidade conforme contrato vigente.
+- R04 em curso: transparência experimental no README e divulgação apenas em discussões GitHub diretamente pertinentes e autenticáveis como `debianlima`.

@@ -1,0 +1,14 @@
+R04 README + outreach
+telemetria_inicio=2026-08-24T19:02:43-03:00
+projeto=airgap-vault-kaizou
+unidade=R04
+entrada=21,944
+contrato_versao=29
+cliente_agente=terminal-oracle
+modelo=GPT-5.6 Sol
+maquina_perfil=terminal
+skills_ativas=desenvolvedor-de-software@14,telemetry-data-visualization@2,airgap-wallet-engineering-skill@0.2.6
+plano_competencias_hash=3ca885b0dc11314ca62bc579b71bc84d784810d4beb9612543da17f3e412e214
+tokens=indisponivel
+custo=indisponivel
+origem_coletor=git+relogio+github-api

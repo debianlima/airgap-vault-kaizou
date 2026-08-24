@@ -1,6 +1,23 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 28
+versao_contrato: 29
 historico_emendas:
+- versao: 29
+  data: '2026-08-24'
+  origem: decisão explícita do operador de tornar o README transparente sobre desenvolvimento
+    com agentes de IA, ausência de revisão humana/auditoria e publicar aviso experimental
+    em discussões GitHub relevantes usando a conta debianlima
+  alteracoes:
+  - README passa a declarar que as modificações Kaizou foram produzidas por agentes
+    de IA sob decisões/operação humana e tiveram teste final, sem revisão humana de
+    código nem auditoria de segurança independente
+  - README documenta que as lógicas adicionadas são de integração Solana/Solflare
+    e que simulações de quadros QR/BC-UR foram executadas a pedido do operador para
+    tratar falhas de reconhecimento multipart
+  - README preserva escopo de homologação mecânica, assinatura Ed25519 e ausência
+    de broadcast, sem transformar teste em garantia de segurança
+  - outreach registra somente postagens em superfícies GitHub diretamente autenticáveis
+    pela conta debianlima e pertinentes ao problema; nenhuma postagem é inventada
+    em plataforma sem canal autenticado disponível
 - versao: 28
   data: '2026-08-24'
   origem: decisão explícita do usuário de homologar pós-release a adição de carteira/conta
@@ -395,7 +412,26 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
+  unidade: R04
+  descricao: atualizar README com transparência experimental/IA e divulgar release
+    em issues GitHub pertinentes usando a conta debianlima
+  agente: terminal-oracle
+  atualizado_em: '2026-08-24T19:02:41-03:00'
+  previsao_inicio: '2026-08-24T19:02:41-03:00'
+  previsao_termino: '2026-08-24T20:32:41-03:00'
+  competencias:
+  - desenvolvedor-de-software@14
+  - telemetry-data-visualization@2
+  - airgap-wallet-engineering-skill@0.2.6
+  zona_exclusao:
+  - README.md
+  - manifesto.yaml
+  - estado.md
+  - logs/R04-2026-08-24-readme-outreach.log
+  - docs/airgap-vault-kaizou-*.mmd
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -559,17 +595,20 @@ entradas:
   status: aceito
 - id: 21
   caminho: README.md
-  proposito: documentação principal do AirGap Vault Kaizou 1.1.2 com airgap-solana-module
-    0.1.5, QR dinâmico Solflare, origem upstream e método colaborativo
+  proposito: documentação principal do AirGap Vault Kaizou 1.1.2 com suporte experimental
+    Solana/Solflare, método de desenvolvimento por agentes de IA sob operação humana,
+    escopo de testes, ausência de auditoria humana/independente e aviso explícito
+    de uso por conta e risco
   tipo: nao-classificado
   consome: []
   produz: null
   aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes();
     u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u);
-    t=r.decode(); assert '# AirGap Vault Kaizou 1.1.2' in t; assert 'airgap-solana-module
-    0.1.6' in t; assert 'módulo estático' in t; assert 'airgap-it/airgap-vault' in
-    t; assert 'ChatGPT' in t"
-  status: aceito
+    t=r.decode(); req=['AirGap Vault Kaizou 1.1.2','airgap-solana-module 0.1.6','agentes
+    de IA','sem revisão humana de código','Não houve auditoria de segurança independente','por
+    conta e risco do usuário','requestId','Ed25519','QR/BC-UR','sem broadcast']; assert
+    all(x in t for x in req)"
+  status: em_curso
 - id: 22
   caminho: android/.gitignore
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -8001,6 +8040,18 @@ entradas:
     'R03_WALLET_POOL_STAKE_PASS' logs/R03-2026-08-24-wallet-pool-stake-homologation.log
     && grep -q 'broadcast=false' logs/R03-2026-08-24-wallet-pool-stake-homologation.log
   status: aceito
+- id: 944
+  caminho: logs/R04-2026-08-24-readme-outreach.log
+  proposito: registrar telemetria mínima, identidade GitHub autenticada, alvos avaliados
+    e URLs/IDs das postagens externas da divulgação experimental 1.1.2, sem token/cookie/conteúdo
+    privado
+  tipo: evidencia-teste
+  consome: []
+  produz: null
+  aceite: test -s logs/R04-2026-08-24-readme-outreach.log && grep -q 'github_login=debianlima'
+    logs/R04-2026-08-24-readme-outreach.log && grep -q 'R04_OUTREACH_PASS' logs/R04-2026-08-24-readme-outreach.log
+    && ! grep -Eqi '(authorization:|bearer |password=|token=)' logs/R04-2026-08-24-readme-outreach.log
+  status: em_curso
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação
