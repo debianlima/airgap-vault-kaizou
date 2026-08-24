@@ -1,4 +1,4 @@
-# Estado — 2026-08-24 — contrato v29
+# Estado — 2026-08-24 — contrato v30
 
 ## Decisões vigentes
 - AirGap Vault Kaizou `1.1.2` está publicado com `airgap-solana-module 0.1.6` estático e verificado por assinatura/hash antes do build.
@@ -30,7 +30,7 @@
 
 - R03 homologado no APK publicado 1.1.2: segunda conta Solana adicionada e persistente; PancakeSwap V3 CLMM open-position/add-liquidity e StakeProgram.Delegate foram assinados 2/2 com requestId correto, 64 bytes e Ed25519 válido; `broadcast=false`.
 
-- R04 README homologado: documentação pública passa a declarar desenvolvimento por agentes de IA sob operação humana, ausência de revisão humana/auditoria independente, método de simulação de quadros QR/BC-UR, escopo de testes e uso por conta e risco.
+- R04 README revisado: documentação pública declara uso de agentes de IA, ausência de revisão humana/auditoria independente, funcionamento previsto, escopo de testes e uso por conta e risco; detalhes internos do processo ficam reservados para artigos futuros.
 
 ## Pendências técnicas não humanas
 - Nenhuma para a release `1.1.2` e para a homologação pós-release R03.
@@ -53,7 +53,7 @@
 - `sincronizacao`: catálogo `offline-transport` 0.1.1 divergia do canônico 0.1.2; catálogo foi corrigido e `REFERENCE_AUDIT=PASS`.
 
 ## Divergências da última reconciliação
-- reconciliada em R04: `origin/master` continha duas edições manuais de README (`697ae743`, `ea006078`); foi preservado o título 1.1.2 e o newline final, enquanto `1.1.3`/remoção do método foram superados pela decisão explícita posterior do operador para a documentação experimental 1.1.2.
+- reconciliada em R04: `origin/master` continha duas edições manuais de README (`697ae743`, `ea006078`); a documentação corrente preserva o título 1.1.2 e a redação pública aprovada na v30.
 - corrigidas: versão da skill/catálogo, critérios 802/933, release contract U26, propósito do build 0.1.6, índice `offline-transport` 0.1.2 e estado pós-publicação.
 - pendentes de autorização: nenhuma.
 
@@ -61,4 +61,4 @@
 - 1–942.
 
 ## Próxima unidade
-- R04 em curso: README aceito; falta publicar e registrar apenas comentários GitHub diretamente pertinentes e autenticáveis como `debianlima`.
+- R04 em curso: reaplicar e publicar a redação pública v30, preservando somente o resumo aprovado nos comentários externos.

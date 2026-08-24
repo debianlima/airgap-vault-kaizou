@@ -1,23 +1,29 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 29
+versao_contrato: 30
 historico_emendas:
+- versao: 30
+  data: '2026-08-24'
+  origem: decisão explícita de adiar para os artigos os detalhes internos do processo
+    de desenvolvimento e das simulações de quadros
+  alteracoes:
+  - documentação pública mantém somente que as modificações Kaizou foram produzidas
+    com agentes de IA, sem revisão humana de código e sem auditoria independente
+  - detalhes internos de condução, dry-run e metodologia de simulação de quadros deixam
+    de constar na superfície pública corrente até publicação dos artigos
+  - comentários externos já publicados permanecem válidos porque usam o resumo curto
+    e não expõem esses detalhes internos
 - versao: 29
   data: '2026-08-24'
-  origem: decisão explícita do operador de tornar o README transparente sobre desenvolvimento
-    com agentes de IA, ausência de revisão humana/auditoria e publicar aviso experimental
-    em discussões GitHub relevantes usando a conta debianlima
+  origem: decisão explícita de atualizar a documentação pública experimental da release
+    1.1.2 e divulgar apenas o resumo aprovado em discussões GitHub pertinentes
   alteracoes:
-  - README passa a declarar que as modificações Kaizou foram produzidas por agentes
-    de IA sob decisões/operação humana e tiveram teste final, sem revisão humana de
-    código nem auditoria de segurança independente
-  - README documenta que as lógicas adicionadas são de integração Solana/Solflare
-    e que simulações de quadros QR/BC-UR foram executadas a pedido do operador para
-    tratar falhas de reconhecimento multipart
-  - README preserva escopo de homologação mecânica, assinatura Ed25519 e ausência
-    de broadcast, sem transformar teste em garantia de segurança
-  - outreach registra somente postagens em superfícies GitHub diretamente autenticáveis
-    pela conta debianlima e pertinentes ao problema; nenhuma postagem é inventada
-    em plataforma sem canal autenticado disponível
+  - README declara uso de agentes de IA, ausência de revisão humana de código e ausência
+    de auditoria independente, sem publicar detalhes internos do processo de condução
+    antes dos artigos
+  - README mantém funcionamento previsto, escopo de integração Solana/Solflare, evidência
+    de testes e aviso de uso por conta e risco
+  - outreach usa somente o resumo público aprovado e registra apenas superfícies GitHub
+    diretamente autenticáveis pela conta debianlima
 - versao: 28
   data: '2026-08-24'
   origem: decisão explícita do usuário de homologar pós-release a adição de carteira/conta
@@ -419,9 +425,9 @@ trabalho_compartilhado:
   descricao: atualizar README com transparência experimental/IA e divulgar release
     em issues GitHub pertinentes usando a conta debianlima
   agente: terminal-oracle
-  atualizado_em: '2026-08-24T19:02:41-03:00'
+  atualizado_em: '2026-08-24T19:30:00-03:00'
   previsao_inicio: '2026-08-24T19:02:41-03:00'
-  previsao_termino: '2026-08-24T20:32:41-03:00'
+  previsao_termino: '2026-08-24T21:00:00-03:00'
   competencias:
   - desenvolvedor-de-software@14
   - telemetry-data-visualization@2
@@ -596,19 +602,21 @@ entradas:
 - id: 21
   caminho: README.md
   proposito: documentação principal do AirGap Vault Kaizou 1.1.2 com suporte experimental
-    Solana/Solflare, método de desenvolvimento por agentes de IA sob operação humana,
-    escopo de testes, ausência de auditoria humana/independente e aviso explícito
-    de uso por conta e risco
+    Solana/Solflare, divulgação de uso de agentes de IA, ausência de revisão humana/auditoria
+    independente, funcionamento previsto, evidência de testes e aviso de uso por conta
+    e risco, mantendo detalhes internos do processo para artigos futuros
   tipo: nao-classificado
   consome: []
   produz: null
   aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes();
     u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u);
-    t=r.decode(); req=['AirGap Vault Kaizou 1.1.2','airgap-solana-module 0.1.6','agentes
-    de IA','sem revisão humana de código','Não houve auditoria de segurança independente','por
-    conta e risco do usuário','requestId','Ed25519','QR/BC-UR','sem broadcast']; assert
-    all(x in t for x in req)"
-  status: aceito
+    p=r[:-len(u)].decode(); req=['AirGap Vault Kaizou 1.1.2','agentes de IA','sem
+    revisão humana de código','Não houve auditoria de segurança independente','por
+    conta e risco do usuário','QR/BC-UR','Ed25519']; assert all(x in p for x in req);
+    forbidden=['execução solicitada pelo operador','aprendizagem/dry-run','tempos
+    entre quadros','O operador definiu o objetivo']; assert not any(x in p for x in
+    forbidden)"
+  status: em_curso
 - id: 22
   caminho: android/.gitignore
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap

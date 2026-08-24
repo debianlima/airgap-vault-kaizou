@@ -10,17 +10,15 @@ A linha 1.1.2 integra o pacote assinado **`airgap-solana-module 0.1.6`** como m�
 
 ### Natureza do desenvolvimento
 
-As modificações Kaizou foram produzidas **com agentes de IA, sob comandos, decisões e execução solicitada pelo operador**. O trabalho foi tratado como experimento de aprendizagem/dry-run, com contratos, simulações, testes e homologação mecânica do artefato final.
+As modificações Kaizou foram produzidas **com agentes de IA**.
 
-O desenvolvimento ocorreu **sem revisão humana de código** e **não houve auditoria de segurança independente**. O operador definiu o objetivo, pediu as execuções e acompanhou os resultados; os agentes implementaram e executaram as lógicas de integração e seus testes. Portanto, teste aprovado significa apenas que o comportamento medido bateu com o contrato observado — não é prova geral de segurança.
+O desenvolvimento ocorreu **sem revisão humana de código** e **não houve auditoria de segurança independente**. Os resultados publicados descrevem apenas o comportamento observado nos testes executados e não constituem prova geral de segurança.
 
 O escopo do trabalho foi deliberadamente limitado às **lógicas de integração Solana/Solflare**, sem pretensão de reauditar ou reescrever todo o AirGap Vault upstream.
 
 ### Problema estudado: reconhecimento de QR multipart
 
 Durante a integração foi observado que solicitações Solana válidas podiam terminar como `Incompatible code` quando o QR dinâmico/fountain ainda estava incompleto, continha quadro corrompido, repetido ou pertencia a outro stream concorrente.
-
-A pedido do operador foram executadas **simulações controladas de sequência, repetição e tempos entre quadros**, além de cenários com quadros parciais, stale, duplicados, corrompidos e múltiplos streams BC-UR/Fountain. Essas medições foram usadas para ajustar o coletor até separar melhor falha transitória de transporte de uma solicitação realmente incompatível.
 
 A solução 1.1.2 mantém o cache visual do scanner separado da entrega dos eventos ao coletor, identifica streams por metadados Fountain, deduplica por stream, limita concorrência, aplica TTL e trata ambiguidade entre solicitações completas sem selecionar uma delas silenciosamente.
 
