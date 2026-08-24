@@ -319,22 +319,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: U23
-  descricao: simular coleta Solflare/BC-UR resiliente com banco sintético de transações
-    antes de alterar runtime
-  agente: terminal-oracle
-  atualizado_em: '2026-08-24T05:44:57-03:00'
-  previsao_termino: '2026-08-24T07:44:57-03:00'
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - contratos/airgap-vault-kaizou-solana-release.schema.json
-  - scripts/airgap-vault-kaizou-solflare-capture-resilience-simulation.js
-  - logs/U23-2026-08-24-solflare-capture-resilience.log
-  - docs/airgap-vault-kaizou-*.mmd
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -7910,7 +7895,7 @@ entradas:
   produz: null
   aceite: node scripts/airgap-vault-kaizou-solflare-capture-resilience-simulation.js
     --repetitions 6 --min-banks 4 --min-scenarios 24 --log logs/U23-2026-08-24-solflare-capture-resilience.log
-  status: em_curso
+  status: aceito
 - id: 942
   caminho: logs/U23-2026-08-24-solflare-capture-resilience.log
   proposito: registrar ambiente, matriz, taxas baseline/candidato, mediana, MAD, streams
@@ -7921,7 +7906,7 @@ entradas:
   produz: null
   aceite: test -s logs/U23-2026-08-24-solflare-capture-resilience.log && grep -q "CAPTURE_RESILIENCE_PASS"
     logs/U23-2026-08-24-solflare-capture-resilience.log
-  status: em_curso
+  status: aceito
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação

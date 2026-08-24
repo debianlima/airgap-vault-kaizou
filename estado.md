@@ -50,6 +50,10 @@
 
 - U23 — simulação declarada: comparar decoder linear U22 com coletor candidato por stream fingerprint em >=4 bancos sintéticos × >=24 variações, 6 execuções por caso; limiares 100% nos casos recuperáveis, zero falso sucesso/exceção e no máximo 4 streams ativos.
 
+- U23 primeira medição: 5 bancos × 32 cenários × 6 execuções; candidato atingiu 140/140 casos recuperáveis, mas 2 cenários com dois requests completos foram autoemitidos pelo critério de recência. Refinamento do simulador: múltiplos streams completos ficam `ambiguous` e exigem separação de sessão, nunca escolha automática por recência.
+
+- U23 GREEN final: 5 bancos sintéticos × 32 cenários × 6 execuções = 160 casos; 140/140 recuperáveis no coletor candidato (`candidate_success_rate=1.0`), baseline 115/140 (`0.8214285714`), zero falso sucesso, zero exceção não tratada e máximo de 4 streams ativos. Mediana por caso: baseline 0.41702 ms (MAD 0.19837), candidato 1.12271 ms (MAD 0.56877). A captura real privada foi checada transitoriamente em 13 perfis sem registrar payload: candidato 11/13, baseline 10/13; os 2 casos restantes tinham fragmentos independentes insuficientes e foram corretamente não recuperáveis.
+
 ## Pendências técnicas não humanas
 - U21: executar portões globais no módulo 0.1.6, reconstruir APK final, homologar Android integralmente e publicar 1.1.2.
 
