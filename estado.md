@@ -31,9 +31,10 @@
 - U16: `airgap-wallet-engineering-skill` 0.2.2 foi recarregada; `protocol-research` agora exige source-to-wire do produtor até a wallet e concordância com captura real antes de alterar canonicalização/signing.
 - U17 replay real: 6 fragmentos válidos do vídeo foram injetados pela callback Cordova QRScanner no APK U15; o handler chegou a 57%/completude e então `IACService` lançou `TypeError: Cannot read properties of undefined (reading 'publicKey')` porque a fingerprint real não pertence à conta de homologação. O defeito agora é account-mismatch após parsing válido, não SignType.Message.
 - U17 RED confirmado: `iac.service.spec.ts` executou 3 specs e falhou 1/3 exatamente em `iac.service.ts:284`, ao acessar `correctWallet.publicKey` quando um `sol-sign-request` válido não encontrou conta local; o gate exige retorno sem exceção e `secret` indefinido.
+- U17 GREEN de software: `IACService.findMatchingWallet` agora preserva `wallet`/`secret` indefinidos sem desreferenciar `correctWallet`; gates IAC 3/3, account-share 3/3, interaction 1/1, Solflare 5/5, nonregression e estrutura passaram.
 
 ## Pendências técnicas não humanas
-- U17 RED confirmado; corrigir null-deref no IAC, executar GREEN, reconstruir APK final e repetir homologação Android completa antes dos portões finais/release.
+- U17 software GREEN; executar portões globais, reconstruir APK final e repetir homologação Android integral antes do fechamento/release.
 
 ## Trabalho compartilhado
 - ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; nenhuma zona de exclusão ativa.

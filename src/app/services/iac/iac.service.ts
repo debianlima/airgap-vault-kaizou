@@ -281,7 +281,7 @@ export class IACService extends BaseIACService {
       correctWallet = await this.findBaseWallet(unsignedTransaction.publicKey, signTransactionRequest)
     }
 
-    const secret = this.secretsService.findByPublicKey(correctWallet.publicKey)
+    const secret = correctWallet ? this.secretsService.findByPublicKey(correctWallet.publicKey) : undefined
 
     return {
       wallet: correctWallet,
