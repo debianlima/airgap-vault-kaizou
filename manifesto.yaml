@@ -1,6 +1,25 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 27
+versao_contrato: 28
 historico_emendas:
+- versao: 28
+  data: '2026-08-24'
+  origem: decisão explícita do usuário de homologar pós-release a adição de carteira/conta
+    Solana, uma operação PancakeSwap V3 de liquidez e um stake, com todas as transações
+    assináveis verificadas criptograficamente
+  alteracoes:
+  - homologação usa exatamente o APK publicado airgap-vault-kaizou-1.1.2 baixado do
+    GitHub e exige SHA-256 publicado antes de qualquer fluxo
+  - adicionar carteira significa adicionar uma segunda conta Solana ao segredo determinístico
+    Kaizou Test e provar endereço distinto e persistente sem substituir a conta 0
+  - adicionar pool Pancake significa, conforme o caso já declarado no projeto, abrir
+    posição/adicionar liquidez em PancakeSwap V3 Solana CLMM com o fixture sintético
+    oficial-SDK open-position; não é criação on-chain de um pool novo
+  - stake significa StakeProgram.Delegate sintético com signer local; deve chegar
+    à revisão e produzir sol-signature
+  - Pancake open-position e stake delegate devem preservar requestId, produzir assinatura
+    de 64 bytes e passar Ed25519 independente sobre a mensagem exata
+  - nenhuma transação é transmitida/broadcast; homologação é offline no Android user/release-keys
+    non-root
 - versao: 27
   data: '2026-08-24'
   origem: U26 homologou o coletor resiliente no APK exato e publicou airgap-wallet-engineering-skill
@@ -376,7 +395,23 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
+  unidade: R03
+  descricao: homologar pós-release adição de conta, Pancake CLMM open-position/add-liquidity
+    e stake delegate no APK publicado 1.1.2
+  agente: terminal-oracle
+  atualizado_em: '2026-08-24T10:37:47-03:00'
+  previsao_inicio: '2026-08-24T10:37:47-03:00'
+  previsao_termino: '2026-08-24T12:37:47-03:00'
+  competencias:
+  - airgap-wallet-engineering-skill
+  zona_exclusao:
+  - manifesto.yaml
+  - estado.md
+  - logs/R03-2026-08-24-wallet-pool-stake-homologation.log
+  - docs/airgap-vault-kaizou-*.mmd
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -7970,6 +8005,18 @@ entradas:
   aceite: test -s logs/U23-2026-08-24-solflare-capture-resilience.log && grep -q "CAPTURE_RESILIENCE_PASS"
     logs/U23-2026-08-24-solflare-capture-resilience.log
   status: aceito
+- id: 943
+  caminho: logs/R03-2026-08-24-wallet-pool-stake-homologation.log
+  proposito: registrar homologação pós-release do APK 1.1.2 para adicionar segunda
+    conta Solana, abrir posição/adicionar liquidez PancakeSwap V3 CLMM e assinar stake
+    delegate, com oráculo requestId+64 bytes+Ed25519 e broadcast desabilitado
+  tipo: evidencia-teste
+  consome: []
+  produz: null
+  aceite: test -s logs/R03-2026-08-24-wallet-pool-stake-homologation.log && grep -q
+    'R03_WALLET_POOL_STAKE_PASS' logs/R03-2026-08-24-wallet-pool-stake-homologation.log
+    && grep -q 'broadcast=false' logs/R03-2026-08-24-wallet-pool-stake-homologation.log
+  status: em_curso
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação

@@ -1,4 +1,4 @@
-# Estado — 2026-08-24 — contrato v27
+# Estado — 2026-08-24 — contrato v28
 
 ## Decisões vigentes
 - AirGap Vault Kaizou `1.1.2` está publicado com `airgap-solana-module 0.1.6` estático e verificado por assinatura/hash antes do build.
@@ -27,6 +27,8 @@
 - Tag anotada `airgap-vault-kaizou-1.1.2` foi publicada apontando para `9a546eed4882f29e29dc28624e907fbd1f3922d0`.
 - GitHub Release `https://github.com/debianlima/airgap-vault-kaizou/releases/tag/airgap-vault-kaizou-1.1.2` foi criada com APK e arquivo `.sha256`.
 - O APK publicado foi baixado novamente via GitHub API autenticada; tamanho `85663983` bytes e SHA-256 remoto/local/esperado são idênticos: `6885cc59cc9f0050bb0e2614ac4a0a4c165aa0011f086e3e8b68881dd3742a45`.
+
+- R03 declarado: homologar pós-release no APK publicado 1.1.2 a adição de segunda conta Solana, PancakeSwap V3 CLMM open-position/add-liquidity e StakeProgram.Delegate, com requestId+64 bytes+Ed25519 e `broadcast=false`.
 
 ## Pendências técnicas não humanas
 - Nenhuma para a release `1.1.2`.
