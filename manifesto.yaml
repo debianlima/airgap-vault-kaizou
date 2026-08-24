@@ -1,6 +1,18 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 30
+versao_contrato: 31
 historico_emendas:
+- versao: 31
+  data: '2026-08-24'
+  origem: 'decisão explícita do operador: comentários externos devem usar a língua
+    da discussão e, quando a discussão estiver em inglês, terminar com tradução automática
+    PT-BR'
+  alteracoes:
+  - os três comentários GitHub existentes são reescritos com texto principal em inglês
+    porque as três discussões de origem estão em inglês
+  - cada comentário termina com seção explicitamente rotulada Automatic translation
+    (PT-BR)
+  - o conteúdo mantém apenas o resumo público já aprovado e não publica detalhes internos
+    reservados para artigos futuros
 - versao: 30
   data: '2026-08-24'
   origem: decisão explícita de adiar para os artigos os detalhes internos do processo
@@ -418,7 +430,24 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
+  unidade: R05
+  descricao: corrigir idioma dos comentários externos e adicionar tradução automática
+    PT-BR
+  agente: terminal-oracle
+  atualizado_em: '2026-08-24T19:23:44-03:00'
+  previsao_inicio: '2026-08-24T19:23:44-03:00'
+  previsao_termino: '2026-08-24T20:08:44-03:00'
+  competencias:
+  - airgap-wallet-engineering-skill@0.2.6
+  - telemetry-data-visualization@2
+  zona_exclusao:
+  - manifesto.yaml
+  - estado.md
+  - logs/R05-2026-08-24-comment-language.log
+  - docs/airgap-vault-kaizou-*.mmd
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8041,6 +8070,19 @@ entradas:
     logs/R04-2026-08-24-readme-outreach.log && grep -q 'R04_OUTREACH_PASS' logs/R04-2026-08-24-readme-outreach.log
     && ! grep -Eqi '(authorization:|bearer |password=|token=)' logs/R04-2026-08-24-readme-outreach.log
   status: aceito
+- id: 945
+  caminho: logs/R05-2026-08-24-comment-language.log
+  proposito: registrar idioma detectado das discussões GitHub e efeito observado da
+    atualização dos comentários públicos para língua da discussão com tradução automática
+    PT-BR
+  tipo: evidencia-teste
+  consome: []
+  produz: null
+  aceite: test -s logs/R05-2026-08-24-comment-language.log && grep -q 'R05_COMMENT_LANGUAGE_PASS'
+    logs/R05-2026-08-24-comment-language.log && grep -q 'comments_updated=3/3' logs/R05-2026-08-24-comment-language.log
+    && grep -q 'primary_language=en' logs/R05-2026-08-24-comment-language.log && grep
+    -q 'automatic_translation=pt-BR' logs/R05-2026-08-24-comment-language.log
+  status: em_curso
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação

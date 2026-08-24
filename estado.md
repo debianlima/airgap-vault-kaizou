@@ -1,4 +1,4 @@
-# Estado — 2026-08-24 — contrato v30
+# Estado — 2026-08-24 — contrato v31
 
 ## Decisões vigentes
 - AirGap Vault Kaizou `1.1.2` está publicado com `airgap-solana-module 0.1.6` estático e verificado por assinatura/hash antes do build.
@@ -36,7 +36,7 @@
 - Nenhuma para a release `1.1.2` e para a homologação pós-release R03.
 
 ## Trabalho compartilhado
-- ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; R04 liberada após verificação pública.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — R05 ativa; atualização de idioma dos comentários externos em curso.
 
 ## Competências ativas nesta unidade
 - `desenvolvedor-de-software` v14 — busca externa, documentação e entrega.
@@ -61,4 +61,5 @@
 - 1–942.
 
 ## Próxima unidade
+- R05 em curso: corrigir os três comentários GitHub para inglês como idioma principal e terminar cada um com `Automatic translation (PT-BR)`.
 - Nenhuma obrigatória para R04; detalhes internos do processo ficam reservados até a publicação dos artigos.

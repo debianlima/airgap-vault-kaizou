@@ -1,0 +1,12 @@
+telemetria_inicio=2026-08-24T19:23:46-03:00
+projeto=airgap-vault-kaizou
+unidade=R05
+contrato_versao=31
+cliente=chatgpt
+modelo=GPT-5.6 Sol
+skills_ativas=airgap-wallet-engineering-skill@0.2.6,telemetry-data-visualization@2
+plano_competencias_hash=f30c195d75e65f522caa4f907619241049a3367b8f3fd646447fef0892ab6397
+perfil_maquina=terminal
+tokens=indisponivel
+custo=indisponivel
+origem_coletor=git+relogio+github-api
