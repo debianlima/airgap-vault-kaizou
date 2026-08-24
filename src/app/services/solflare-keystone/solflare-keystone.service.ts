@@ -333,7 +333,7 @@ export class SolflareSignRequestHandler implements IACMessageHandler<IACMessageD
       const accepted = this.decoder.receivePart(data)
       if (!accepted) return IACHandlerStatus.PARTIAL
     } catch {
-      return IACHandlerStatus.UNSUPPORTED
+      return IACHandlerStatus.PARTIAL
     }
     return this.decoder.isComplete() && this.decoder.isSuccess() ? IACHandlerStatus.SUCCESS : IACHandlerStatus.PARTIAL
   }

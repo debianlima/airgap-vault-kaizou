@@ -46,6 +46,7 @@
 - `airgap-solana-module v0.1.6` publicado; ZIP remoto verificado byte-idêntico ao local, SHA-256 `2515d1536938d7aca2709a63b9264e2439438cf441b4d45abe34acd6e1185150`.
 
 - U22 RED definido: um fragmento `ur:sol-sign-request` com checksum inválido no meio de um fountain multipart deve ser ignorado como `PARTIAL`; frames válidos posteriores precisam completar o request sem alerta genérico `Incompatible code`.
+- U22 GREEN: `SolflareSignRequestHandler.receive()` trata erro de checksum/decodificação de fragmento reconhecido como `PARTIAL`; gate Solflare 6/6, IAC 3/3, interaction 1/1, nonregression e estrutura passaram.
 
 ## Pendências técnicas não humanas
 - U21: executar portões globais no módulo 0.1.6, reconstruir APK final, homologar Android integralmente e publicar 1.1.2.
