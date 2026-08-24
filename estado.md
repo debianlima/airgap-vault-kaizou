@@ -30,6 +30,8 @@
 
 - R03 homologado no APK publicado 1.1.2: segunda conta Solana adicionada e persistente; PancakeSwap V3 CLMM open-position/add-liquidity e StakeProgram.Delegate foram assinados 2/2 com requestId correto, 64 bytes e Ed25519 válido; `broadcast=false`.
 
+- R04 README homologado: documentação pública passa a declarar desenvolvimento por agentes de IA sob operação humana, ausência de revisão humana/auditoria independente, método de simulação de quadros QR/BC-UR, escopo de testes e uso por conta e risco.
+
 ## Pendências técnicas não humanas
 - Nenhuma para a release `1.1.2` e para a homologação pós-release R03.
 
@@ -58,4 +60,4 @@
 - 1–942.
 
 ## Próxima unidade
-- R04 em curso: transparência experimental no README e divulgação apenas em discussões GitHub diretamente pertinentes e autenticáveis como `debianlima`.
+- R04 em curso: README aceito; falta publicar e registrar apenas comentários GitHub diretamente pertinentes e autenticáveis como `debianlima`.

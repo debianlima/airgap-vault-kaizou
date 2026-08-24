@@ -1,42 +1,83 @@
 # AirGap Vault Kaizou 1.1.2
 
-> Fork comunitário do AirGap Vault com **Solana disponível diretamente na linha Kaizou**, integração Solflare, stake preservado e classificação offline ampliada para o escopo Keystone Solana, mantendo abaixo a documentação original do projeto upstream.
+> **Projeto experimental — suporte Solana wallet / Solflare em fluxo air-gapped.** Não é uma versão oficial do AirGap, Solflare, Keystone, PancakeSwap ou Solana.
 
-## Sobre o Kaizou
+## Sobre o experimento
 
-**AirGap Vault Kaizou 1.1.2** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
+**AirGap Vault Kaizou 1.1.2** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**, para estudar uma possível integração de **Solana em um fluxo air-gapped** interoperando com solicitações no formato Keystone/Solflare por QR/BC-UR.
 
-A linha 1.1.2 integra o pacote assinado **airgap-solana-module 0.1.6** como **módulo estático** no APK. O módulo continua sendo desenvolvido e versionado separadamente do Kaizou; a distribuição apenas incorpora os artefatos assinados verificados.
+A linha 1.1.2 integra o pacote assinado **`airgap-solana-module 0.1.6`** como módulo estático no APK. O módulo continua versionado separadamente; o Kaizou incorpora apenas o artefato fixado e verificado para esta release.
 
-### O que a versão 1.1.2 acrescenta
+### Natureza do desenvolvimento
 
-- `airgap-solana-module 0.1.6` integrado ao APK como módulo estático, mantendo o módulo como projeto independente;
-- correção do QR dinâmico/fountain do Solflare: fragmentos `sol-sign-request` são acumulados até o UR ficar completo, sem cair em `Incompatible code` por serem multipart;
-- `SignType.Transaction` aceita tanto bytes de mensagem Solana quanto uma transação Solana serializada completa; quando a transação já vem serializada, ela é preservada byte a byte e não recebe um segundo prefixo de assinaturas;
-- classificação offline compatível com as famílias System, Vote, Stake, SPL Token, SPL Token Swap v3, SPL Token Lending, Squads v4, Jupiter v6 e Compute Budget tratadas pelo parser Keystone fixado pelo módulo;
-- regressão de liquidity pool: transação coberta por SPL Token Swap v3 deixa de cair em `Solana transaction not recognized offline`;
-- detalhes ricos de transferência e **stake permanecem preservados**, sem mudança semântica do fluxo já homologado;
-- transações Solana válidas fora da matriz Keystone usam fallback genérico estruturado com bytes originais preservados;
-- opção **AirGap Solflare**, sincronização `crypto-multi-accounts` e assinatura `sol-sign-request` → `sol-signature` continuam preservadas;
-- proteção de não-regressão das demais redes permanece obrigatória por suíte upstream e gate mecânico de isolamento.
+As modificações Kaizou foram produzidas **com agentes de IA, sob comandos, decisões e execução solicitada pelo operador**. O trabalho foi tratado como experimento de aprendizagem/dry-run, com contratos, simulações, testes e homologação mecânica do artefato final.
 
-A integração Kaizou continua deliberadamente restrita a Solana. Bitcoin, Ethereum, BNB Smart Chain e os demais protocolos permanecem nos caminhos upstream, sem alteração semântica intencional causada por esta emenda.
+O desenvolvimento ocorreu **sem revisão humana de código** e **não houve auditoria de segurança independente**. O operador definiu o objetivo, pediu as execuções e acompanhou os resultados; os agentes implementaram e executaram as lógicas de integração e seus testes. Portanto, teste aprovado significa apenas que o comportamento medido bateu com o contrato observado — não é prova geral de segurança.
 
-## Desenvolvimento colaborativo e método
+O escopo do trabalho foi deliberadamente limitado às **lógicas de integração Solana/Solflare**, sem pretensão de reauditar ou reescrever todo o AirGap Vault upstream.
 
-As **modificações Kaizou deste fork** foram desenvolvidas de forma colaborativa pelo administrador humano do projeto com apoio de um **agente de IA ChatGPT**. Essa atribuição se refere às alterações do fork Kaizou; não atribui ao ChatGPT a autoria do AirGap Vault original nem implica participação ou endosso dos mantenedores upstream.
+### Problema estudado: reconhecimento de QR multipart
 
-O trabalho foi conduzido por um **método de manutenção orientado por manifesto, contrato, portões mecânicos e reconciliação**. A avaliação do agente de IA não substitui testes, builds, verificadores, validação criptográfica nem homologação de runtime.
+Durante a integração foi observado que solicitações Solana válidas podiam terminar como `Incompatible code` quando o QR dinâmico/fountain ainda estava incompleto, continha quadro corrompido, repetido ou pertencia a outro stream concorrente.
 
-## Homologação da linha 1.1.2
+A pedido do operador foram executadas **simulações controladas de sequência, repetição e tempos entre quadros**, além de cenários com quadros parciais, stale, duplicados, corrompidos e múltiplos streams BC-UR/Fountain. Essas medições foram usadas para ajustar o coletor até separar melhor falha transitória de transporte de uma solicitação realmente incompatível.
 
-A homologação exige módulo estático `0.1.6` assinado, QR `sol-sign-request` multipart/fountain, regressão de `VersionedTransaction` serializada sem duplo prefixo de assinaturas, regressão completa de stake, classificação offline de liquidity pool suportado pela matriz Keystone, produção de `sol-signature` com requestId preservado, verificação Ed25519, build Android e gate de isolamento que mantém os protocolos não-Solana nos caminhos existentes.
+A solução 1.1.2 mantém o cache visual do scanner separado da entrega dos eventos ao coletor, identifica streams por metadados Fountain, deduplica por stream, limita concorrência, aplica TTL e trata ambiguidade entre solicitações completas sem selecionar uma delas silenciosamente.
 
-> Broadcast Solana devnet continua fora do contrato offline/QR enquanto não houver saldo de teste verificável.
+## Funcionamento previsto
+
+O fluxo esperado é:
+
+1. a carteira online prepara uma solicitação Solana compatível com `ur:sol-sign-request`;
+2. o dispositivo Kaizou permanece offline e lê o QR/BC-UR;
+3. a solicitação é reconstruída, validada e exibida para revisão;
+4. a conta local correspondente assina os bytes exatos da mensagem;
+5. o dispositivo offline devolve `ur:sol-signature` por QR;
+6. a carteira online recebe a resposta e decide o que fazer com ela.
+
+O Kaizou **não precisa transmitir a transação** para executar esse fluxo. A homologação descrita abaixo foi feita **sem broadcast**, com `broadcast=false`.
+
+## O que a versão 1.1.2 acrescenta
+
+- `airgap-solana-module 0.1.6` integrado ao APK como módulo estático;
+- recepção de `SignType.Message` e `SignType.Transaction`;
+- preservação byte a byte de `VersionedTransaction` serializada antes da assinatura;
+- coleta multipart/fountain resiliente para `sol-sign-request`;
+- resposta `sol-signature` preservando `requestId`;
+- classificação offline para famílias System, Vote, Stake, SPL Token, SPL Token Swap v3, SPL Token Lending, Squads v4, Jupiter v6 e Compute Budget tratadas pelo parser fixado;
+- fallback estruturado para transações Solana válidas fora da matriz conhecida, preservando os bytes originais;
+- opção **AirGap Solflare** e sincronização `crypto-multi-accounts`;
+- manutenção dos caminhos upstream das demais redes sem alteração semântica intencional.
+
+## Como foi testado
+
+A homologação final da 1.1.2 usou **Android 11 / API 30, build `user`, `release-keys`, non-root**. O APK candidato foi instalado, extraído novamente do dispositivo e comparado por SHA-256 com o artefato publicado.
+
+Foram exercitados QR multipart/fountain, frame corrompido, stream stale, até quatro streams concorrentes e ambiguidade entre requests completos. Também foram testados criação/persistência de contas Solana, replay Solflare real para conta não existente localmente, mensagem controlada, Stake, TokenSwap e casos PancakeSwap V3 CLMM.
+
+A validação das assinaturas não ficou apenas na interface. Para os casos assinados, um verificador independente confirmou:
+
+- `requestId` preservado;
+- assinatura com **64 bytes**;
+- assinatura **Ed25519 válida sobre os bytes exatos da mensagem**.
+
+Na homologação adicional R03, uma segunda conta Solana foi adicionada sem substituir a primeira e permaneceu após reinício do processo do app. Uma operação PancakeSwap V3 CLMM `open-position/add-liquidity` e uma `StakeProgram.Delegate` foram assinadas **2/2** e verificadas criptograficamente. Nenhuma dessas transações foi transmitida à rede.
+
+## Limites e aviso de risco
+
+Este repositório é um **projeto experimental de aprendizagem**. Ele demonstra apenas que os fluxos acima funcionaram nos ambientes e cenários medidos.
+
+**Não houve auditoria de segurança independente. Não houve revisão humana de código das modificações Kaizou.** Revise o código, os commits, os artefatos e os hashes por conta própria antes de qualquer uso. O uso é inteiramente por conta e risco do usuário, e estes resultados **não devem ser considerados garantia de segurança para fundos reais**.
+
+## Release experimental
+
+- Release: https://github.com/debianlima/airgap-vault-kaizou/releases/tag/airgap-vault-kaizou-1.1.2
+- APK SHA-256: `6885cc59cc9f0050bb0e2614ac4a0a4c165aa0011f086e3e8b68881dd3742a45`
 
 ---
 
 ## README original preservado
+
 
 A partir daqui, o README de `airgap-it/airgap-vault` tag `v3.34.4` é mantido sem alterações.
 

@@ -608,7 +608,7 @@ entradas:
     de IA','sem revisão humana de código','Não houve auditoria de segurança independente','por
     conta e risco do usuário','requestId','Ed25519','QR/BC-UR','sem broadcast']; assert
     all(x in t for x in req)"
-  status: em_curso
+  status: aceito
 - id: 22
   caminho: android/.gitignore
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
