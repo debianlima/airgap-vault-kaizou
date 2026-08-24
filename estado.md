@@ -1,4 +1,4 @@
-# Estado — 2026-08-23 — contrato v16
+# Estado — 2026-08-23 — contrato v17
 
 ## Decisões vigentes
 - AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.5` permanece o módulo integrado e não muda nesta unidade.
@@ -29,10 +29,11 @@
 - U15 GREEN de software: `signType` passou a ser preservado no decode; `Message` usa wrapping explícito da mensagem e `Transaction` mantém a detecção de transação completa. Gate dedicado 5/5, agregador 6 grupos, suite 92/92, build, verify-only, nonregression, README, estrutura e diagramas passaram.
 - U15 homologação Android controlada: APK `e66994a8…e61d` clean-installed byte-idêntico; pairing anunciou signer `f036…58f7`; `sol-signature` preservou requestId e passou Ed25519 independente; Stake Deactivate repetiu requestId+Ed25519; TokenSwapV3 retornou `keystone-classified` com `unknownProgramIds: []`; cold restart preservou `Kaizou Test`.
 - U16: `airgap-wallet-engineering-skill` 0.2.2 foi recarregada; `protocol-research` agora exige source-to-wire do produtor até a wallet e concordância com captura real antes de alterar canonicalização/signing.
+- U17 replay real: 6 fragmentos válidos do vídeo foram injetados pela callback Cordova QRScanner no APK U15; o handler chegou a 57%/completude e então `IACService` lançou `TypeError: Cannot read properties of undefined (reading 'publicKey')` porque a fingerprint real não pertence à conta de homologação. O defeito agora é account-mismatch após parsing válido, não SignType.Message.
+- U17 RED confirmado: `iac.service.spec.ts` executou 3 specs e falhou 1/3 exatamente em `iac.service.ts:284`, ao acessar `correctWallet.publicKey` quando um `sol-sign-request` válido não encontrou conta local; o gate exige retorno sem exceção e `secret` indefinido.
 
 ## Pendências técnicas não humanas
-- Repassar no APK U15 o QR dinâmico real do usuário como gate de parser/roteamento; a conta/fingerprint do vídeo não pertence à conta de homologação e não será usada como prova de assinatura.
-- Reexecutar os portões finais de release após esse replay, fechar entradas `em_curso` e só então publicar 1.1.2.
+- U17 RED confirmado; corrigir null-deref no IAC, executar GREEN, reconstruir APK final e repetir homologação Android completa antes dos portões finais/release.
 
 ## Trabalho compartilhado
 - ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; nenhuma zona de exclusão ativa.
@@ -59,4 +60,4 @@
 - 921/938 permanecem aceitas; entradas 21, 118, 127, 141, 228, 229, 231, 371, 372, 779, 780, 801, 802, 931, 933, 934 e 936 estão `em_curso` nas U10/U11/U12/U13/U14.
 
 ## Próxima unidade
-- U16 — replay do QR real no APK U15, portões finais, aceite das entradas `em_curso` e publicação da release 1.1.2.
+- U17 — RED/GREEN de account-mismatch no IAC; depois APK final, homologação Android integral, portões finais e publicação da release 1.1.2.

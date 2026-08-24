@@ -1201,8 +1201,8 @@ graph TD
     E776["gyroscope.service.spec.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
   end
   subgraph src_app_services_iac["src/app/services/iac"]
-    E777["iac.service.spec.ts<br/>provar sol-sign-request para fluxo interno"]
-    E778["iac.service.ts<br/>interceptar sol-sign-request e convertê-lo para TransactionSignRequest interno"]
+    E777["iac.service.spec.ts<br/>provar sol-sign-request para fluxo interno, inclusive pedido válido cuja fingerprint não pertence a nenhuma conta local"]
+    E778["iac.service.ts<br/>interceptar sol-sign-request, convertê-lo para TransactionSignRequest interno e tratar account-mismatch válido sem desreferenciar wallet indefinida"]
   end
   subgraph src_app_services_interaction["src/app/services/interaction"]
     E779["interaction.service.spec.ts<br/>provar que a resposta Solflare seleciona a assinatura pela chave Ed25519 do endereço de recebimento mesmo quando wallet.publicKey diverge"]

@@ -1,6 +1,14 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 16
+versao_contrato: 17
 historico_emendas:
+- versao: 17
+  data: '2026-08-23'
+  origem: replay mecânico do QR real do usuário no APK U15 completou o fountain Solflare e chegou ao handler customizado, mas um pedido pertencente a outra fingerprint derrubou `IACService.findMatchingWallet` ao desreferenciar `correctWallet.publicKey` quando nenhuma conta local correspondia; isso reincidiu no alerta genérico Incompatible code
+  alteracoes:
+  - ativar `src/app/services/iac/iac.service.spec.ts` e `src/app/services/iac/iac.service.ts` para uma regressão de account-mismatch válida
+  - request Solflare válido e totalmente decodificado sem wallet local correspondente deve encerrar o parser sem exceção, preservar a classificação de código válido e seguir para o fluxo no-secret/account-not-found; não pode cair em Incompatible code
+  - o teste dedicado de IAC passa de 2 para 3 specs e deve falhar antes da correção por acesso a `publicKey` de wallet indefinida
+  - a release continua 1.1.2 e o APK final deve ser reconstruído e re-homologado integralmente depois da correção
 - versao: 16
   data: '2026-08-23'
   origem: usuário determinou preservar nas skills de engenharia AirGap o método source-to-wire que levou à correção da assinatura e recarregá-lo antes de fechar a release Kaizou 1.1.2
@@ -6346,20 +6354,20 @@ entradas:
   status: aceito
 - id: 777
   caminho: src/app/services/iac/iac.service.spec.ts
-  proposito: provar sol-sign-request para fluxo interno
+  proposito: provar sol-sign-request para fluxo interno, inclusive pedido válido cuja fingerprint não pertence a nenhuma conta local
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 2 --include src/app/services/iac/iac.service.spec.ts
-  status: aceito
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/services/iac/iac.service.spec.ts
+  status: em_curso
 - id: 778
   caminho: src/app/services/iac/iac.service.ts
-  proposito: interceptar sol-sign-request e convertê-lo para TransactionSignRequest interno
+  proposito: interceptar sol-sign-request, convertê-lo para TransactionSignRequest interno e tratar account-mismatch válido sem desreferenciar wallet indefinida
   tipo: backend-integracao
   consome: []
   produz: null
   aceite: yarn build && node scripts/airgap-vault-kaizou-karma-gate.js --all && node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  status: em_curso
 - id: 779
   caminho: src/app/services/interaction/interaction.service.spec.ts
   proposito: provar que a resposta Solflare seleciona a assinatura pela chave Ed25519 do endereço de recebimento mesmo quando wallet.publicKey diverge

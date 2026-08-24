@@ -34,7 +34,7 @@ const DEFAULT_TIMEOUT_MS = 180000
 
 const ALL = [
   ['src/app/services/solflare-keystone/solflare-keystone.service.spec.ts', 5],
-  ['src/app/services/iac/iac.service.spec.ts', 2],
+  ['src/app/services/iac/iac.service.spec.ts', 3],
   ['src/app/pages/account-address/account-address.page.spec.ts', 2],
   ['src/app/pages/account-share/account-share.page.spec.ts', 3],
   ['src/app/services/interaction/interaction.service.spec.ts', 1],

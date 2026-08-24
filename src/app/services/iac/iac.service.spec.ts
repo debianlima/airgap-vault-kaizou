@@ -22,6 +22,7 @@ import { SecretsService } from '../secrets/secrets.service'
 import { SecureStorageServiceMock } from '../secure-storage/secure-storage.mock'
 import { SecureStorageService } from '../secure-storage/secure-storage.service'
 import { StartupChecksService } from '../startup-checks/startup-checks.service'
+import { SOLFLARE_KEYSTONE_PROTOCOL } from '../solflare-keystone/solflare-keystone.service'
 
 describe('IACService', () => {
   let service: IACService
@@ -68,5 +69,31 @@ describe('IACService', () => {
     const handlerNames: string[] = (service as any).handlers.map((handler) => handler.name)
     expect(handlerNames[0]).toBe('SolflareSignRequestHandler')
     expect(handlerNames.slice(1, 3)).toEqual(['SerializerV3Handler', 'SerializerV2Handler'])
+  })
+
+  it('keeps an unmatched but valid Solflare request out of the incompatible-code error path', async () => {
+    const secretsService: SecretsService = TestBed.get(SecretsService)
+    spyOn(secretsService, 'findWalletByPublicKeyAndProtocolIdentifier').and.resolveTo(undefined)
+    spyOn(secretsService, 'findByFingerprint').and.returnValue(undefined)
+    spyOn(secretsService, 'findBaseWalletByPublicKeyAndProtocolIdentifier').and.resolveTo(undefined)
+    const findByPublicKey = spyOn(secretsService, 'findByPublicKey').and.returnValue(undefined)
+
+    const request: any = {
+      id: 99,
+      protocol: SOLFLARE_KEYSTONE_PROTOCOL,
+      payload: {
+        transaction: { transaction: 'AQID', encoding: 'base64' },
+        publicKey: '',
+        callbackURL: ''
+      }
+    }
+    const metadata = { sourceFingerprint: 'deadbeef', derivationPath: "44'/501'/0'/0'", requestId: '00112233' }
+
+    const result = await (service as any).findMatchingWallet(request, metadata)
+
+    expect(result.wallet).toBeUndefined()
+    expect(result.secret).toBeUndefined()
+    expect(result.signTransactionRequest).toBe(request)
+    expect(findByPublicKey).not.toHaveBeenCalled()
   })
 })
