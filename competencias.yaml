@@ -38,7 +38,7 @@
   ativa_em:
   - '*'
   fonte: /home/anderson/airgap-solana-work/airgap-wallet-engineering-skill/SKILL.md
-  versao: 0.2.4
+  versao: 0.2.6
   origem:
     projeto_de_origem: airgap-wallet-engineering-skill
     derivacao: original

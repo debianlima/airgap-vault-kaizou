@@ -91,7 +91,10 @@
         "dynamicQr",
         "solflareSignType",
         "pairingSignerKey",
-        "messageSignatureSemantics"
+        "messageSignatureSemantics",
+        "signingSimulationMatrix",
+        "captureResilienceSimulation",
+        "androidRuntimeU26"
       ],
       "properties": {
         "android": {
@@ -200,6 +203,41 @@
               "mad_latency_ms"
             ],
             "privacy": "versioned evidence contains no real user transaction payload; private capture may be checked transiently only"
+          }
+        },
+        "androidRuntimeU26": {
+          "const": {
+            "exactApkHashRequired": true,
+            "captureMatrix": {
+              "requiredCases": [
+                "normalize-corrupt",
+                "stale-partial-target",
+                "five-stale-target",
+                "two-complete-ambiguous"
+              ],
+              "passRate": 1.0,
+              "incompatibleCodeCount": 0
+            },
+            "realSolflareForeignAccount": {
+              "expected": "No account found",
+              "mustNotContain": [
+                "Incompatible code",
+                "null dereference"
+              ]
+            },
+            "signatureCases": [
+              "controlled-solana",
+              "pancake-clmm",
+              "stake-deactivate",
+              "tokenswap-v3"
+            ],
+            "signatureChecks": [
+              "requestId-match",
+              "signature-length-64",
+              "ed25519-exact-message"
+            ],
+            "credentialGate": "enter test credential only after the same BiometricPrompt remains stable and lockPassword is present",
+            "coldRestartBoundary": "if emulator command contains -wipe-data, container restart is clean-room reset; product persistence gate is app-process force-stop/start while emulator remains alive"
           }
         }
       }

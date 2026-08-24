@@ -1,6 +1,23 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 26
+versao_contrato: 27
 historico_emendas:
+- versao: 27
+  data: '2026-08-24'
+  origem: U26 homologou o coletor resiliente no APK exato e publicou airgap-wallet-engineering-skill
+    0.2.6; auditoria final encontrou dois critérios de aceite Solflare desatualizados
+    em relação ao gate determinístico atual
+  alteracoes:
+  - recarregar airgap-wallet-engineering-skill 0.2.6 antes do fechamento da release
+  - entrada 802 troca yarn test direto indisponível neste ambiente pelo karma-gate
+    versionado com 10 specs; o produto e os asserts não mudam
+  - entrada 933 corrige contagem esperada Solflare de 5 para 10, acompanhando o spec
+    já ampliado por U25/U26
+  - release contract exige explicitamente signingSimulationMatrix, captureResilienceSimulation
+    e androidRuntimeU26
+  - androidRuntimeU26 exige matriz 4/4 no scanner real, replay estrangeiro seguro,
+    assinaturas controlada/Pancake/Stake/TokenSwap com requestId+64 bytes+Ed25519
+    e restart de processo do app como persistência quando o container usa -wipe-data
+  - reconciliar propósito do build-release para airgap-solana-module 0.1.6
 - versao: 26
   data: '2026-08-24'
   origem: U26 GREEN do scanner tornou tab-scan uma superfície deliberadamente alterada;
@@ -366,8 +383,8 @@ trabalho_compartilhado:
   descricao: corrigir integração scanner->coletor para duplicatas chegarem ao settle
     stream-aware e homologar Android
   agente: terminal-oracle
-  atualizado_em: '2026-08-24T06:34:01-03:00'
-  previsao_termino: '2026-08-24T08:34:01-03:00'
+  atualizado_em: '2026-08-24T08:39:24-03:00'
+  previsao_termino: '2026-08-24T10:39:24-03:00'
   zona_exclusao:
   - manifesto.yaml
   - estado.md
@@ -375,6 +392,11 @@ trabalho_compartilhado:
   - src/app/pages/tab-scan/tab-scan.page.spec.ts
   - docs/airgap-vault-kaizou-*.mmd
   - scripts/airgap-vault-kaizou-nonregression.js
+  - competencias.yaml
+  - contratos/airgap-vault-kaizou-solana-release.schema.json
+  prorrogado_em: '2026-08-24T08:39:24-03:00'
+  competencias:
+  - airgap-wallet-engineering-skill
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -6821,7 +6843,7 @@ entradas:
   tipo: backend-integracao
   consome: []
   produz: null
-  aceite: yarn test --watch=false --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 10 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: em_curso
 - id: 803
   caminho: src/app/services/startup-checks/startup-checks.service.spec.ts
@@ -7872,7 +7894,7 @@ entradas:
   tipo: teste-integracao
   consome: []
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 5 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 10 --include src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
   status: em_curso
 - id: 934
   caminho: scripts/airgap-vault-kaizou-karma-gate.js
@@ -7903,8 +7925,9 @@ entradas:
   produz: null
   aceite: python3 -m json.tool contratos/airgap-vault-kaizou-solana-release.schema.json
     >/dev/null && python3 -c "import json; d=json.load(open('contratos/airgap-vault-kaizou-solana-release.schema.json'));
-    p=d['properties']['release']['properties']; assert p['kaizouVersion']['const']=='1.1.2';
-    assert p['solanaModuleVersion']['const']=='0.1.6'"
+    p=d['properties']['release']['properties']; h=d['properties']['homologation'];
+    assert p['kaizouVersion']['const']=='1.1.2'; assert p['solanaModuleVersion']['const']=='0.1.6';
+    assert all(x in h['required'] for x in ['signingSimulationMatrix','captureResilienceSimulation','androidRuntimeU26'])"
   status: em_curso
 - id: 937
   caminho: src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts
@@ -7918,7 +7941,7 @@ entradas:
 - id: 938
   caminho: scripts/airgap-vault-kaizou-build-release-with-solana-module.js
   proposito: verificar e construir APK Kaizou em staging externo incluindo exatamente
-    o pacote Solana 0.1.5 assinado como asset module estático
+    o pacote Solana 0.1.6 assinado como asset module estático
   tipo: deploy-android
   consome: []
   produz: null
