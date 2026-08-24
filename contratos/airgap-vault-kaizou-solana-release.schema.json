@@ -118,7 +118,7 @@
         "signingSimulationMatrix": {
           "const": {
             "minimumCases": 30,
-            "repetitions": 5,
+            "repetitions": 6,
             "discardFirstTiming": true,
             "metrics": [
               "semantic_pass_rate",
@@ -145,7 +145,8 @@
               "Solana official transaction rules",
               "Anza wallet-adapter ca731858affa36fa91b593cc670747b671c4589f",
               "Solana Stack Exchange failure shapes"
-            ]
+            ],
+            "measuredRepetitions": 5
           }
         }
       }

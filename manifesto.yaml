@@ -1,6 +1,15 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 18
+versao_contrato: 19
 historico_emendas:
+- versao: 19
+  data: '2026-08-24'
+  origem: 'correção mecânica antes da execução: método desenvolvedor-de-software v10
+    exige no mínimo cinco medições por variante descartando a primeira; cinco execuções
+    totais deixariam apenas quatro medições'
+  alteracoes:
+  - 'simulation repetitions sobe de 5 para 6: uma execução de aquecimento descartada
+    + cinco medições válidas'
+  - critério semântico permanece 100% e sem mutações/aceites/rejeições inesperados
 - versao: 18
   data: '2026-08-24'
   origem: usuário solicitou pesquisa em fóruns de erros de assinatura Solana e uma
@@ -7821,7 +7830,7 @@ entradas:
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-solana-signing-simulation.js --repetitions
-    5 --min-cases 30 --log logs/U18-2026-08-24-solana-signing-simulation.log
+    6 --min-cases 30 --log logs/U18-2026-08-24-solana-signing-simulation.log
   status: em_curso
 - id: 940
   caminho: logs/U18-2026-08-24-solana-signing-simulation.log
