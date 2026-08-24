@@ -20,7 +20,7 @@ const {
   VersionedTransaction
 } = require('/home/anderson/airgap-solana-work/airgap-solana-module/node_modules/@solana/web3.js')
 
-const EXPECTED_MODULE_BUNDLE_SHA256 = '6b0e7f6c19af23d4594d4c4413974afaeaec01dcabca6b80bb3b4a1251b491d7'
+const EXPECTED_MODULE_BUNDLE_SHA256 = '2a058bc403c7cd123ad512de01fc0a8d0fc343d18ad313a7c54f0be79d2d2900'
 const MODULE_BUNDLE = '/home/anderson/airgap-solana-work/airgap-solana-module/dist/airgap-solana-module.bundle.js'
 const WALLET_ADAPTER_SOURCE = '/home/anderson/.cache/wallet-adapter-source-oracle'
 const WALLET_ADAPTER_COMMIT = 'ca731858affa36fa91b593cc670747b671c4589f'
@@ -227,9 +227,9 @@ const cases = [
   makeAccept('v0-multisig-local-second-other-presigned', 'forum-partial-sign', () => twoSignerTx({ local: B, payer: P, preSign: [P] }), { verifyExisting: true }),
   makeAccept('v0-multisig-local-first-other-presigned', 'forum-partial-sign', () => { const tx=v0(P,[multisigInstruction(CUSTOM,[P,B])]); tx.sign([B]); return {tx,signer:P} }, { verifyExisting: true }),
   makeAccept('legacy-multisig-local-second-other-presigned', 'forum-partial-sign', () => twoSignerTx({ kind: 'legacy', local: B, payer: P, preSign: [P] }), { verifyExisting: true }),
-  makeAccept('v0-alt-readonly', 'forum-alt-resolution', () => altCase(false, false), { verification: 'keystone-classified' }),
-  makeAccept('v0-alt-writable', 'forum-alt-resolution', () => altCase(true, false), { verification: 'keystone-classified' }),
-  makeAccept('v0-alt-30-loaded-addresses', 'forum-alt-resolution', () => altCase(false, true), { verification: 'keystone-classified' }),
+  makeAccept('v0-alt-readonly', 'forum-alt-resolution', () => altCase(false, false), { verification: 'generic-solana' }),
+  makeAccept('v0-alt-writable', 'forum-alt-resolution', () => altCase(true, false), { verification: 'generic-solana' }),
+  makeAccept('v0-alt-30-loaded-addresses', 'forum-alt-resolution', () => altCase(false, true), { verification: 'generic-solana' }),
   makeAccept('v0-alt-signer-remains-static', 'official-alt-signer-rule', () => { const table=lut(88,P,[B.publicKey,C.publicKey]); const tx=v0(P,[customInstruction(CUSTOM,[signerMeta(P),signerMeta(B),nonsignerMeta(C.publicKey)],Buffer.from([8]))],[table]); tx.sign([P]); return {tx,signer:B} }, { verifyExisting: true, assertSignerStatic: true }),
   makeAccept('v0-durable-nonce-first', 'forum-blockhash-nonce', () => durableNonceCase(false, false)),
   makeAccept('v0-durable-nonce-compute-after', 'forum-blockhash-nonce', () => durableNonceCase(false, true)),
@@ -244,7 +244,7 @@ const cases = [
   makeAccept('v0-create-account-local-second', 'forum-missing-signer', () => createAccountCase('v0',B), { verifyExisting:true }),
   makeAccept('legacy-create-account-local-second', 'forum-missing-signer', () => createAccountCase('legacy',B), { verifyExisting:true }),
   makeAccept('v0-nonce-authority-local-second', 'forum-blockhash-nonce', () => { const payer=P, authority=B; const ix=SystemProgram.nonceAdvance({noncePubkey:C.publicKey,authorizedPubkey:authority.publicKey}); const tx=v0(payer,[ix]); tx.sign([payer]); return {tx,signer:authority} }, { verifyExisting:true }),
-  makeAccept('v0-readonly-account-pressure', 'official-account-index-limit', () => staticAccountCase(45)),
+  makeAccept('v0-readonly-account-pressure', 'official-account-index-limit', () => staticAccountCase(24)),
   makeReject('reject-wrong-signer-key', 'forum-missing-signer', () => { const {tx}=baseTransferTx('v0',1); return { raw:moduleRaw(tx), signer:C } }, /non signer|signer/i),
   makeReject('reject-truncated-transaction', 'adversarial-malformed', () => { const {tx,signer}=baseTransferTx('v0',1); const raw=moduleRaw(tx); return {raw:raw.subarray(0,Math.max(1,raw.length-17)),signer} }, /deserialize|signature|length|offset|unexpected|reach|buffer|byte|read/i),
   makeReject('reject-random-bytes', 'adversarial-malformed', () => ({raw:Buffer.from('00112233445566778899aabbccddeeff','hex'),signer:P}), /deserialize|signature|length|offset|unexpected|reach|buffer|byte|read/i),
@@ -253,7 +253,7 @@ const cases = [
   makeReject('reject-31-byte-secret-seed', 'module-contract', () => { const {tx}=baseTransferTx('v0',1); return {raw:moduleRaw(tx),signer:P,secretOverride:Buffer.alloc(31,1)} }, /32-byte/i),
   makeReject('reject-33-byte-secret-seed', 'module-contract', () => { const {tx}=baseTransferTx('v0',1); return {raw:moduleRaw(tx),signer:P,secretOverride:Buffer.alloc(33,1)} }, /32-byte/i),
   makeReject('reject-unsupported-message-version', 'adversarial-malformed-version', () => { const {tx,signer}=baseTransferTx('v0',1); const raw=moduleRaw(tx); const sigCount=raw[0]; const messageOffset=1+sigCount*64; raw[messageOffset]=0x82; return {raw,signer} }, /version|deserialize|unsupported|message/i),
-  makeReject('reject-corrupt-signature-count', 'adversarial-malformed-signatures', () => { const {tx,signer}=baseTransferTx('v0',1); const raw=moduleRaw(tx); raw[0]=0; return {raw,signer} }, /deserialize|signature|version|length|offset|unexpected|message/i)
+  makeReject('reject-corrupt-signature-count', 'adversarial-malformed-signatures', () => { const {tx,signer}=baseTransferTx('v0',1); const raw=moduleRaw(tx); raw[0]=0; return {raw,signer} }, /canonical|deserialize|signature|signatures length|version|length|offset|unexpected|message/i)
 ]
 
 function median(values) {

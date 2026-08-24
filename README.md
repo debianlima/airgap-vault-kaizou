@@ -6,11 +6,11 @@
 
 **AirGap Vault Kaizou 1.1.2** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
 
-A linha 1.1.2 integra o pacote assinado **airgap-solana-module 0.1.5** como **módulo estático** no APK. O módulo continua sendo desenvolvido e versionado separadamente do Kaizou; a distribuição apenas incorpora os artefatos assinados verificados.
+A linha 1.1.2 integra o pacote assinado **airgap-solana-module 0.1.6** como **módulo estático** no APK. O módulo continua sendo desenvolvido e versionado separadamente do Kaizou; a distribuição apenas incorpora os artefatos assinados verificados.
 
 ### O que a versão 1.1.2 acrescenta
 
-- `airgap-solana-module 0.1.5` integrado ao APK como módulo estático, mantendo o módulo como projeto independente;
+- `airgap-solana-module 0.1.6` integrado ao APK como módulo estático, mantendo o módulo como projeto independente;
 - correção do QR dinâmico/fountain do Solflare: fragmentos `sol-sign-request` são acumulados até o UR ficar completo, sem cair em `Incompatible code` por serem multipart;
 - `SignType.Transaction` aceita tanto bytes de mensagem Solana quanto uma transação Solana serializada completa; quando a transação já vem serializada, ela é preservada byte a byte e não recebe um segundo prefixo de assinaturas;
 - classificação offline compatível com as famílias System, Vote, Stake, SPL Token, SPL Token Swap v3, SPL Token Lending, Squads v4, Jupiter v6 e Compute Budget tratadas pelo parser Keystone fixado pelo módulo;
@@ -30,7 +30,7 @@ O trabalho foi conduzido por um **método de manutenção orientado por manifest
 
 ## Homologação da linha 1.1.2
 
-A homologação exige módulo estático `0.1.5` assinado, QR `sol-sign-request` multipart/fountain, regressão de `VersionedTransaction` serializada sem duplo prefixo de assinaturas, regressão completa de stake, classificação offline de liquidity pool suportado pela matriz Keystone, produção de `sol-signature` com requestId preservado, verificação Ed25519, build Android e gate de isolamento que mantém os protocolos não-Solana nos caminhos existentes.
+A homologação exige módulo estático `0.1.6` assinado, QR `sol-sign-request` multipart/fountain, regressão de `VersionedTransaction` serializada sem duplo prefixo de assinaturas, regressão completa de stake, classificação offline de liquidity pool suportado pela matriz Keystone, produção de `sol-signature` com requestId preservado, verificação Ed25519, build Android e gate de isolamento que mantém os protocolos não-Solana nos caminhos existentes.
 
 > Broadcast Solana devnet continua fora do contrato offline/QR enquanto não houver saldo de teste verificável.
 

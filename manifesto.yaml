@@ -1,6 +1,30 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 19
+versao_contrato: 21
 historico_emendas:
+- versao: 21
+  data: '2026-08-24'
+  origem: airgap-solana-module v0.1.6 foi publicado e a matriz adversarial voltou
+    a 47/47 PASS; fechamento Kaizou precisa refletir a dependência final 0.1.6 no
+    README e nos critérios atuais antes do APK final
+  alteracoes:
+  - README e seu gate passam de airgap-solana-module 0.1.5 para 0.1.6
+  - registrar U20 47/47 PASS com seis execuções por cenário e cinco medições válidas
+  - promover entradas 939 e 940 da matriz adversarial para aceito
+  - fechar U18 e abrir U21 para portões finais, build APK e homologação Android da
+    release 1.1.2
+- versao: 20
+  data: '2026-08-24'
+  origem: 'U18 encontrou defeito real no módulo 0.1.5: bytes truncados/non-canonical
+    podiam ser aceitos pelo deserializer e assinados após reconstrução; airgap-solana-module
+    0.1.6 corrige o gate de canonicalidade e passou os portões do módulo'
+  alteracoes:
+  - release Kaizou 1.1.2 passa a exigir airgap-solana-module 0.1.6 em vez de 0.1.5
+  - matriz adversarial usa o bundle 0.1.6 SHA-256 2a058bc403c7cd123ad512de01fc0a8d0fc343d18ad313a7c54f0be79d2d2900
+  - 'corrigir somente expectativas do harness comprovadamente erradas: programas ALT
+    custom continuam generic-solana, pressão de contas permanece dentro do limite
+    serializável e regex de rejeição inclui erro estável de signature-count'
+  - reexecutar todos os 47 cenários com seis execuções por cenário e cinco medições
+    válidas antes da homologação Android
 - versao: 19
   data: '2026-08-24'
   origem: 'correção mecânica antes da execução: método desenvolvedor-de-software v10
@@ -263,18 +287,19 @@ historico_emendas:
 trabalho_compartilhado:
   projeto: airgap-vault-kaizou
   caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: U18
-  descricao: matriz adversarial source-to-wire de assinatura Solana antes da homologação
-    final 1.1.2
+  unidade: U21
+  descricao: portões finais, APK com módulo 0.1.6, homologação Android e publicação
+    1.1.2
   agente: terminal-oracle
-  atualizado_em: '2026-08-24T02:00:35-03:00'
-  previsao_termino: '2026-08-24T04:00:35-03:00'
+  atualizado_em: '2026-08-24T03:01:26-03:00'
+  previsao_termino: '2026-08-24T05:01:26-03:00'
   zona_exclusao:
+  - README.md
   - manifesto.yaml
   - competencias.yaml
   - estado.md
   - contratos/airgap-vault-kaizou-solana-release.schema.json
-  - scripts/airgap-vault-kaizou-solana-signing-simulation.js
+  - scripts/airgap-vault-kaizou-*.js
   - logs/U18-2026-08-24-solana-signing-simulation.log
   - docs/airgap-vault-kaizou-*.mmd
 entradas:
@@ -448,7 +473,7 @@ entradas:
   aceite: python3 -c "import pathlib,subprocess; r=pathlib.Path('README.md').read_bytes();
     u=subprocess.check_output(['git','show','v3.34.4:README.md']); assert r.endswith(u);
     t=r.decode(); assert '# AirGap Vault Kaizou 1.1.2' in t; assert 'airgap-solana-module
-    0.1.5' in t; assert 'módulo estático' in t; assert 'airgap-it/airgap-vault' in
+    0.1.6' in t; assert 'módulo estático' in t; assert 'airgap-it/airgap-vault' in
     t; assert 'ChatGPT' in t"
   status: em_curso
 - id: 22
@@ -7793,7 +7818,7 @@ entradas:
   status: aceito
 - id: 936
   caminho: contratos/airgap-vault-kaizou-solana-release.schema.json
-  proposito: contrato JSON Schema da release Kaizou 1.1.2 com módulo Solana 0.1.5
+  proposito: contrato JSON Schema da release Kaizou 1.1.2 com módulo Solana 0.1.6
     estático, QR dinâmico Solflare, stake preservado e regressão de liquidity pool
   tipo: estrutura-contrato
   consome: []
@@ -7801,7 +7826,7 @@ entradas:
   aceite: python3 -m json.tool contratos/airgap-vault-kaizou-solana-release.schema.json
     >/dev/null && python3 -c "import json; d=json.load(open('contratos/airgap-vault-kaizou-solana-release.schema.json'));
     p=d['properties']['release']['properties']; assert p['kaizouVersion']['const']=='1.1.2';
-    assert p['solanaModuleVersion']['const']=='0.1.5'"
+    assert p['solanaModuleVersion']['const']=='0.1.6'"
   status: em_curso
 - id: 937
   caminho: src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts
@@ -7831,7 +7856,7 @@ entradas:
   produz: null
   aceite: node scripts/airgap-vault-kaizou-solana-signing-simulation.js --repetitions
     6 --min-cases 30 --log logs/U18-2026-08-24-solana-signing-simulation.log
-  status: em_curso
+  status: aceito
 - id: 940
   caminho: logs/U18-2026-08-24-solana-signing-simulation.log
   proposito: registrar ambiente, fontes, métricas, mediana, dispersão e resultado
@@ -7841,7 +7866,7 @@ entradas:
   produz: null
   aceite: test -s logs/U18-2026-08-24-solana-signing-simulation.log && grep -q "SIMULATION_PASS"
     logs/U18-2026-08-24-solana-signing-simulation.log
-  status: em_curso
+  status: aceito
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação

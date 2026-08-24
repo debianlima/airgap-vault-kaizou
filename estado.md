@@ -1,10 +1,10 @@
-# Estado — 2026-08-23 — contrato v19
+# Estado — 2026-08-24 — contrato v21
 
 ## Decisões vigentes
-- AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.5` permanece o módulo integrado e não muda nesta unidade.
+- AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.6` passa a ser o módulo integrado após U18 encontrar e corrigir canonicalidade no signer.
 - O QR real do usuário é `sol-sign-request` fountain/multipart com `SignType.Message`; o handler deve aceitar `SignType.Message` e `SignType.Transaction` e preservar corretamente mensagem ou transação serializada completa.
 - Stake e protocolos não-Solana permanecem semanticamente inalterados.
-- `airgap-wallet-engineering-skill` foi recarregada para a versão de trabalho 0.2.2 antes do fechamento da homologação; 0.2.2 inclui o método source-to-wire e os aprendizados de assinatura homologados em U15.
+- `airgap-wallet-engineering-skill` foi recarregada para a versão de trabalho 0.2.3 antes do fechamento da homologação; 0.2.2 inclui o método source-to-wire e os aprendizados de assinatura homologados em U15.
 - `android-container-avd-lab` atua somente na montagem/reparo do laboratório; `android-airgap-runtime` continua responsável pela homologação do APK.
 
 ## Decisões superadas
@@ -38,8 +38,15 @@
 
 - U18 medição RED: 47 cenários × 6 execuções (1 aquecimento + 5 medidas); 41 PASS, 6 FAIL, `semantic_pass_rate=0.8723404255`, mediana de latência por caso 18.1235 ms e MAD 4.3179 ms. Três ALT usavam programa custom desconhecido e esperavam classificação errada (`generic-solana` é o comportamento contratual), um caso de pressão de contas excedeu o limite de serialização antes do signer, e a corrupção do signature-count rejeitou com erro estável diferente do regex. O defeito de produto candidato é um payload truncado não canônico que `VersionedTransaction.deserialize` aceita e reserializa com bytes diferentes; o módulo 0.1.5 também o assina. Sweep confirmou cortes de 1 e 17 bytes aceitos/reconstruídos, enquanto outros cortes rejeitam.
 
+- U20 — dependência promovida para `airgap-solana-module 0.1.6`; o patch rejeita serializações Solana não canônicas antes da assinatura. A matriz adversarial deve voltar a 47/47 PASS antes de reconstruir o APK.
+
+- U20 primeira reexecução no módulo 0.1.6: 46/47 PASS; o único FAIL foi expectativa de texto do harness em `reject-corrupt-signature-count`. O módulo rejeitou corretamente mais cedo por `Non-canonical serialized Solana transaction bytes`; regex do caso foi ampliado para aceitar essa rejeição mais forte.
+
+- U20 final: matriz adversarial no `airgap-solana-module 0.1.6` fechou 47/47 PASS, 6 execuções por cenário (1 aquecimento + 5 medidas), `semantic_pass_rate=1.0`, mediana 19.983 ms e MAD 3.7831 ms; 9 rejeições adversariais esperadas passaram e não houve mutação/aceite/rejeição inesperados.
+- `airgap-solana-module v0.1.6` publicado; ZIP remoto verificado byte-idêntico ao local, SHA-256 `2515d1536938d7aca2709a63b9264e2439438cf441b4d45abe34acd6e1185150`.
+
 ## Pendências técnicas não humanas
-- U17 software GREEN; executar portões globais, reconstruir APK final e repetir homologação Android integral antes do fechamento/release.
+- U21: executar portões globais no módulo 0.1.6, reconstruir APK final, homologar Android integralmente e publicar 1.1.2.
 
 ## Trabalho compartilhado
 - ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; nenhuma zona de exclusão ativa.

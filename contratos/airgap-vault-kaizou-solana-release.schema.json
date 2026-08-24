@@ -95,7 +95,7 @@
       ],
       "properties": {
         "android": {
-          "const": "Android 11 Google Play user non-root: module 0.1.5 available on clean install without ZIP import; stake remains functional and a Keystone-supported liquidity-pool request is classified offline rather than unrecognized"
+          "const": "Android 11 Google Play user non-root: module 0.1.6 available on clean install without ZIP import; stake remains functional and a Keystone-supported liquidity-pool request is classified offline rather than unrecognized"
         },
         "solflare": {
           "const": "sol-sign-request -> Vault -> sol-signature preserves requestId and verifies Ed25519"
@@ -140,7 +140,7 @@
               "pass_count",
               "expected_rejection_count"
             ],
-            "environment": "WSL Node 24, exact airgap-solana-module 0.1.5 source/bundle, deterministic synthetic keys; no RPC submission",
+            "environment": "WSL Node 24, exact airgap-solana-module 0.1.6 source/bundle, deterministic synthetic keys; no RPC submission",
             "sources": [
               "Solana official transaction rules",
               "Anza wallet-adapter ca731858affa36fa91b593cc670747b671c4589f",
@@ -169,7 +169,7 @@
           "const": "airgap-vault-kaizou-1.1.2"
         },
         "solanaModuleVersion": {
-          "const": "0.1.5"
+          "const": "0.1.6"
         },
         "solanaModuleProject": {
           "const": "airgap-solana-module"
