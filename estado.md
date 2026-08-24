@@ -54,6 +54,8 @@
 
 - U23 GREEN final: 5 bancos sintéticos × 32 cenários × 6 execuções = 160 casos; 140/140 recuperáveis no coletor candidato (`candidate_success_rate=1.0`), baseline 115/140 (`0.8214285714`), zero falso sucesso, zero exceção não tratada e máximo de 4 streams ativos. Mediana por caso: baseline 0.41702 ms (MAD 0.19837), candidato 1.12271 ms (MAD 0.56877). A captura real privada foi checada transitoriamente em 13 perfis sem registrar payload: candidato 11/13, baseline 10/13; os 2 casos restantes tinham fragmentos independentes insuficientes e foram corretamente não recuperáveis.
 
+- U24 — skill recarregada: `airgap-wallet-engineering-skill` 0.2.4 / `offline-transport` 0.1.2 incorpora a evidência U23 de isolamento por fingerprint Fountain, dedupe, limites de streams e ambiguidade explícita entre requests completos concorrentes.
+
 ## Pendências técnicas não humanas
 - U21: executar portões globais no módulo 0.1.6, reconstruir APK final, homologar Android integralmente e publicar 1.1.2.
 
