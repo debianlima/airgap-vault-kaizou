@@ -60,16 +60,11 @@ export class TabScanPage extends ScanBasePage {
   }
 
   public async checkScan(data: string): Promise<boolean | void> {
-    const sizeBefore: number = this.parts.size
     this.parts.add(data)
 
-    if (sizeBefore === this.parts.size) {
-      // We scanned a string we already have in our cache, ignoring it and starting scan again.
-      this.startScan()
-
-      return undefined
-    }
-
+    // Keep the UI cache deduplicated, but always forward the carrier event to IACService.
+    // Multipart handlers perform stream-aware dedupe and may need repeated captures to
+    // settle stale/competing streams without confusing a duplicate frame with a new part.
     this.ngZone.run(() => {
       this.iacService
         .handleRequest(data, IACMessageTransport.QR_SCANNER, (progress: number) => {

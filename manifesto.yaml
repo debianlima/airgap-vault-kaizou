@@ -1,6 +1,14 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 25
+versao_contrato: 26
 historico_emendas:
+- versao: 26
+  data: '2026-08-24'
+  origem: U26 GREEN do scanner tornou tab-scan uma superfície deliberadamente alterada;
+    o portão nonregression ainda tratava esses dois arquivos como mudança inesperada
+  alteracoes:
+  - nonregression passa a reconhecer tab-scan.page.ts/spec.ts como parte declarada
+    da superfície Solflare/QR
+  - nenhuma outra superfície de produto é ampliada
 - versao: 25
   data: '2026-08-24'
   origem: homologação Android U25 reproduziu stale partial + target completo ficando
@@ -358,14 +366,15 @@ trabalho_compartilhado:
   descricao: corrigir integração scanner->coletor para duplicatas chegarem ao settle
     stream-aware e homologar Android
   agente: terminal-oracle
-  atualizado_em: '2026-08-24T06:26:08-03:00'
-  previsao_termino: '2026-08-24T08:26:08-03:00'
+  atualizado_em: '2026-08-24T06:34:01-03:00'
+  previsao_termino: '2026-08-24T08:34:01-03:00'
   zona_exclusao:
   - manifesto.yaml
   - estado.md
   - src/app/pages/tab-scan/tab-scan.page.ts
   - src/app/pages/tab-scan/tab-scan.page.spec.ts
   - docs/airgap-vault-kaizou-*.mmd
+  - scripts/airgap-vault-kaizou-nonregression.js
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -7849,13 +7858,13 @@ entradas:
   status: em_curso
 - id: 932
   caminho: scripts/airgap-vault-kaizou-nonregression.js
-  proposito: verificar mecanicamente que a integração Solflare/stake está isolada
-    a Solana e que fluxos das demais redes permanecem no comportamento upstream
+  proposito: verificar mecanicamente que a integração Solflare/stake/QR scanner está
+    isolada à superfície declarada e que demais redes permanecem upstream
   tipo: teste-integracao
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-nonregression.js
-  status: aceito
+  status: em_curso
 - id: 933
   caminho: scripts/airgap-vault-kaizou-karma.conf.js
   proposito: harness Karma reproduzível com porta exclusiva por job para impedir reconnect

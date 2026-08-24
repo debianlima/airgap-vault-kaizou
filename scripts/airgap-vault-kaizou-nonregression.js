@@ -21,7 +21,9 @@ const allowedProductChanges = new Set([
   'src/app/services/solflare-keystone/solflare-keystone.service.ts',
   'src/app/services/solflare-keystone/solflare-keystone.service.spec.ts',
   'src/app/pages/deserialized-detail/deserialized-detail.effects.ts',
-  'src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts'
+  'src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts',
+  'src/app/pages/tab-scan/tab-scan.page.ts',
+  'src/app/pages/tab-scan/tab-scan.page.spec.ts'
 ])
 const changed = execFileSync(
   'git',
