@@ -1,6 +1,27 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 22
+versao_contrato: 23
 historico_emendas:
+- versao: 23
+  data: '2026-08-24'
+  origem: usuário pediu simular uma sequência de coleta QR mais resiliente usando
+    o banco de transações já criado e variações de captura antes de qualquer nova
+    alteração de produto
+  alteracoes:
+  - declarar simulador comparativo baseline U22 versus coletor candidato sem tocar
+    runtime do Vault
+  - 'usar apenas fixtures sintéticas/derivadas locais: controlled SignType.Message,
+    Stake, TokenSwapV3 e requests Pancake CLMM; captura real do usuário só pode ser
+    validada transitoriamente e não entra no log versionado'
+  - variar ordem, duplicação, perdas recuperáveis, corrupção, truncamento, ruído,
+    gaps, ciclos parciais e interleaving de requests distintos
+  - coletor candidato normaliza entrada, descarta frame inválido, deduplica e isola
+    streams multipart por type+seqLen+messageLen+checksum antes de alimentar decoders
+    independentes
+  - simulação exige >=4 bancos sintéticos, >=24 cenários, 6 execuções por caso (1
+    aquecimento + 5 medições), target_success=100% nos casos recuperáveis, false_success=0,
+    unhandled_exception=0 e <=4 streams ativos
+  - qualquer correção de produto posterior exige RED commitado separado; esta unidade
+    mede apenas a lógica candidata
 - versao: 22
   data: '2026-08-24'
   origem: replay fresco da captura real Solflare no APK U21 mostrou simultaneamente
@@ -301,18 +322,18 @@ historico_emendas:
 trabalho_compartilhado:
   projeto: airgap-vault-kaizou
   caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: U22
-  descricao: tolerar frame fountain Solflare corrompido sem classificar request válido
-    como Incompatible code
+  unidade: U23
+  descricao: simular coleta Solflare/BC-UR resiliente com banco sintético de transações
+    antes de alterar runtime
   agente: terminal-oracle
-  atualizado_em: '2026-08-24T04:26:40-03:00'
-  previsao_termino: '2026-08-24T06:26:40-03:00'
+  atualizado_em: '2026-08-24T05:44:57-03:00'
+  previsao_termino: '2026-08-24T07:44:57-03:00'
   zona_exclusao:
   - manifesto.yaml
   - estado.md
-  - src/app/services/solflare-keystone/solflare-keystone.service.ts
-  - src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
-  - scripts/airgap-vault-kaizou-karma-gate.js
+  - contratos/airgap-vault-kaizou-solana-release.schema.json
+  - scripts/airgap-vault-kaizou-solflare-capture-resilience-simulation.js
+  - logs/U23-2026-08-24-solflare-capture-resilience.log
   - docs/airgap-vault-kaizou-*.mmd
 entradas:
 - id: 1
@@ -7879,6 +7900,28 @@ entradas:
   aceite: test -s logs/U18-2026-08-24-solana-signing-simulation.log && grep -q "SIMULATION_PASS"
     logs/U18-2026-08-24-solana-signing-simulation.log
   status: aceito
+- id: 941
+  caminho: scripts/airgap-vault-kaizou-solflare-capture-resilience-simulation.js
+  proposito: comparar o decoder linear atual com um coletor candidato de QR Solflare/BC-UR
+    resiliente a perdas, duplicatas, corrupção, ruído e interleaving usando o banco
+    sintético de transações da homologação
+  tipo: teste-integracao
+  consome: []
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-solflare-capture-resilience-simulation.js
+    --repetitions 6 --min-banks 4 --min-scenarios 24 --log logs/U23-2026-08-24-solflare-capture-resilience.log
+  status: em_curso
+- id: 942
+  caminho: logs/U23-2026-08-24-solflare-capture-resilience.log
+  proposito: registrar ambiente, matriz, taxas baseline/candidato, mediana, MAD, streams
+    ativos e rejeições esperadas da simulação U23; sem material de transação real
+    do usuário
+  tipo: evidencia-teste
+  consome: []
+  produz: null
+  aceite: test -s logs/U23-2026-08-24-solflare-capture-resilience.log && grep -q "CAPTURE_RESILIENCE_PASS"
+    logs/U23-2026-08-24-solflare-capture-resilience.log
+  status: em_curso
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação

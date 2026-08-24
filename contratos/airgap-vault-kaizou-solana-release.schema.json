@@ -148,6 +148,59 @@
             ],
             "measuredRepetitions": 5
           }
+        },
+        "captureResilienceSimulation": {
+          "const": {
+            "minimumBanks": 4,
+            "minimumScenarios": 24,
+            "repetitions": 6,
+            "measuredRepetitions": 5,
+            "discardFirstTiming": true,
+            "candidateSequence": [
+              "normalize",
+              "recognize-type",
+              "parse-fountain-metadata",
+              "discard-invalid-frame",
+              "deduplicate",
+              "route-by-type-seqLen-messageLen-checksum",
+              "decode-per-stream",
+              "validate-complete-UR",
+              "emit-once"
+            ],
+            "variations": [
+              "ordered",
+              "reverse",
+              "shuffle",
+              "duplicate",
+              "burst-duplicate",
+              "drop-recoverable",
+              "corrupt",
+              "truncate",
+              "noise",
+              "whitespace",
+              "case",
+              "partial-cycle-then-full",
+              "interleaved-stream",
+              "stale-stream",
+              "long-gap"
+            ],
+            "thresholds": {
+              "recoverableTargetSuccessRate": 1.0,
+              "falseSuccessCount": 0,
+              "unhandledExceptionCount": 0,
+              "maxActiveStreams": 4
+            },
+            "report": [
+              "baseline_success_rate",
+              "candidate_success_rate",
+              "candidate_false_success_count",
+              "candidate_unhandled_exception_count",
+              "candidate_max_active_streams",
+              "median_latency_ms",
+              "mad_latency_ms"
+            ],
+            "privacy": "versioned evidence contains no real user transaction payload; private capture may be checked transiently only"
+          }
         }
       }
     },

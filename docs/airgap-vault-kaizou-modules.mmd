@@ -401,6 +401,7 @@ graph TD
   end
   subgraph logs["logs"]
     E940["U18-2026-08-24-solana-signing-simulation.log<br/>registrar ambiente, fontes, métricas, mediana, dispersão e resultado por cenário da simulação U18; retenção máxima 30 unidades ou 90 dias"]
+    E942["U23-2026-08-24-solflare-capture-resilience.log<br/>registrar ambiente, matriz, taxas baseline/candidato, mediana, MAD, streams ativos e rejeições esperadas da simulação U23; sem material de transação real do usuário"]
   end
   subgraph resources["resources"]
     E233["logo-dark_splash.svg<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
@@ -417,6 +418,7 @@ graph TD
     E934["airgap-vault-kaizou-karma-gate.js<br/>executar Karma de forma determinística no WSL com porta exclusiva por job e cleanup síncrono do Chrome temporário"]
     E938["airgap-vault-kaizou-build-release-with-solana-module.js<br/>verificar e construir APK Kaizou em staging externo incluindo exatamente o pacote Solana 0.1.5 assinado como asset module estático"]
     E939["airgap-vault-kaizou-solana-signing-simulation.js<br/>executar matriz source-to-wire de alta variedade derivada de erros reais de assinatura Solana, medindo preservação de bytes, slots multisig, classificação e rejeição estável antes da homologação Android final"]
+    E941["airgap-vault-kaizou-solflare-capture-resilience-simulation.js<br/>comparar o decoder linear atual com um coletor candidato de QR Solflare/BC-UR resiliente a perdas, duplicatas, corrupção, ruído e interleaving usando o banco sintético de transações da homologação"]
   end
   subgraph src["src"]
     E883["global.scss<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
