@@ -10,7 +10,25 @@ const ROOT = path.resolve(__dirname, '..')
 const NG = path.join(ROOT, 'node_modules', '@angular', 'cli', 'bin', 'ng')
 const KARMA = path.join(ROOT, 'scripts', 'airgap-vault-kaizou-karma.conf.js')
 const WIN_CHROME_WSL = '/mnt/c/Program Files/Google/Chrome/Application/chrome.exe'
-const PUPPETEER_CHROME = require(path.join(ROOT, 'node_modules', 'puppeteer')).executablePath()
+function resolveLinuxChrome() {
+  try {
+    const puppeteer = require(path.join(ROOT, 'node_modules', 'puppeteer'))
+    const executable = puppeteer.executablePath()
+    if (executable && fs.existsSync(executable)) return executable
+  } catch {}
+
+  const cacheRoot = path.join(os.homedir(), '.cache', 'puppeteer', 'chrome')
+  if (!fs.existsSync(cacheRoot)) return undefined
+  const candidates = fs
+    .readdirSync(cacheRoot)
+    .sort()
+    .reverse()
+    .map((version) => path.join(cacheRoot, version, 'chrome-linux64', 'chrome'))
+    .filter((candidate) => fs.existsSync(candidate))
+  return candidates[0]
+}
+
+const PUPPETEER_CHROME = resolveLinuxChrome()
 const PROFILE_ROOT = '/mnt/e/airgap-vault-kaizou-workspace/cache'
 const DEFAULT_TIMEOUT_MS = 180000
 
@@ -18,7 +36,8 @@ const ALL = [
   ['src/app/services/solflare-keystone/solflare-keystone.service.spec.ts', 5],
   ['src/app/services/iac/iac.service.spec.ts', 2],
   ['src/app/pages/account-address/account-address.page.spec.ts', 2],
-  ['src/app/pages/account-share/account-share.page.spec.ts', 2],
+  ['src/app/pages/account-share/account-share.page.spec.ts', 3],
+  ['src/app/services/interaction/interaction.service.spec.ts', 1],
   ['src/app/pages/transaction-signed/transaction-signed.page.spec.ts', 1]
 ]
 

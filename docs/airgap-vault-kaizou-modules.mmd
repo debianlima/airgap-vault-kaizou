@@ -1205,7 +1205,7 @@ graph TD
     E778["iac.service.ts<br/>interceptar sol-sign-request e convertê-lo para TransactionSignRequest interno"]
   end
   subgraph src_app_services_interaction["src/app/services/interaction"]
-    E779["interaction.service.spec.ts<br/>arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap"]
+    E779["interaction.service.spec.ts<br/>provar que a resposta Solflare seleciona a assinatura pela chave Ed25519 do endereço de recebimento mesmo quando wallet.publicKey diverge"]
     E780["interaction.service.ts<br/>preservar contexto externo de Solflare/Keystone e extrair a assinatura pela chave Ed25519 correspondente ao endereço de recebimento da conta"]
   end
   subgraph src_app_services_lifehash["src/app/services/lifehash"]

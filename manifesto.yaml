@@ -1,6 +1,14 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 13
+versao_contrato: 14
 historico_emendas:
+- versao: 14
+  data: '2026-08-23'
+  origem: correção U13 exige também um portão RED independente para a seleção do signer na resposta `sol-signature`, antes de alterar `InteractionService`
+  alteracoes:
+  - ativar `src/app/services/interaction/interaction.service.spec.ts` como regressão de integração em vez do placeholder upstream comentado
+  - o teste deve construir transação com dois signers em que `wallet.publicKey` aponta ao primeiro e `receivingPublicAddress` ao segundo; a resposta Solflare deve extrair a assinatura do segundo
+  - o agregador Karma passa a incluir explicitamente esse spec com contagem determinística
+  - nenhum critério de produto ou versão alvo muda em relação ao contrato v13
 - versao: 13
   data: '2026-08-23'
   origem: homologação Android 1.1.2 revelou que o QR crypto-multi-accounts usava `wallet.publicKey`, enquanto a chave Ed25519 realmente derivada para assinatura coincide com `wallet.receivingPublicAddress`; o request chegava ao detalhe mas falhava com `Cannot sign with non signer key`
@@ -6338,12 +6346,12 @@ entradas:
   status: aceito
 - id: 779
   caminho: src/app/services/interaction/interaction.service.spec.ts
-  proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
-  tipo: nao-classificado
+  proposito: provar que a resposta Solflare seleciona a assinatura pela chave Ed25519 do endereço de recebimento mesmo quando wallet.publicKey diverge
+  tipo: teste-integracao
   consome: []
   produz: null
-  aceite: git diff --quiet v3.34.4 -- src/app/services/interaction/interaction.service.spec.ts
-  status: aceito
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 1 --include src/app/services/interaction/interaction.service.spec.ts
+  status: em_curso
 - id: 780
   caminho: src/app/services/interaction/interaction.service.ts
   proposito: preservar contexto externo de Solflare/Keystone e extrair a assinatura pela chave Ed25519 correspondente ao endereço de recebimento da conta

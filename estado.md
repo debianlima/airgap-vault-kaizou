@@ -1,4 +1,4 @@
-# Estado — 2026-08-23 — contrato v13
+# Estado — 2026-08-23 — contrato v14
 
 ## Decisões vigentes
 - AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.5` permanece o módulo integrado e não muda nesta unidade.
@@ -22,6 +22,8 @@
 - U12: a skill 0.2.0 foi recarregada; o workflow-infra 110 permanece fonte do inventário e a nova subskill fornece apenas procedimento do laboratório.
 - U13: homologação Android provou divergência real entre o `wallet.publicKey` anunciado pelo QR e a chave pública derivada da seed/endereço; signing chegou ao módulo mas falhou com `Cannot sign with non signer key`.
 - U13 RED confirmado: `account-share.page.spec.ts` executou 3 specs e falhou 1/3 porque `encodeAccountSync` recebeu `wallet.publicKey=11…11` em vez da chave Ed25519 `f036…58f7` decodificada do endereço Solana de teste.
+- U14: resposta `sol-signature` ganha portão RED próprio em `interaction.service.spec.ts` antes da alteração de `InteractionService`.
+- U14 RED confirmado: transação v0 sintética com dois signers retornou a assinatura `0x21…` ligada a `wallet.publicKey`; o aceite exige `0x42…` ligada à chave Ed25519 decodificada de `receivingPublicAddress`.
 
 ## Pendências técnicas não humanas
 - Corrigir sob teste-first o QR de pareamento/extração de resposta para usar a chave Ed25519 do endereço de recebimento e repetir a homologação Android 1.1.2 até `sol-signature` verificável.
@@ -49,7 +51,7 @@
 - pendentes de autorização: nenhuma.
 
 ## Entradas aceitas
-- 922/938 permanecem aceitas; entradas 21, 118, 127, 141, 228, 229, 231, 371, 372, 780, 801, 802, 931, 933, 934 e 936 estão `em_curso` nas U10/U11/U12/U13.
+- 921/938 permanecem aceitas; entradas 21, 118, 127, 141, 228, 229, 231, 371, 372, 779, 780, 801, 802, 931, 933, 934 e 936 estão `em_curso` nas U10/U11/U12/U13/U14.
 
 ## Próxima unidade
-- U13 — primeiro gate: regressão de pareamento deve falhar quando `wallet.publicKey` diverge do endereço/signer; só depois corrigir QR e resposta e retomar o gate Android.
+- U14 — RED de resposta confirmado; reaplicar `InteractionService` usando a chave derivada de `receivingPublicAddress`, executar GREEN e então reconstruir o APK.
