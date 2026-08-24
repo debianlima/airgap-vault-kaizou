@@ -36,7 +36,7 @@
 - Nenhuma para a release `1.1.2` e para a homologação pós-release R03.
 
 ## Trabalho compartilhado
-- ponteiro: `manifesto.yaml.trabalho_compartilhado` — R04 ativa; `README.md`, `manifesto.yaml`, `estado.md`, log R04 e diagramas reservados até o fechamento.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — `null`; R04 liberada após verificação pública.
 
 ## Competências ativas nesta unidade
 - `desenvolvedor-de-software` v14 — busca externa, documentação e entrega.
@@ -61,4 +61,4 @@
 - 1–942.
 
 ## Próxima unidade
-- R04 em curso: reaplicar e publicar a redação pública v30, preservando somente o resumo aprovado nos comentários externos.
+- Nenhuma obrigatória para R04; detalhes internos do processo ficam reservados até a publicação dos artigos.

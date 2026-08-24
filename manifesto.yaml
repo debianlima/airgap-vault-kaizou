@@ -418,26 +418,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou
-  unidade: R04
-  descricao: atualizar README com transparência experimental/IA e divulgar release
-    em issues GitHub pertinentes usando a conta debianlima
-  agente: terminal-oracle
-  atualizado_em: '2026-08-24T19:30:00-03:00'
-  previsao_inicio: '2026-08-24T19:02:41-03:00'
-  previsao_termino: '2026-08-24T21:00:00-03:00'
-  competencias:
-  - desenvolvedor-de-software@14
-  - telemetry-data-visualization@2
-  - airgap-wallet-engineering-skill@0.2.6
-  zona_exclusao:
-  - README.md
-  - manifesto.yaml
-  - estado.md
-  - logs/R04-2026-08-24-readme-outreach.log
-  - docs/airgap-vault-kaizou-*.mmd
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -616,7 +597,7 @@ entradas:
     forbidden=['execução solicitada pelo operador','aprendizagem/dry-run','tempos
     entre quadros','O operador definiu o objetivo']; assert not any(x in p for x in
     forbidden)"
-  status: em_curso
+  status: aceito
 - id: 22
   caminho: android/.gitignore
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -8059,7 +8040,7 @@ entradas:
   aceite: test -s logs/R04-2026-08-24-readme-outreach.log && grep -q 'github_login=debianlima'
     logs/R04-2026-08-24-readme-outreach.log && grep -q 'R04_OUTREACH_PASS' logs/R04-2026-08-24-readme-outreach.log
     && ! grep -Eqi '(authorization:|bearer |password=|token=)' logs/R04-2026-08-24-readme-outreach.log
-  status: em_curso
+  status: aceito
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação
