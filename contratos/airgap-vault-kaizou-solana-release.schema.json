@@ -114,6 +114,39 @@
         },
         "messageSignatureSemantics": {
           "const": "Solflare SignType.Message signData is the serialized Solana transaction message: Vault creates only the required empty signature slots for local signing and preserves message bytes exactly; the Keystone response is the detached Ed25519 sol-signature bound to the original requestId. SignType.Transaction may instead preserve a complete serialized transaction byte-for-byte."
+        },
+        "signingSimulationMatrix": {
+          "const": {
+            "minimumCases": 30,
+            "repetitions": 5,
+            "discardFirstTiming": true,
+            "metrics": [
+              "semantic_pass_rate",
+              "message_byte_equality",
+              "multisigner_preservation",
+              "expected_rejection_stability",
+              "latency_ms"
+            ],
+            "thresholds": {
+              "semanticPassRate": 1.0,
+              "unexpectedMutationCount": 0,
+              "unexpectedAcceptanceCount": 0,
+              "unexpectedRejectionCount": 0
+            },
+            "report": [
+              "median_latency_ms",
+              "mad_latency_ms",
+              "case_count",
+              "pass_count",
+              "expected_rejection_count"
+            ],
+            "environment": "WSL Node 24, exact airgap-solana-module 0.1.5 source/bundle, deterministic synthetic keys; no RPC submission",
+            "sources": [
+              "Solana official transaction rules",
+              "Anza wallet-adapter ca731858affa36fa91b593cc670747b671c4589f",
+              "Solana Stack Exchange failure shapes"
+            ]
+          }
         }
       }
     },

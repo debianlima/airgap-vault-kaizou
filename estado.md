@@ -1,4 +1,4 @@
-# Estado — 2026-08-23 — contrato v17
+# Estado — 2026-08-23 — contrato v18
 
 ## Decisões vigentes
 - AirGap Vault Kaizou 1.1.2 corrige o host Solflare/Keystone; `airgap-solana-module 0.1.5` permanece o módulo integrado e não muda nesta unidade.
@@ -33,6 +33,8 @@
 - U17 RED confirmado: `iac.service.spec.ts` executou 3 specs e falhou 1/3 exatamente em `iac.service.ts:284`, ao acessar `correctWallet.publicKey` quando um `sol-sign-request` válido não encontrou conta local; o gate exige retorno sem exceção e `secret` indefinido.
 - U17 GREEN de software: `IACService.findMatchingWallet` agora preserva `wallet`/`secret` indefinidos sem desreferenciar `correctWallet`; gates IAC 3/3, account-share 3/3, interaction 1/1, Solflare 5/5, nonregression e estrutura passaram.
 
+- U18 — matriz adversarial source-to-wire: contrato fixou >=30 cenários, 5 repetições, descarte da primeira medição, 100% de invariantes e mediana+MAD; fontes externas viram apenas formas de falha, nunca transações privadas copiadas.
+
 ## Pendências técnicas não humanas
 - U17 software GREEN; executar portões globais, reconstruir APK final e repetir homologação Android integral antes do fechamento/release.
 
@@ -43,7 +45,7 @@
 - `keystone-solflare-ur` — contrato real `sol-sign-request`/`sol-signature`, fountain e sign types.
 - `angular-ionic-integration` — caminho IAC do scanner para `deserialized-detail`.
 - `android-vault-runtime` — build/instalação/smoke no Android user/non-root.
-- `skill-projeto` — `airgap-wallet-engineering-skill` v0.2.2; signing externo ativa `protocol-research` source-to-wire + `external-wallet-interoperability` + `cryptographic-boundaries`; `android-container-avd-lab` só monta/repara laboratório.
+- `skill-projeto` — `airgap-wallet-engineering-skill` v0.2.3; signing externo ativa `protocol-research` source-to-wire + `external-wallet-interoperability` + `cryptographic-boundaries`; `android-container-avd-lab` só monta/repara laboratório.
 
 ## Competências instaladas para unidades futuras
 - As competências existentes permanecem; `android-container-avd-lab` está disponível via skill de projeto somente quando a tarefa tocar montagem/reparo de container/AVD.
