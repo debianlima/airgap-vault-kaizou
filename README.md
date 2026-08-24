@@ -1,10 +1,10 @@
-# AirGap Vault Kaizou 1.1.1
+# AirGap Vault Kaizou 1.1.2
 
 > Fork comunitário do AirGap Vault com **Solana disponível diretamente na linha Kaizou**, integração Solflare, stake preservado e classificação offline ampliada para o escopo Keystone Solana, mantendo abaixo a documentação original do projeto upstream.
 
 ## Sobre o Kaizou
 
-**AirGap Vault Kaizou 1.1.1** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
+**AirGap Vault Kaizou 1.1.3** é um fork público do [AirGap Vault](https://github.com/airgap-it/airgap-vault), criado a partir da tag **`v3.34.4`**, commit **`aa50b7f0371ed2e681f358d22b546c7c000e05b7`**.
 
 A linha 1.1.1 integra o pacote assinado **airgap-solana-module 0.1.5** como **módulo estático** no APK. O módulo continua sendo desenvolvido e versionado separadamente do Kaizou; a distribuição apenas incorpora os artefatos assinados verificados.
 
