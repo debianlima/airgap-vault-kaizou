@@ -137,6 +137,7 @@
     "bip39": "^3.0.3",
     "bip85": "0.0.3",
     "browserify-zlib": "^0.2.0",
+    "bs58": "4.0.1",
     "cordova-plugin-audioinput": "1.0.1",
     "cordova-plugin-compat": "1.2.0",
     "cordova-plugin-device-motion": "^2.0.1",

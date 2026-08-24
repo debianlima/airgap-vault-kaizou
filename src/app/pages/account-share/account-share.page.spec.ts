@@ -3,14 +3,15 @@ import { airgapsolflare, airgapwallet } from '../account-address/account-address
 import { AccountSharePage } from './account-share.page'
 
 describe('AccountSharePage AirGap Solflare', () => {
-  const publicKey = 'd39e71bc4c201ce8c4edadeda09d763c26393bbb218b5826b7521ede5e8893c9'
+  const publicKey = 'f036276246a75b9de3349ed42b15e232f6518fc20f5fcd4f1d64e81f9bd258f7'
+  const receivingPublicAddress = 'HAgk14JpMQLgt6rVgv7cBQFJWFto5Dqxi472uT3DKpqk'
 
   it('renders a crypto-multi-accounts payload from the selected Solana wallet fields', () => {
     const navigation: any = {
       getState: () => ({
         interactionUrl: [],
         companionApp: airgapsolflare,
-        wallet: { publicKey, derivationPath: "m/44'/501'/0'/0'", masterFingerprint: '12345678' }
+        wallet: { publicKey, receivingPublicAddress, derivationPath: "m/44'/501'/0'/0'", masterFingerprint: '12345678' }
       })
     }
     const page = new AccountSharePage(navigation, {} as any, new SolflareKeystoneService())
@@ -19,7 +20,6 @@ describe('AccountSharePage AirGap Solflare', () => {
 
   it('uses the Ed25519 signer encoded by the Solana receiving address when wallet.publicKey diverges', () => {
     const staleWalletPublicKey = '11'.repeat(32)
-    const receivingPublicAddress = 'HAgk14JpMQLgt6rVgv7cBQFJWFto5Dqxi472uT3DKpqk'
     const expectedSignerPublicKey = 'f036276246a75b9de3349ed42b15e232f6518fc20f5fcd4f1d64e81f9bd258f7'
     const service: any = {
       encodeAccountSync: jasmine.createSpy('encodeAccountSync').and.returnValue('ur:crypto-multi-accounts/test')

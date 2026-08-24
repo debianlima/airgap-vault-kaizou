@@ -8,6 +8,7 @@ import {
   SolflareKeystoneService,
   SolflareSignRequestHandler,
   extractSignatureForPublicKey,
+  solanaPublicKeyHexFromAddress,
   unsignedTransactionFromMessage
 } from './solflare-keystone.service'
 
@@ -28,6 +29,9 @@ describe('SolflareKeystoneService', () => {
   const requestIdHex = '550e8400e29b41d4a716446655440000'
 
   it('encodes the Keystone crypto-multi-accounts contract used by Solflare', () => {
+    expect(solanaPublicKeyHexFromAddress('HAgk14JpMQLgt6rVgv7cBQFJWFto5Dqxi472uT3DKpqk')).toBe(
+      'f036276246a75b9de3349ed42b15e232f6518fc20f5fcd4f1d64e81f9bd258f7'
+    )
     const qr = service.encodeAccountSync(publicKeyHex, path, fingerprint)
     expect(qr.startsWith('ur:crypto-multi-accounts/')).toBeTrue()
     const ur = decodeUr(qr)

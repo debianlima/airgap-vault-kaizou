@@ -5,7 +5,7 @@ import { AirGapWallet } from '@airgap/coinlib-core'
 import { NavigationService } from '../../services/navigation/navigation.service'
 import { airgapwallet, CompanionApp } from '../account-address/account-address.page'
 import { ErrorCategory, handleErrorLocal } from './../../services/error-handler/error-handler.service'
-import { SolflareKeystoneService } from '../../services/solflare-keystone/solflare-keystone.service'
+import { SolflareKeystoneService, solanaPublicKeyHexFromAddress } from '../../services/solflare-keystone/solflare-keystone.service'
 
 @Component({
   selector: 'airgap-account-share',
@@ -37,7 +37,7 @@ export class AccountSharePage {
         throw new Error('AirGap Solflare sync requires a wallet with master fingerprint')
       }
       this.solflareSyncQr = this.solflareKeystoneService.encodeAccountSync(
-        wallet.publicKey,
+        solanaPublicKeyHexFromAddress(wallet.receivingPublicAddress),
         wallet.derivationPath,
         wallet.masterFingerprint
       )

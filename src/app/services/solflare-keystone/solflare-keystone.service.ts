@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer'
+import * as bs58 from 'bs58'
 
 import { IACHandlerStatus, IACMessageHandler, IACMessageWrapper } from '@airgap/angular-core'
 import { ProtocolSymbols } from '@airgap/coinlib-core'
@@ -174,6 +175,14 @@ export function unsignedTransactionFromSignData(signData: Uint8Array): string {
     return bytes.toString('base64')
   }
   return unsignedTransactionFromMessage(bytes)
+}
+
+export function solanaPublicKeyHexFromAddress(address: string): string {
+  const decoded = bs58.decode(address)
+  if (decoded.length !== 32) {
+    throw new Error(`Solana receiving address must decode to 32 bytes, got ${decoded.length}`)
+  }
+  return Buffer.from(decoded).toString('hex')
 }
 
 export function extractSignatureForPublicKey(signedTransactionBase64: string, publicKeyHex: string): Uint8Array {

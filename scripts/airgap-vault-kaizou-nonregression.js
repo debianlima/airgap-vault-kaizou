@@ -17,6 +17,7 @@ const allowedProductChanges = new Set([
   'src/app/services/iac/iac.service.ts',
   'src/app/services/iac/iac.service.spec.ts',
   'src/app/services/interaction/interaction.service.ts',
+  'src/app/services/interaction/interaction.service.spec.ts',
   'src/app/services/solflare-keystone/solflare-keystone.service.ts',
   'src/app/services/solflare-keystone/solflare-keystone.service.spec.ts',
   'src/app/pages/deserialized-detail/deserialized-detail.effects.ts',

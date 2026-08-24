@@ -12,7 +12,8 @@ import { InteractionType, VaultStorageKey, VaultStorageService } from '../storag
 import {
   SOLFLARE_KEYSTONE_PROTOCOL,
   SolflareKeystoneService,
-  extractSignatureForPublicKey
+  extractSignatureForPublicKey,
+  solanaPublicKeyHexFromAddress
 } from '../solflare-keystone/solflare-keystone.service'
 
 export enum InteractionCommunicationType {
@@ -137,7 +138,7 @@ export class InteractionService {
         wallet &&
         signedTransaction
       ) {
-        const signature = extractSignatureForPublicKey(signedTransaction, wallet.publicKey)
+        const signature = extractSignatureForPublicKey(signedTransaction, solanaPublicKeyHexFromAddress(wallet.receivingPublicAddress))
         solflareSignatureQr = this.solflareKeystoneService.encodeSignature(signature, context.requestIdHex)
         this.solflareKeystoneService.forgetRequest(response.id)
       }
