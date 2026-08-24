@@ -1,6 +1,14 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 14
+versao_contrato: 15
 historico_emendas:
+- versao: 15
+  data: '2026-08-23'
+  origem: pesquisa solicitada pelo usuário sobre PancakeSwap V3/Solana e Solflare confirmou que o fluxo de carteira é transacional e que a assinatura de transação Solana é uma assinatura destacada dos bytes da mensagem; `SignType.Message` precisa preservar essa semântica em vez de depender de heurística do payload
+  alteracoes:
+  - 'preservar `signType` decodificado no contexto Solflare e rotear `SignType.Message` explicitamente como bytes de mensagem Solana v0'
+  - '`SignType.Message` deve criar apenas os slots de assinatura exigidos pelo header e manter os bytes da mensagem byte-a-byte; `SignType.Transaction` mantém compatibilidade com transação serializada completa'
+  - '`sol-signature` continua sendo assinatura Ed25519 destacada vinculada ao mesmo requestId; a transação completa não substitui esse contrato de resposta Keystone'
+  - 'PancakeSwap V3 Solana permanece evidência de caso de uso de liquidez concentrada; nenhuma lógica específica de pool é incorporada ao signer'
 - versao: 14
   data: '2026-08-23'
   origem: correção U13 exige também um portão RED independente para a seleção do signer na resposta `sol-signature`, antes de alterar `InteractionService`
@@ -7650,6 +7658,18 @@ procedencia_externa:
   licenca: MIT
   alteracoes: expor helper host que decodifica endereço Solana Base58 e exige exatamente 32 bytes; account-share e interaction reutilizam o mesmo helper para impedir divergência entre pareamento e resposta
   teste_de_aceite: src/app/pages/account-share/account-share.page.spec.ts
+- entrada: 802
+  problema: fixar a semântica de assinatura Solflare para transações Solana V3/CLMM sem confundir `SignType.Message` com assinatura de texto
+  degraus_tentados:
+  - '1: o repositório já preservava mensagens v0 e respostas `sol-signature`, mas descartava o `signType` depois da decodificação e escolhia a forma do payload por heurística'
+  - '2: airgap-wallet-engineering-skill 0.2.0 exige oráculo byte-a-byte e fronteira de protocolo explícita'
+  - '5: Solflare SDK público declara `signTransaction(TransactionOrVersionedTransaction)` e o protocolo Solana wallet-adapter documenta `signTransaction` como assinatura destacada de `transaction.serializeMessage()`'
+  - '5: documentação PancakeSwap confirma pools V3 Solana de liquidez concentrada; pacote `@pancakeswap/solana-core-sdk` 0.2.1 é usado pelo frontend e deriva do Raydium SDK V2'
+  adotado_de: https://github.com/solflare-wallet/solflare-sdk
+  acessado_em: '2026-08-23'
+  licenca: Apache-2.0
+  alteracoes: nenhuma cópia de algoritmo; somente tornar explícita no host a distinção `Message` versus `Transaction` e reforçar o teste de preservação byte-a-byte
+  teste_de_aceite: src/app/services/solflare-keystone/solflare-keystone.service.spec.ts
 infraestrutura:
   host_canonico: DESKTOP-KQAHRF0
   endereco_host: 172.16.0.110

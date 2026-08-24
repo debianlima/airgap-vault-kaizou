@@ -72,6 +72,7 @@ describe('SolflareKeystoneService', () => {
     expect(decoded.derivationPath).toBe(path)
     expect(decoded.sourceFingerprint).toBe(fingerprint)
     expect(decoded.requestIdHex).toBe(requestIdHex)
+    expect(decoded.signType).toBe(SignType.Transaction)
 
     const serialized = Buffer.from(unsignedTransactionFromMessage(decoded.signData), 'base64')
     expect(serialized[0]).toBe(1)
@@ -131,6 +132,11 @@ describe('SolflareKeystoneService', () => {
       status = await handler.receive(frame)
     }
     expect(status).toBe(IACHandlerStatus.SUCCESS)
+
+    const decodedRequest = service.decodeSignRequestCbor(
+      Uint8Array.from(decodeUr(request.toUREncoder(1000).encodeWhole()[0]).cbor)
+    )
+    expect(decodedRequest.signType).toBe(SignType.Message)
 
     const handled = await handler.getResult()
     const serialized = Buffer.from((handled?.result[0].payload as any).transaction.transaction, 'base64')

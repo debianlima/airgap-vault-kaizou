@@ -90,7 +90,8 @@
         "regression",
         "dynamicQr",
         "solflareSignType",
-        "pairingSignerKey"
+        "pairingSignerKey",
+        "messageSignatureSemantics"
       ],
       "properties": {
         "android": {
@@ -110,6 +111,9 @@
         },
         "pairingSignerKey": {
           "const": "crypto-multi-accounts and sol-signature signer selection use the Ed25519 public key encoded by the Solana receiving address; stale or divergent wallet.publicKey must not be advertised as the signer"
+        },
+        "messageSignatureSemantics": {
+          "const": "Solflare SignType.Message signData is the serialized Solana transaction message: Vault creates only the required empty signature slots for local signing and preserves message bytes exactly; the Keystone response is the detached Ed25519 sol-signature bound to the original requestId. SignType.Transaction may instead preserve a complete serialized transaction byte-for-byte."
         }
       }
     },
