@@ -28,6 +28,7 @@ export interface SolflareRequestContext {
 
 export interface SolflareDecodedSignRequest extends SolflareRequestContext {
   signData: Uint8Array
+  signType: SignType
 }
 
 function assertHex(value: string, bytes: number, label: string): void {
@@ -177,6 +178,16 @@ export function unsignedTransactionFromSignData(signData: Uint8Array): string {
   return unsignedTransactionFromMessage(bytes)
 }
 
+export function unsignedTransactionFromSignRequest(signData: Uint8Array, signType: SignType): string {
+  if (signType === SignType.Message) {
+    return unsignedTransactionFromMessage(signData)
+  }
+  if (signType === SignType.Transaction) {
+    return unsignedTransactionFromSignData(signData)
+  }
+  throw new Error(`Unsupported Solflare Solana sign type: ${signType}`)
+}
+
 export function solanaPublicKeyHexFromAddress(address: string): string {
   const decoded = bs58.decode(address)
   if (decoded.length !== 32) {
@@ -240,6 +251,7 @@ function decodeSignRequestFromCbor(cbor: Uint8Array): SolflareDecodedSignRequest
 
   return {
     signData: Uint8Array.from(request.getSignData()),
+    signType,
     requestIdHex: requestId.toString('hex'),
     derivationPath: normalizePath(request.getDerivationPath()),
     sourceFingerprint: sourceFingerprint.toString('hex')
@@ -357,7 +369,7 @@ export class SolflareSignRequestHandler implements IACMessageHandler<IACMessageD
           type: IACMessageType.TransactionSignRequest,
           payload: {
             transaction: {
-              transaction: unsignedTransactionFromSignData(request.signData),
+              transaction: unsignedTransactionFromSignRequest(request.signData, request.signType),
               encoding: 'base64'
             },
             publicKey: '',

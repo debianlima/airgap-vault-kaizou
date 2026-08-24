@@ -26,6 +26,7 @@
 - U14 RED confirmado: transação v0 sintética com dois signers retornou a assinatura `0x21…` ligada a `wallet.publicKey`; o aceite exige `0x42…` ligada à chave Ed25519 decodificada de `receivingPublicAddress`.
 - U15: evidência pública Solflare/Solana + caso PancakeSwap V3 fixa `SignType.Message` como mensagem transacional Solana, preservada byte-a-byte, com resposta Ed25519 destacada em `sol-signature`; o teste RED deve provar que o `signType` não é descartado.
 - U15 RED confirmado: o gate dedicado falhou em compilação porque `SolflareDecodedSignRequest` não expunha `signType`; o contrato v15 exige preservar `Transaction=1` e `Message=2` até a conversão para transação local.
+- U15 GREEN de software: `signType` passou a ser preservado no decode; `Message` usa wrapping explícito da mensagem e `Transaction` mantém a detecção de transação completa. Gate dedicado 5/5, agregador 6 grupos, suite 92/92, build, verify-only, nonregression, README, estrutura e diagramas passaram.
 
 ## Pendências técnicas não humanas
 - Corrigir sob teste-first o QR de pareamento/extração de resposta para usar a chave Ed25519 do endereço de recebimento e repetir a homologação Android 1.1.2 até `sol-signature` verificável.
@@ -56,4 +57,4 @@
 - 921/938 permanecem aceitas; entradas 21, 118, 127, 141, 228, 229, 231, 371, 372, 779, 780, 801, 802, 931, 933, 934 e 936 estão `em_curso` nas U10/U11/U12/U13/U14.
 
 ## Próxima unidade
-- U15 — RED confirmado; implementar `signType` explícito no decode/roteamento, executar GREEN e repetir a homologação Android com request controlado da conta de teste; só após isso atualizar skills por evidência e publicar 1.1.2.
+- U15 — software GREEN; reconstruir/reinstalar APK e concluir homologação Android com request controlado da conta de teste, stake e cold restart; só depois atualizar skills e publicar 1.1.2.
