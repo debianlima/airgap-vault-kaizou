@@ -57,6 +57,7 @@
 - U24 — skill recarregada: `airgap-wallet-engineering-skill` 0.2.4 / `offline-transport` 0.1.2 incorpora a evidência U23 de isolamento por fingerprint Fountain, dedupe, limites de streams e ambiguidade explícita entre requests completos concorrentes.
 
 - U25 RED declarado: runtime Solflare deve reproduzir o coletor U23 com normalização de carrier, isolamento por fingerprint Fountain, dedupe, máximo de 4 streams, settle de concorrentes e ambiguidade explícita entre dois requests completos.
+- U25 GREEN software: `SolflareSignRequestHandler` implementa normalização, validação pré-decoder, isolamento por `type+seqLen+messageLen+checksum`, dedupe por stream, limite de 4 streams, TTL de incompletos e settle de concorrentes; Solflare 10/10, IAC 3/3, interaction 1/1, U23 160/160, nonregression, build, módulo 0.1.6, estrutura e diagramas passaram. O `tsc --noEmit --project tsconfig.json` global permanece não aplicável como portão porque falha em tipagens/preexistências upstream não relacionadas; o build Angular de produção passou.
 
 ## Pendências técnicas não humanas
 - U21: executar portões globais no módulo 0.1.6, reconstruir APK final, homologar Android integralmente e publicar 1.1.2.

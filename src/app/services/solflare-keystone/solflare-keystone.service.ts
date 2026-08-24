@@ -15,6 +15,8 @@ import {
   extend as RegistryExtend
 } from '@keystonehq/bc-ur-registry-sol'
 import { URDecoder } from '@ngraveio/bc-ur'
+import bytewords from '@ngraveio/bc-ur/dist/bytewords'
+import { FountainEncoderPart } from '@ngraveio/bc-ur/dist/fountainEncoder'
 import { Injectable } from '@angular/core'
 
 export const SOLFLARE_KEYSTONE_PROTOCOL: ProtocolSymbols = 'solana' as ProtocolSymbols
@@ -310,10 +312,48 @@ export class SolflareKeystoneService {
   }
 }
 
+interface SolflareCaptureStream {
+  decoder: URDecoder
+  parts: Set<string>
+  lastSeenTick: number
+  completedAtTick?: number
+}
+
+interface SolflareCaptureFrame {
+  normalized: string
+  streamKey: string
+}
+
+const SOLFLARE_CAPTURE_MAX_STREAMS = 4
+const SOLFLARE_CAPTURE_TTL_FRAMES = 64
+const SOLFLARE_CAPTURE_SETTLE_FRAMES = 4
+
+function parseSolflareCaptureFrame(data: string): SolflareCaptureFrame {
+  const normalized = data.trim().toLowerCase()
+  const [type, components] = URDecoder.parse(normalized)
+  if (type !== 'sol-sign-request') throw new Error(`Unexpected UR type: ${type}`)
+
+  if (components.length === 1) {
+    return { normalized, streamKey: `single:${normalized}` }
+  }
+  if (components.length !== 2) throw new Error(`Unexpected Solflare UR path length: ${components.length}`)
+
+  const [seqNum, seqLength] = URDecoder.parseSequenceComponent(components[0])
+  const decoded = bytewords.decode(components[1], bytewords.STYLES.MINIMAL)
+  const part = FountainEncoderPart.fromCBOR(Buffer.from(decoded, 'hex'))
+  if (seqNum !== part.seqNum || seqLength !== part.seqLength) throw new Error('Solflare UR sequence metadata mismatch')
+
+  return {
+    normalized,
+    streamKey: `${type}:${part.seqLength}:${part.messageLength}:${part.checksum}`
+  }
+}
+
 export class SolflareSignRequestHandler implements IACMessageHandler<IACMessageDefinitionObjectV3[]> {
   public readonly name = 'SolflareSignRequestHandler'
-  private decoder = new URDecoder()
-  private readonly parts = new Set<string>()
+  private readonly streams = new Map<string, SolflareCaptureStream>()
+  private tick = 0
+  private selectedStreamKey?: string
   private resultCache?: IACMessageWrapper<IACMessageDefinitionObjectV3[]>
 
   constructor(
@@ -322,20 +362,42 @@ export class SolflareSignRequestHandler implements IACMessageHandler<IACMessageD
   ) {}
 
   public async canHandle(data: string): Promise<boolean> {
-    return /^ur:sol-sign-request\//i.test(data)
+    return /^ur:sol-sign-request\//i.test(data.trim())
   }
 
   public async receive(data: string): Promise<IACHandlerStatus> {
     if (!(await this.canHandle(data))) return IACHandlerStatus.UNSUPPORTED
-    if (this.parts.has(data)) return IACHandlerStatus.PARTIAL
-    this.parts.add(data)
+    this.tick += 1
+    this.pruneStaleStreams()
+
+    let frame: SolflareCaptureFrame
     try {
-      const accepted = this.decoder.receivePart(data)
-      if (!accepted) return IACHandlerStatus.PARTIAL
+      frame = parseSolflareCaptureFrame(data)
     } catch {
-      return IACHandlerStatus.PARTIAL
+      return this.currentStatus()
     }
-    return this.decoder.isComplete() && this.decoder.isSuccess() ? IACHandlerStatus.SUCCESS : IACHandlerStatus.PARTIAL
+
+    let stream = this.streams.get(frame.streamKey)
+    if (!stream) {
+      if (!this.makeRoomForStream()) return IACHandlerStatus.PARTIAL
+      stream = { decoder: new URDecoder(), parts: new Set<string>(), lastSeenTick: this.tick }
+      this.streams.set(frame.streamKey, stream)
+    }
+    stream.lastSeenTick = this.tick
+
+    if (!stream.parts.has(frame.normalized)) {
+      stream.parts.add(frame.normalized)
+      try {
+        const accepted = stream.decoder.receivePart(frame.normalized)
+        if (accepted && stream.decoder.isComplete() && stream.decoder.isSuccess() && stream.completedAtTick === undefined) {
+          stream.completedAtTick = this.tick
+        }
+      } catch {
+        return this.currentStatus()
+      }
+    }
+
+    return this.currentStatus()
   }
 
   public async handleComplete(): Promise<IACMessageWrapper<IACMessageDefinitionObjectV3[]>> {
@@ -346,13 +408,15 @@ export class SolflareSignRequestHandler implements IACMessageHandler<IACMessageD
   }
 
   public async getProgress(): Promise<number> {
-    return Number(this.decoder.estimatedPercentComplete().toFixed(2))
+    const progress = Array.from(this.streams.values()).map((stream) => stream.decoder.estimatedPercentComplete())
+    return progress.length === 0 ? 0 : Number(Math.max(...progress).toFixed(2))
   }
 
   public async getResult(): Promise<IACMessageWrapper<IACMessageDefinitionObjectV3[]> | undefined> {
     if (this.resultCache) return this.resultCache
-    if (!this.decoder.isComplete() || !this.decoder.isSuccess()) return undefined
-    const ur = this.decoder.resultUR()
+    const stream = this.selectedStreamKey ? this.streams.get(this.selectedStreamKey) : undefined
+    if (!stream || !stream.decoder.isComplete() || !stream.decoder.isSuccess()) return undefined
+    const ur = stream.decoder.resultUR()
     if (ur.type !== 'sol-sign-request') throw new Error(`Unexpected UR type: ${ur.type}`)
     const request = this.service.decodeSignRequestCbor(Uint8Array.from(ur.cbor))
     const internalId = generateId(8)
@@ -388,13 +452,57 @@ export class SolflareSignRequestHandler implements IACMessageHandler<IACMessageD
   }
 
   public async getDataSingle(): Promise<string | undefined> {
-    if (!this.decoder.isComplete() || !this.decoder.isSuccess() || this.parts.size !== 1) return undefined
-    return this.parts.values().next().value
+    const stream = this.selectedStreamKey ? this.streams.get(this.selectedStreamKey) : undefined
+    if (!stream || !stream.decoder.isComplete() || !stream.decoder.isSuccess() || stream.parts.size !== 1) return undefined
+    return stream.parts.values().next().value
   }
 
   public async reset(): Promise<void> {
-    this.decoder = new URDecoder()
-    this.parts.clear()
+    this.streams.clear()
+    this.tick = 0
+    this.selectedStreamKey = undefined
     this.resultCache = undefined
+  }
+
+  private currentStatus(): IACHandlerStatus {
+    const complete = Array.from(this.streams.entries()).filter(([, stream]) => stream.decoder.isComplete() && stream.decoder.isSuccess())
+    if (complete.length !== 1) {
+      this.selectedStreamKey = undefined
+      return IACHandlerStatus.PARTIAL
+    }
+
+    const [completeKey] = complete[0]
+    const competingRecentlyObserved = Array.from(this.streams.entries()).some(
+      ([key, stream]) => key !== completeKey && this.tick - stream.lastSeenTick <= SOLFLARE_CAPTURE_SETTLE_FRAMES
+    )
+    if (competingRecentlyObserved) {
+      this.selectedStreamKey = undefined
+      return IACHandlerStatus.PARTIAL
+    }
+
+    this.selectedStreamKey = completeKey
+    return IACHandlerStatus.SUCCESS
+  }
+
+  private pruneStaleStreams(): void {
+    for (const [key, stream] of this.streams) {
+      if (!stream.decoder.isComplete() && this.tick - stream.lastSeenTick > SOLFLARE_CAPTURE_TTL_FRAMES) {
+        this.streams.delete(key)
+      }
+    }
+  }
+
+  private makeRoomForStream(): boolean {
+    if (this.streams.size < SOLFLARE_CAPTURE_MAX_STREAMS) return true
+
+    let oldestIncomplete: [string, SolflareCaptureStream] | undefined
+    for (const entry of this.streams.entries()) {
+      const [, stream] = entry
+      if (stream.decoder.isComplete() && stream.decoder.isSuccess()) continue
+      if (!oldestIncomplete || stream.lastSeenTick < oldestIncomplete[1].lastSeenTick) oldestIncomplete = entry
+    }
+    if (!oldestIncomplete) return false
+    this.streams.delete(oldestIncomplete[0])
+    return true
   }
 }
