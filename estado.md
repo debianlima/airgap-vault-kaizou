@@ -1,44 +1,38 @@
-# Estado — 2026-08-25 — contrato v31
+# Estado — 2026-08-25 — contrato v32
 
 ## Decisões vigentes
-- AirGap Vault Kaizou `1.1.3` é a release pública corrente de código-fonte, licenças e proveniência; ela não publica APK.
-- A última evidência binária permanece histórica na tag `airgap-vault-kaizou-1.1.2`, com `airgap-solana-module 0.1.6`; sua página de release e APK foram retirados da distribuição corrente.
-- As páginas 1.0.0, 1.1.0, 1.1.1 e 1.1.2 foram consolidadas nas notas 1.1.3 e removidas somente após criação, download e verificação do novo arquivo legal.
-- As tags e commits 1.0.0–1.1.2 permanecem preservados para auditoria.
-- Um próximo APK exige `airgap-solana-module 0.1.7` assinado com a chave de produção, os três arquivos legais com hashes no manifesto assinado, build limpo, inspeção do APK e nova homologação Android.
-- `sol-sign-request` aceita `SignType.Message` e `SignType.Transaction`; a resposta é `sol-signature` com requestId preservado e assinatura Ed25519 sobre a mensagem exata.
-- A coleta multipart Solflare usa fingerprint Fountain, dedupe por stream, limite de quatro streams, TTL e ambiguidade explícita.
-- Skill de projeto ativa: `airgap-wallet-engineering-skill` 0.2.7, com gate mecânico de licenças e proveniência de release.
+- `airgap-vault-kaizou-1.1.3` é a release pública corrente e o alvo da publicação binária U27; não criar 1.1.4 apenas para o APK.
+- O binário 1.1.3 usa exatamente `airgap-solana-module 0.1.7` do handoff de produção, ZIP SHA-256 `5032d045cd0e93bcb2a6a666bf4213add2f787fd70da79a0f431927916fded0c`.
+- O APK só pode ser anexado após build limpo, inspeção do módulo estático e homologação Android 11/API 30 Google Play `user/release-keys`, non-root.
+- Skill de projeto ativa: `airgap-wallet-engineering-skill` 0.2.9; delta 0.2.7→0.2.9 lido e reconciliado até `e0ff39455e2b79cf842b95d86683a044f6bbb63b`.
 
 ## Decisões superadas
-- Apresentar 1.1.2 e seus APKs como distribuição corrente — substituído pela release-fonte 1.1.3.
-- Empacotar módulo sem lockfile, avisos completos e hashes legais — substituído pelo contrato 0.1.7.
-- Decoder Fountain linear único — substituído pela coleta stream-aware homologada.
-- Descartar QR duplicado no `TabScanPage` antes do IAC — substituído por dedupe visual com entrega ao handler.
+- Tratar 1.1.3 como permanentemente source-only — superada pela decisão humana de continuar a homologação/publicação binária na própria 1.1.3.
+- Criar 1.1.4 apenas porque 1.1.3 já existe — descartado.
 
-## Evidência histórica preservada
-- APK 1.1.2: SHA-256 `6885cc59cc9f0050bb0e2614ac4a0a4c165aa0011f086e3e8b68881dd3742a45`; Android 11 Google Play `user/release-keys`, non-root; 99/99 specs.
-- No APK histórico, controlled, Pancake CLMM, Stake e TokenSwap retornaram requestId correto, assinatura de 64 bytes e Ed25519 válido; `broadcast=false`.
-- A descrição e os hashes das versões 1.0.0–1.1.2 estão preservados em `releases/airgap-vault-kaizou-1.1.3.md`.
+## Decisões humanas pendentes
+- Nenhuma decisão de versão/release pendente nesta unidade.
 
-## Correções legais 1.1.3
-- `LICENSE.md` preserva o MIT/copyright Papers AG do upstream.
-- `THIRD_PARTY_NOTICES.md` registra AirGap, Keystone, NGRAVE, versões, licenças e procedência.
-- `MODIFICATIONS.md` mapeia os arquivos upstream modificados; arquivos de código/teste alterados contêm cabeçalho SPDX/origem.
-- `LEGAL_AUDIT.md` registra a descoberta do `rpc-websockets` LGPL-3.0-only no bundle antigo e o controle corretivo do módulo 0.1.7.
-- O build Kaizou futuro exige `LICENSE`, `THIRD_PARTY_NOTICES.md` e `THIRD_PARTY_DEPENDENCIES.md` no módulo e confere seus SHA-256 a partir do manifesto assinado.
-
-## Pendências técnicas
-- Produzir o pacote 0.1.7 com a chave de assinatura de produção, que permanece fora dos repositórios.
-- Construir um APK novo, conferir seus arquivos legais e hashes e repetir a homologação Android antes de qualquer release binária.
-- Submeter as alterações a revisão humana e auditoria independente antes de recomendar uso com fundos reais.
+## Pendências técnicas não humanas
+- Verificar o módulo 0.1.7 pelo gate Kaizou, construir o APK e repetir a homologação Android non-root.
+- Atualizar a nota pública 1.1.3 e anexar o APK somente depois de `U27_BINARY_HOMOLOGATION_PASS`.
+- Se o download do system image exigir Android SDK License Agreement, a aceitação continua sendo ato humano/organizacional e não é inferida pelo agente.
 
 ## Trabalho compartilhado
-- `manifesto.yaml.trabalho_compartilhado`: `null`.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — unidade U27.
+
+## Competências ativas nesta unidade
+- `airgap-wallet-engineering-skill@0.2.9`
+- `android-container-avd-lab@0.1.4`
+- `android-airgap-runtime@0.1.4`
+- `release-packaging@0.2.0`
+
+## Divergências da última reconciliação
+- corrigidas: skill 0.2.7→0.2.9; alvo binário fixado na release 1.1.3; nota pública 1.1.3 declarada como entrada 947 `preexistente`.
+- pendentes de autorização: eventual aceitação da licença Android SDK, se necessária para adquirir o system image.
 
 ## Entradas aceitas
-- Entradas históricas 1–942 permanecem como evidência da homologação 1.1.2.
-- Os novos documentos/gates legais foram verificados separadamente na publicação 1.1.3.
+- Histórico aceito preservado; 936 e 938 reabertas para v32; 946 pendente; 947 preexistente até auditoria/atualização final.
 
 ## Próxima unidade
-- Somente uma unidade binária futura: assinar o módulo 0.1.7 em ambiente autorizado, reconstruir/homologar o APK e publicar uma nova versão, sem reutilizar artefatos 1.0.0–1.1.2.
+- U27 — verificar 0.1.7, construir APK 1.1.3, homologar no Android non-root e publicar somente com todos os portões verdes.

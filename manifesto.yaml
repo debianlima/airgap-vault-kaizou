@@ -1,6 +1,16 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 31
+versao_contrato: 32
 historico_emendas:
+- versao: 32
+  data: '2026-08-25'
+  origem: decisão explícita do usuário de continuar a homologação e publicação binária na release pública existente airgap-vault-kaizou-1.1.3
+  alteracoes:
+  - preservar a release/tag 1.1.3 existente como alvo; não criar 1.1.4 apenas para o binário
+  - incorporar exatamente airgap-solana-module 0.1.7 do handoff de produção SHA-256 5032d045cd0e93bcb2a6a666bf4213add2f787fd70da79a0f431927916fded0c
+  - build em árvore limpa e commitada, com assinatura Ed25519 e hashes legais do módulo verificados antes do APK
+  - publicar APK 1.1.3 somente após homologação Android 11/API 30 Google Play user/release-keys non-root no perfil work
+  - atualizar a skill de projeto 0.2.7 para 0.2.9 após leitura/reconciliação do delta de ambientes e conectores
+  - remover identidade/endereço/caminho de máquina do projeto; capacidades ficam prescritivas no manifesto e topologia real permanece no workflow-infra residente
 - versao: 31
   data: '2026-08-24'
   origem: 'decisão explícita do operador: comentários externos devem usar a língua
@@ -445,6 +455,7 @@ trabalho_compartilhado:
     - contratos/airgap-vault-kaizou-solana-release.schema.json
     - releases/airgap-vault-kaizou-1.1.3.md
     - scripts/airgap-vault-kaizou-build-release-with-solana-module.js
+    - scripts/airgap-vault-kaizou-verify-structure.py
     - logs/U27-2026-08-25-1.1.3-binary-homologation.log
 entradas:
 - id: 1
@@ -2379,7 +2390,7 @@ entradas:
   consome: []
   produz: null
   aceite: python3 scripts/airgap-vault-kaizou-verify-structure.py --all
-  status: aceito
+  status: em_curso
 - id: 241
   caminho: src/app/app-routing.module.ts
   proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
@@ -7972,7 +7983,7 @@ entradas:
   status: aceito
 - id: 936
   caminho: contratos/airgap-vault-kaizou-solana-release.schema.json
-  proposito: contrato JSON Schema da release Kaizou 1.1.2 com módulo Solana 0.1.6
+  proposito: contrato JSON Schema da release Kaizou 1.1.3 com módulo Solana 0.1.7 de produção
     estático, QR dinâmico Solflare, stake preservado e regressão de liquidity pool
   tipo: estrutura-contrato
   consome: []
@@ -7980,9 +7991,9 @@ entradas:
   aceite: python3 -m json.tool contratos/airgap-vault-kaizou-solana-release.schema.json
     >/dev/null && python3 -c "import json; d=json.load(open('contratos/airgap-vault-kaizou-solana-release.schema.json'));
     p=d['properties']['release']['properties']; h=d['properties']['homologation'];
-    assert p['kaizouVersion']['const']=='1.1.2'; assert p['solanaModuleVersion']['const']=='0.1.6';
-    assert all(x in h['required'] for x in ['signingSimulationMatrix','captureResilienceSimulation','androidRuntimeU26'])"
-  status: aceito
+    assert p['kaizouVersion']['const']=='1.1.3'; assert p['solanaModuleVersion']['const']=='0.1.7';
+    assert 'binaryU27' in h['required']"
+  status: em_curso
 - id: 937
   caminho: src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts
   proposito: regressão do crash ao assinar transação Solana sem destinatário/token
@@ -7995,12 +8006,12 @@ entradas:
 - id: 938
   caminho: scripts/airgap-vault-kaizou-build-release-with-solana-module.js
   proposito: verificar e construir APK Kaizou em staging externo incluindo exatamente
-    o pacote Solana 0.1.6 assinado como asset module estático
+    o pacote Solana 0.1.7 de produção assinado como asset module estático
   tipo: deploy-android
   consome: []
   produz: null
   aceite: node scripts/airgap-vault-kaizou-build-release-with-solana-module.js --verify-only
-  status: aceito
+  status: em_curso
 - id: 939
   caminho: scripts/airgap-vault-kaizou-solana-signing-simulation.js
   proposito: executar matriz source-to-wire de alta variedade derivada de erros reais
@@ -8081,6 +8092,22 @@ entradas:
     && grep -q 'primary_language=en' logs/R05-2026-08-24-comment-language.log && grep
     -q 'automatic_translation=pt-BR' logs/R05-2026-08-24-comment-language.log
   status: aceito
+- id: 946
+  caminho: logs/U27-2026-08-25-1.1.3-binary-homologation.log
+  proposito: registrar telemetria, hashes exatos, build, inspeção do APK e homologação Android non-root da 1.1.3 com módulo 0.1.7
+  tipo: evidencia-teste
+  consome: []
+  produz: null
+  aceite: test -s logs/U27-2026-08-25-1.1.3-binary-homologation.log && grep -q 'U27_BINARY_HOMOLOGATION_PASS' logs/U27-2026-08-25-1.1.3-binary-homologation.log
+  status: pendente
+- id: 947
+  caminho: releases/airgap-vault-kaizou-1.1.3.md
+  proposito: nota pública acumulativa da release 1.1.3, encontrada preexistente e atualizável somente após o gate binário U27
+  tipo: documentacao-release
+  consome: []
+  produz: null
+  aceite: grep -Fq 'AirGap Vault Kaizou 1.1.3' releases/airgap-vault-kaizou-1.1.3.md
+  status: preexistente
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação
@@ -8168,9 +8195,13 @@ procedencia_externa:
     teste
   teste_de_aceite: scripts/airgap-vault-kaizou-solana-signing-simulation.js
 infraestrutura:
-  host_canonico: DESKTOP-KQAHRF0
-  endereco_host: 172.16.0.110
-  ambiente: WSL Ubuntu
-  raiz_projeto: /home/anderson/airgap-solana-work/airgap-vault-kaizou
+  perfil_requerido: work
+  requer:
+    docker: true
+    kvm: true
+    android:
+      api: 30
+      tag: google_apis_playstore
+      abi: x86_64
   vps: ponte_apenas
-  workflow_infra: externo_global_nao_versionado_neste_projeto
+  workflow_infra: externo_residente_fonte_descritiva

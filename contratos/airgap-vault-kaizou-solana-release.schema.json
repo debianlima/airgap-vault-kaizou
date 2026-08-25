@@ -101,11 +101,12 @@
         "messageSignatureSemantics",
         "signingSimulationMatrix",
         "captureResilienceSimulation",
-        "androidRuntimeU26"
+        "androidRuntimeU26",
+        "binaryU27"
       ],
       "properties": {
         "android": {
-          "const": "Release 1.1.3 is source/licensing documentation only and publishes no APK; the last historical Android 11 non-root evidence is 1.1.2 with module 0.1.6"
+          "const": "Release 1.1.3 binary may be published only after exact APK homologation on Android 11/API 30 Google Play user/release-keys non-root with airgap-solana-module 0.1.7 production artifact"
         },
         "solflare": {
           "const": "sol-sign-request -> Vault -> sol-signature preserves requestId and verifies Ed25519"
@@ -246,6 +247,20 @@
             "credentialGate": "enter test credential only after the same BiometricPrompt remains stable and lockPassword is present",
             "coldRestartBoundary": "if emulator command contains -wipe-data, container restart is clean-room reset; product persistence gate is app-process force-stop/start while emulator remains alive"
           }
+        },
+        "binaryU27": {
+          "const": {
+            "releaseTag": "airgap-vault-kaizou-1.1.3",
+            "moduleVersion": "0.1.7",
+            "moduleProductionZipSha256": "5032d045cd0e93bcb2a6a666bf4213add2f787fd70da79a0f431927916fded0c",
+            "exactApkHashRequired": true,
+            "androidApi": 30,
+            "androidTag": "google_apis_playstore",
+            "androidAbi": "x86_64",
+            "rootForbidden": true,
+            "cleanInstallRequired": true,
+            "publishOnlyAfterPass": true
+          }
         }
       }
     },
@@ -278,10 +293,10 @@
           "const": true
         },
         "distributionMode": {
-          "const": "source-and-legal-provenance-only"
+          "const": "source-legal-provenance-and-apk"
         },
         "binaryPublished": {
-          "const": false
+          "const": true
         }
       }
     }

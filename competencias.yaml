@@ -39,8 +39,10 @@
   tipo_competencia: projeto
   ativa_em:
   - '*'
-  fonte: /home/anderson/airgap-solana-work/airgap-wallet-engineering-skill/SKILL.md
-  versao: 0.2.7
+  fonte: debianlima/airgap-wallet-engineering-skill/SKILL.md
+  versao: 0.2.9
+  delta_lido_ate: e0ff39455e2b79cf842b95d86683a044f6bbb63b
+  reconciliacao: PASS
   origem:
     projeto_de_origem: airgap-wallet-engineering-skill
     derivacao: original
