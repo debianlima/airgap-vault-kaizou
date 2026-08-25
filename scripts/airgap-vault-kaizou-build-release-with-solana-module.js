@@ -8,7 +8,8 @@ const { execFileSync, spawnSync } = require('child_process')
 
 const repoRoot = path.resolve(__dirname, '..')
 const moduleDist = path.resolve(process.env.AIRGAP_KAIZOU_SOLANA_MODULE_DIST || path.join(repoRoot, '..', 'airgap-solana-module', 'dist'))
-const requiredFiles = ['manifest.json', 'airgap-solana-module.bundle.js', 'module.sig']
+const legalFiles = ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'THIRD_PARTY_DEPENDENCIES.md']
+const requiredFiles = ['manifest.json', 'airgap-solana-module.bundle.js', 'module.sig', ...legalFiles]
 const staticRelative = path.join('src', 'assets', 'protocol_modules', 'airgap-solana-module')
 const releaseContract = JSON.parse(fs.readFileSync(path.join(repoRoot, 'contratos', 'airgap-vault-kaizou-solana-release.schema.json'), 'utf8'))
 const releaseProperties = releaseContract.properties.release.properties
@@ -40,6 +41,13 @@ function verifyModule() {
   if (!/^[0-9a-fA-F]{64}$/.test(manifest.publicKey || '')) fail('module manifest publicKey must be 32-byte hex')
   const signature = fs.readFileSync(path.join(moduleDist, 'module.sig'))
   if (signature.length !== 64) fail(`module signature must be 64 bytes, got ${signature.length}`)
+  if (!manifest.legal || !manifest.legal.files || typeof manifest.legal.files !== 'object') fail('module manifest must contain signed legal file hashes')
+  for (const name of legalFiles) {
+    const expected = manifest.legal.files[name]
+    if (!/^[0-9a-f]{64}$/.test(expected || '')) fail(`module manifest missing SHA-256 for ${name}`)
+    const actual = sha256(path.join(moduleDist, name))
+    if (actual !== expected) fail(`module legal file hash mismatch for ${name}: ${actual} != ${expected}`)
+  }
   const message = Buffer.concat([...manifest.include.map((name) => fs.readFileSync(path.join(moduleDist, name))), manifestBytes])
   const spki = Buffer.concat([Buffer.from('302a300506032b6570032100', 'hex'), Buffer.from(manifest.publicKey, 'hex')])
   const publicKey = crypto.createPublicKey({ key: spki, format: 'der', type: 'spki' })
