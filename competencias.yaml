@@ -5,6 +5,7 @@
   - teste-integracao
   fonte: KeystoneHQ/keystone3-firmware@6ab436a2c34a5bcce2e72aae1e6ff8ee43bf057f +
     Solflare extension 2.34.0 instalada
+  licencas: firmware Keystone MIT (YANSSIE HK LIMITED); registries Keystone Apache-2.0/ISC; NGRAVE BC-UR MIT
   melhora: compatibilidade com crypto-multi-accounts, sol-sign-request e sol-signature
   portao: Solflare 2.34.0 importa sync QR e aceita sol-signature gerada após request
     real
@@ -18,6 +19,7 @@
   - backend-integracao
   fonte: airgap-it/airgap-vault@v3.34.4 e precedente MetaMask do @airgap/angular-core
     0.0.62
+  licencas: MIT; copyright Papers AG preservado em LICENSE.md e THIRD_PARTY_NOTICES.md
   melhora: reuso de navegação, assinatura e QR existentes
   portao: yarn build + testes unitários + fluxo UI no APK Android
   evidencia: pontos account-address/account-share/IAC/transaction-signed localizados
@@ -38,7 +40,7 @@
   ativa_em:
   - '*'
   fonte: /home/anderson/airgap-solana-work/airgap-wallet-engineering-skill/SKILL.md
-  versao: 0.2.6
+  versao: 0.2.7
   origem:
     projeto_de_origem: airgap-wallet-engineering-skill
     derivacao: original
@@ -65,3 +67,17 @@
     ao módulo e ao Kaizou
   instalada_em: 2026-08-23
   vinculada_por: usuário, em 2026-08-23
+
+- id: license-compliant-source-release
+  nome: Release-fonte com licenças e proveniência
+  ativa_em:
+  - legal
+  - release
+  - supply-chain
+  - documentacao
+  fonte: auditoria Kaizou 1.1.3 e airgap-solana-module 0.1.7
+  licencas: MIT, Apache-2.0 e ISC, com avisos e copyrights independentes preservados
+  melhora: mapa de arquivos modificados, cabeçalhos de origem, release cumulativa e gate legal do módulo embutido
+  portao: nova release verificada antes da remoção das páginas antigas; tags históricas preservadas
+  evidencia: módulo 0.1.6 incorporava dependência LGPL não utilizada sem o novo pacote de avisos; 0.1.7 a exclui mecanicamente e assina hashes legais
+  instalada_em: '2026-08-25'
