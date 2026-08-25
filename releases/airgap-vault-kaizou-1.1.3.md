@@ -93,3 +93,7 @@ Depois que esta release e seu arquivo de proveniência forem verificados, as
 páginas GitHub Releases 1.0.0, 1.1.0, 1.1.1 e 1.1.2 e seus APKs serão removidas
 como distribuições substituídas. As tags e commits históricos permanecerão
 intactos para auditoria e reprodução do histórico.
+
+## Verificação da consolidação
+
+A publicação transacional inicial criou a 1.1.3, baixou e validou o SHA-256 do arquivo legal e só então removeu as quatro páginas substituídas. A execução final também alinha a tag 1.1.3 ao estado documental final. As tags históricas 1.0.0–1.1.2 continuam presentes.
