@@ -1,6 +1,15 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 32
+versao_contrato: 33
 historico_emendas:
+- versao: 33
+  data: '2026-08-25'
+  origem: decisão explícita do operador de continuar U27 no perfil terminal, sem reutilizar o transporte Work
+  alteracoes:
+  - preservar a release existente airgap-vault-kaizou-1.1.3 como único alvo do APK desta unidade
+  - preservar exatamente airgap-solana-module 0.1.7 de produção e todos os gates binários definidos na emenda 32
+  - resolver Docker, KVM, Android SDK e AVD pelo perfil terminal e pelo workflow-infra residente desse ambiente
+  - não aceitar nova licença Android em nome do operador; eventual nova aceitação continua sendo lacuna humana bloqueante
+  - atualizar referências de competências somente após leitura e reconciliação do delta remoto, sem mudar versões no meio da unidade
 - versao: 32
   data: '2026-08-25'
   origem: decisão explícita do usuário de continuar a homologação e publicação binária na release pública existente airgap-vault-kaizou-1.1.3
@@ -454,6 +463,7 @@ trabalho_compartilhado:
     - contratos/airgap-vault-kaizou-solana-release.schema.json
     - releases/airgap-vault-kaizou-1.1.3.md
     - logs/U27-2026-08-25-1.1.3-binary-homologation.log
+    - competencias.yaml
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8192,7 +8202,7 @@ procedencia_externa:
     teste
   teste_de_aceite: scripts/airgap-vault-kaizou-solana-signing-simulation.js
 infraestrutura:
-  perfil_requerido: work
+  perfil_requerido: terminal
   requer:
     docker: true
     kvm: true
