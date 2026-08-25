@@ -63,6 +63,8 @@ jobs:
             gh release create "$tag" --target "$GITHUB_SHA" --title 'AirGap Vault Kaizou 1.1.3 — source, licenses and provenance' --notes-file "$notes" "$archive" "$checksum"
           fi
           gh release upload "$tag" "$archive" "$checksum" --clobber
+          release_id="$(gh release view "$tag" --json databaseId --jq .databaseId)"
+          gh api --method PATCH "repos/${{ github.repository }}/releases/$release_id" -f target_commitish="$GITHUB_SHA" >/dev/null
           test "$(gh release view "$tag" --json isDraft --jq .isDraft)" = false
           test "$(gh release view "$tag" --json isPrerelease --jq .isPrerelease)" = false
           gh release view "$tag" --json assets --jq '.assets[].name' | grep -qx 'airgap-vault-kaizou-1.1.3-license-provenance.zip'
@@ -78,12 +80,11 @@ jobs:
         run: |
           set -euo pipefail
           replacement='airgap-vault-kaizou-1.1.3'
-          while IFS= read -r old_tag; do
-            if [ -n "$old_tag" ] && [ "$old_tag" != "$replacement" ]; then
+          for old_tag in airgap-vault-kaizou-1.0.0 airgap-vault-kaizou-1.1.0 airgap-vault-kaizou-1.1.1 airgap-vault-kaizou-1.1.2; do
+            if gh release view "$old_tag" >/dev/null 2>&1; then
               gh release delete "$old_tag" --yes
             fi
-          done < <(gh api --paginate repos/${{ github.repository }}/releases --jq '.[].tag_name')
-          test "$(gh api --paginate repos/${{ github.repository }}/releases --jq '.[].tag_name')" = "$replacement"
-          for old_tag in airgap-vault-kaizou-1.0.0 airgap-vault-kaizou-1.1.0 airgap-vault-kaizou-1.1.1 airgap-vault-kaizou-1.1.2; do
+            ! gh release view "$old_tag" >/dev/null 2>&1
             git ls-remote --exit-code --tags origin "refs/tags/$old_tag" >/dev/null
           done
+          gh release view "$replacement" >/dev/null
