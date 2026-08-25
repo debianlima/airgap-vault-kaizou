@@ -37,7 +37,7 @@
 - Depois de `U27_BINARY_HOMOLOGATION_PASS`, fechar reconciliação/dependências e somente então anexar o APK à release 1.1.3.
 
 ## Trabalho compartilhado
-- Nenhum bloco ativo; a unidade foi encerrada como lacuna humana e a zona foi liberada.
+- Nenhum bloco ativo; unidade de inventário encerrada para abrir reparo de dependências.
 
 ## Competências ativas nesta unidade
 - `telemetry-data-visualization@2`
@@ -58,9 +58,10 @@
 - `teste-typescript`: primeira tentativa Karma compilou com tipos Jasmine incompatíveis; execução válida posterior observou `jasmine-core 3.9.0` + `@types/jasmine 3.10.18` e passou 99/99 upstream + 20/20 Kaizou, sem mudança no APK.
 
 ## Divergências da última reconciliação
-- corrigidas: perfil terminal em contrato/verificador; referência da skill reconciliada; licença SDK terminal; snapshot estrutural.
-- pendentes de autorização: H01 — PIN sintético existente ou decisão de recriar laboratório clean-room.
-- pendentes técnicas: fecho ontológico/dependências ainda não executado porque runtime não fechou.
+- corrigidas: inventário remoto/local e deltas foram lidos; aprendizado homologado preservado.
+- pendentes técnicas: catálogo registra `airgap-wallet-engineering 0.2.6` contra fonte `0.2.9`; `android-container-avd-lab` aparece como `0.1.2` no índice interno/catálogo contra fonte `0.1.4`; `release-packaging` aparece como `0.1.0` contra fonte `0.2.0`; `scripts/validate_release_licenses.py` existe no HEAD remoto da skill mas não está declarado no manifesto.
+- portões: `DELTA_INVENTORY=PASS`, `LEARNING_PRESERVED=PASS`, `RECONCILIATION_CLOSURE=FAIL`, `DEPENDENCY_REFERENCES=FAIL`.
+- pendente humana separada: H01 continua sendo o PIN sintético do AVD; nenhum canal seguro novo foi localizado.
 
 ## Entradas aceitas
 - Histórico aceito preservado. Entradas 936/938/946 permanecem `em_curso`; 947 permanece `preexistente`.
