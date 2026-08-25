@@ -97,3 +97,5 @@ intactos para auditoria e reprodução do histórico.
 ## Verificação da consolidação
 
 A publicação transacional inicial criou a 1.1.3, baixou e validou o SHA-256 do arquivo legal e só então removeu as quatro páginas substituídas. A execução final também alinha a tag 1.1.3 ao estado documental final. As tags históricas 1.0.0–1.1.2 continuam presentes.
+
+O workflow de consolidação é limitado nominalmente às quatro páginas históricas acima; ele não remove releases futuras ou não relacionadas.
