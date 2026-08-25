@@ -42,7 +42,7 @@ def main():
     infra=m.get('infraestrutura') or {}
     forbidden={'host_canonico','endereco_host','raiz_projeto'} & set(infra)
     if forbidden: fail(f'machine identity leaked into project infrastructure: {sorted(forbidden)}')
-    if infra.get('perfil_requerido')!='work': fail('required environment profile mismatch')
+    if infra.get('perfil_requerido')!='terminal': fail('required environment profile mismatch')
     req=infra.get('requer') or {}; android=req.get('android') or {}
     if req.get('docker') is not True or req.get('kvm') is not True: fail('required Docker/KVM capabilities missing')
     if android.get('api')!=30 or android.get('tag')!='google_apis_playstore' or android.get('abi')!='x86_64': fail('required Android capability mismatch')
