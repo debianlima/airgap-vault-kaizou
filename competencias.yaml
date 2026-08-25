@@ -41,7 +41,7 @@
   - '*'
   fonte: debianlima/airgap-wallet-engineering-skill/SKILL.md
   versao: 0.2.9
-  delta_lido_ate: 763c05baba4d694aacd07c974af28552e0a45742
+  delta_lido_ate: 4741f19df57950a9f487748e1b7d41c97dfef4b9
   reconciliacao: PASS
   origem:
     projeto_de_origem: airgap-wallet-engineering-skill

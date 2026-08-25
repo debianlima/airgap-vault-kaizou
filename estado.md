@@ -3,9 +3,9 @@
 ## Decisões vigentes
 - `airgap-vault-kaizou-1.1.3` continua sendo a release pública corrente e o único alvo do APK desta homologação; não criar 1.1.4 apenas para o APK.
 - O APK candidato incorpora exatamente `airgap-solana-module 0.1.7` do handoff de produção, ZIP SHA-256 `5032d045cd0e93bcb2a6a666bf4213add2f787fd70da79a0f431927916fded0c`.
-- A U27 foi executada no perfil `terminal`, conforme emenda v33, preservando todos os gates binários da v32.
-- Publicação somente após `U27_BINARY_HOMOLOGATION_PASS`, `RECONCILIATION_CLOSURE=PASS` e `DEPENDENCY_REFERENCES=PASS`.
-- Skill de projeto usada nesta unidade: `airgap-wallet-engineering-skill@0.2.9`; plano de competências permaneceu congelado durante a unidade.
+- A U27 executa no perfil `terminal` conforme emenda v33, preservando todos os gates binários da v32.
+- Publicação somente após `U27_BINARY_HOMOLOGATION_PASS`, `RECONCILIATION_CLOSURE=PASS` e `DEPENDENCY_REFERENCES=PASS`; os dois últimos passam no fecho atual, mas o primeiro continua bloqueado por H01.
+- Skill de projeto: `airgap-wallet-engineering-skill@0.2.9`, reconciliada até `4741f19df57950a9f487748e1b7d41c97dfef4b9`.
 
 ## Decisões superadas
 - Continuar U27 exclusivamente no perfil `work` — superada pela decisão humana registrada na emenda v33.
@@ -24,20 +24,23 @@
 | **Vantagem** | Menor retrabalho e preserva o estado exato já validado | Remove dependência de credencial perdida e cria estado reproduzível | Nenhum risco operacional adicional |
 | **Desvantagem** | Exige recuperar o PIN de teste | Repete gates de runtime/base.apk e instalação limpa | U27 permanece bloqueada |
 | **Custo de reverter** | Baixo | Médio | Baixo |
-| **Impacto no contrato** | Nenhum | Nenhum, desde que Android 11/API30 Google Play user/release-keys/non-root e clean install sejam reprovidos/provados novamente | Mantém 946 em curso e 947 preexistente |
+| **Impacto no contrato** | Nenhum | Nenhum, desde que Android 11/API30 Google Play user/release-keys/non-root e clean install sejam provados novamente | Mantém 946 em curso e 947 preexistente |
 
-**Recomendação:** fornecer o PIN sintético existente se ele for conhecido. Não enviar credencial real de uso pessoal.
+**Recomendação:** fornecer o PIN sintético existente se ele for conhecido. Não enviar credencial real de uso pessoal; prefira um caminho/variável de cofre local.
 
 ## Decisões fechadas nesta emenda
 - O gate de licença que bloqueou Work não bloqueia terminal: SDK persistente já licenciado e probe com stdin fechado instalou `build-tools;34.0.0` e `platforms;android-35` sem novo aceite.
-- Verificador estrutural foi alinhado mecanicamente ao perfil `terminal` do contrato v33 e voltou a PASS.
+- Verificador estrutural foi alinhado ao perfil `terminal` do contrato v33 e voltou a PASS.
+- A skill compartilhada foi reconciliada sem alterar `SKILL.md`: entrada 74 declarou o gate de licença já existente, índice derivado foi regenerado e o catálogo foi alinhado a root 0.2.9, AVD 0.1.4 e release-packaging 0.2.0.
+- O Kaizou leu o delta `763c05b…→4741f19…`, atualizou `delta_lido_ate` e obteve `RECONCILIATION_CLOSURE=PASS` e `DEPENDENCY_REFERENCES=PASS` contra catálogo `b0748d1…`.
 
 ## Pendências técnicas não humanas
 - Após resolver H01, executar os quatro casos da matriz de captura, o caso Solflare foreign-account, os quatro casos de assinatura e persistência de app-process no APK já fixado, sem rebuild.
-- Depois de `U27_BINARY_HOMOLOGATION_PASS`, fechar reconciliação/dependências e somente então anexar o APK à release 1.1.3.
+- Se skill/catálogo mudarem antes do upload, recalcular o fecho de reconciliação antes da publicação.
+- Com `U27_BINARY_HOMOLOGATION_PASS`, anexar o mesmo APK hash-fixado à release 1.1.3 e verificar o asset publicado.
 
 ## Trabalho compartilhado
-- Nenhum bloco ativo; unidade de inventário encerrada para abrir reparo de dependências.
+- `manifesto.yaml.trabalho_compartilhado` está `null`; a reserva desta unidade foi liberada após o fechamento dos portões de dependência.
 
 ## Competências ativas nesta unidade
 - `telemetry-data-visualization@2`
@@ -45,26 +48,23 @@
 - `github-incremental-reconciliation@7`
 - `governanca-ontologica-de-skills@1.0.4`
 - `airgap-wallet-engineering-skill@0.2.9`
-- `android-container-avd-lab@0.1.4`
-- `android-airgap-runtime@0.1.4`
-- `release-packaging@0.2.0`
 
 ## Competências instaladas para unidades futuras
 - Nenhuma nova nesta unidade.
 
 ## Falhas de portão por tipo de entrada
-- `evidencia-teste`: runtime U27 bloqueado por credencial sintética de lockscreen não declarada; nenhum caso foi marcado PASS sem execução.
-- `estrutura`: uma reprovação transitória porque o verificador ainda exigia `work` após a emenda v33; corrigida e rerodada com PASS.
-- `teste-typescript`: primeira tentativa Karma compilou com tipos Jasmine incompatíveis; execução válida posterior observou `jasmine-core 3.9.0` + `@types/jasmine 3.10.18` e passou 99/99 upstream + 20/20 Kaizou, sem mudança no APK.
+- `evidencia-teste`: runtime U27 continua bloqueado por credencial sintética de lockscreen não declarada; nenhum caso foi marcado PASS sem execução.
+- `estrutura`: a divergência anterior do verificador `work`→`terminal` foi corrigida e permanece PASS.
+- `teste-typescript`: a execução válida observou `jasmine-core 3.9.0` + `@types/jasmine 3.10.18` e passou 99/99 upstream + 20/20 Kaizou, sem mudança no APK.
+- `dependencia`: divergências anteriores de catálogo/índice/manifesto da skill foram reparadas em unidade separada e o fecho atual passa.
 
 ## Divergências da última reconciliação
-- corrigidas: inventário remoto/local e deltas foram lidos; aprendizado homologado preservado.
-- pendentes técnicas: catálogo registra `airgap-wallet-engineering 0.2.6` contra fonte `0.2.9`; `android-container-avd-lab` aparece como `0.1.2` no índice interno/catálogo contra fonte `0.1.4`; `release-packaging` aparece como `0.1.0` contra fonte `0.2.0`; `scripts/validate_release_licenses.py` existe no HEAD remoto da skill mas não está declarado no manifesto.
-- portões: `DELTA_INVENTORY=PASS`, `LEARNING_PRESERVED=PASS`, `RECONCILIATION_CLOSURE=FAIL`, `DEPENDENCY_REFERENCES=FAIL`.
-- pendente humana separada: H01 continua sendo o PIN sintético do AVD; nenhum canal seguro novo foi localizado.
+- corrigidas: root skill 0.2.9, 12/12 subskills e 4/4 métodos/macros globais convergem entre fonte, índice, catálogo e consumidor; catálogo valida; `delta_lido_ate` avança para `4741f19df57950a9f487748e1b7d41c97dfef4b9`.
+- portões: `DELTA_INVENTORY=PASS`, `LEARNING_PRESERVED=PASS`, `RECONCILIATION_CLOSURE=PASS`, `DEPENDENCY_REFERENCES=PASS`.
+- pendentes de autorização: somente H01 do runtime Android.
 
 ## Entradas aceitas
-- Histórico aceito preservado. Entradas 936/938/946 permanecem `em_curso`; 947 permanece `preexistente`.
+- Histórico aceito preservado. Entradas 936/938/946 permanecem `em_curso`; 947 permanece `preexistente` até a homologação binária e publicação efetivas.
 
 ## Evidência binária U27 atual
 - build source HEAD: `d1ed951a5583538eff300f9555399012ae6a5c56`.
@@ -75,8 +75,9 @@
 - guest: Android 11/API30/x86_64, fingerprint `google/sdk_gphone_x86_64/generic_x86_64_arm64:11/RSR1.201211.001/7027799:user/release-keys`, Google Play presente, `user`, `release-keys`, `ro.debuggable=0`, `ro.secure=1`, `adb root` recusado.
 - instalação inicial: app ausente antes da instalação limpa.
 - regressão: non-regression/estrutura PASS; Karma upstream 99/99 PASS; seis gates Kaizou 20/20 PASS.
+- dependências: `RECONCILIATION_CLOSURE=PASS`; `DEPENDENCY_REFERENCES=PASS`.
 - runtime de assinatura/captura: NÃO EXECUTADO por H01; portanto `U27_BINARY_HOMOLOGATION_PASS` não foi declarado.
 - publicação: NÃO EXECUTADA.
 
 ## Próxima unidade
-- Resolver H01. Se o PIN sintético existente for fornecido, retomar do mesmo laboratório/mesmo APK sem rebuild; caso seja escolhido clean-room, repetir somente os gates de instalação/runtime necessários e recalcular qualquer evidência que dependa do guest.
+- Resolver H01. Com PIN sintético disponibilizado por canal seguro, retomar do mesmo laboratório/mesmo APK sem rebuild; se o operador escolher clean-room, repetir somente os gates dependentes do guest e da instalação.
