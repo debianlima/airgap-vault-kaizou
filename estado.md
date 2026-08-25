@@ -1,38 +1,44 @@
 # Estado — 2026-08-25 — contrato v32
 
 ## Decisões vigentes
-- `airgap-vault-kaizou-1.1.3` é a release pública corrente e o alvo da publicação binária U27; não criar 1.1.4 apenas para o APK.
-- O binário 1.1.3 usa exatamente `airgap-solana-module 0.1.7` do handoff de produção, ZIP SHA-256 `5032d045cd0e93bcb2a6a666bf4213add2f787fd70da79a0f431927916fded0c`.
-- O APK só pode ser anexado após build limpo, inspeção do módulo estático e homologação Android 11/API 30 Google Play `user/release-keys`, non-root.
-- Skill de projeto ativa: `airgap-wallet-engineering-skill` 0.2.9; delta 0.2.7→0.2.9 lido e reconciliado até `e0ff39455e2b79cf842b95d86683a044f6bbb63b`.
+- `airgap-vault-kaizou-1.1.3` é a release pública corrente e o alvo da publicação binária; não criar 1.1.4 apenas para o APK.
+- O binário 1.1.3 deve incorporar exatamente `airgap-solana-module 0.1.7` do handoff de produção, ZIP SHA-256 `5032d045cd0e93bcb2a6a666bf4213add2f787fd70da79a0f431927916fded0c`.
+- A publicação exige build limpo, módulo estático verificado e homologação Android 11/API 30 Google Play `user/release-keys`, non-root.
+- Skill de projeto ativa: `airgap-wallet-engineering-skill@0.2.9`, delta 0.2.7→0.2.9 reconciliado.
 
 ## Decisões superadas
-- Tratar 1.1.3 como permanentemente source-only — superada pela decisão humana de continuar a homologação/publicação binária na própria 1.1.3.
-- Criar 1.1.4 apenas porque 1.1.3 já existe — descartado.
+- Tratar 1.1.3 como permanentemente source-only — superada pela decisão humana de continuar a publicação binária na própria 1.1.3.
+- Criar 1.1.4 apenas porque a página 1.1.3 já existe — descartado.
+- Usar Node 14.x do workflow histórico para a árvore atual — incompatível com `bip32@5.0.0-rc.0`, que exige Node >=18.
 
 ## Decisões humanas pendentes
-- Nenhuma decisão de versão/release pendente nesta unidade.
+- H01 — aceitação do Android SDK License Agreement por representante adulto/autorizado da organização. Bloqueia aquisição de `build-tools;34.0.0`, `platforms;android-35`, geração do APK e o laboratório Android Google Play. O agente não pode aceitar esse acordo em nome da organização.
 
 ## Pendências técnicas não humanas
-- Verificar o módulo 0.1.7 pelo gate Kaizou, construir o APK e repetir a homologação Android non-root.
-- Atualizar a nota pública 1.1.3 e anexar o APK somente depois de `U27_BINARY_HOMOLOGATION_PASS`.
-- Se o download do system image exigir Android SDK License Agreement, a aceitação continua sendo ato humano/organizacional e não é inferida pelo agente.
+- Após H01: instalar os componentes Android requeridos e repetir o build Gradle.
+- Gerar o APK 1.1.3 e registrar seu SHA-256.
+- Criar/reusar Android 11/API 30 Google Play non-root, instalar o APK exato e executar os gates U27.
+- Atualizar a nota pública 1.1.3 e anexar o APK somente após `U27_BINARY_HOMOLOGATION_PASS`.
 
 ## Trabalho compartilhado
-- ponteiro: `manifesto.yaml.trabalho_compartilhado` — unidade U27.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — livre após encerramento bloqueado da U27.
 
 ## Competências ativas nesta unidade
-- `airgap-wallet-engineering-skill@0.2.9`
-- `android-container-avd-lab@0.1.4`
-- `android-airgap-runtime@0.1.4`
-- `release-packaging@0.2.0`
+- `airgap-wallet-engineering-skill@0.2.9` — raiz do projeto.
+- `android-container-avd-lab@0.1.4` — laboratório Android.
+- `android-airgap-runtime@0.1.4` — gate non-root.
+- `release-packaging@0.2.0` — integridade/publicação.
+
+## Falhas de portão por tipo de entrada
+- deploy-android: 1 bloqueio por licença Android SDK não aceita.
+- ambiente-build: Node 14.x histórico reprovou por dependência corrente que exige Node >=18; Node 22.22.1 + Yarn 1.22.19 instalou o lockfile sem alterar a árvore.
 
 ## Divergências da última reconciliação
-- corrigidas: skill 0.2.7→0.2.9; alvo binário fixado na release 1.1.3; nota pública 1.1.3 declarada como entrada 947 `preexistente`.
-- pendentes de autorização: eventual aceitação da licença Android SDK, se necessária para adquirir o system image.
+- corrigidas: skill 0.2.7→0.2.9; contrato v32; alvo binário na release 1.1.3; módulo 0.1.7 verificado.
+- pendentes de autorização: H01 Android SDK License Agreement.
 
 ## Entradas aceitas
-- Histórico aceito preservado; 936 e 938 reabertas para v32; 946 pendente; 947 preexistente até auditoria/atualização final.
+- Histórico aceito preservado; 936, 938 e 946 permanecem `em_curso`; 947 permanece `preexistente` até auditoria/atualização final.
 
 ## Próxima unidade
-- U27 — verificar 0.1.7, construir APK 1.1.3, homologar no Android non-root e publicar somente com todos os portões verdes.
+- Após H01: reabrir a homologação binária, repetir Gradle com SDK completo, gerar APK, homologar Android non-root e publicar somente com todos os portões em PASS.

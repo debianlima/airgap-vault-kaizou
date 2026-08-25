@@ -440,23 +440,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/cti/airgap-homologation/airgap-vault-kaizou
-  unidade: U27
-  descricao: homologacao e publicacao binaria da release 1.1.3 com modulo 0.1.7
-  agente: WORK-SSH
-  atualizado_em: '2026-08-25T19:58:07+00:00'
-  previsao_termino: '2026-08-25T21:58:07+00:00'
-  zona_exclusao:
-    - manifesto.yaml
-    - competencias.yaml
-    - estado.md
-    - contratos/airgap-vault-kaizou-solana-release.schema.json
-    - releases/airgap-vault-kaizou-1.1.3.md
-    - scripts/airgap-vault-kaizou-build-release-with-solana-module.js
-    - scripts/airgap-vault-kaizou-verify-structure.py
-    - logs/U27-2026-08-25-1.1.3-binary-homologation.log
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8099,7 +8083,7 @@ entradas:
   consome: []
   produz: null
   aceite: test -s logs/U27-2026-08-25-1.1.3-binary-homologation.log && grep -q 'U27_BINARY_HOMOLOGATION_PASS' logs/U27-2026-08-25-1.1.3-binary-homologation.log
-  status: pendente
+  status: em_curso
 - id: 947
   caminho: releases/airgap-vault-kaizou-1.1.3.md
   proposito: nota pública acumulativa da release 1.1.3, encontrada preexistente e atualizável somente após o gate binário U27
