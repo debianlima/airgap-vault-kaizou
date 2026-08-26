@@ -5,14 +5,31 @@ o controle de licenças/proveniência do fork e do módulo Solana.
 
 ## Natureza desta release
 
-**Release de código-fonte e documentação legal. Não há APK 1.1.3.** Um novo APK
-só poderá ser publicado depois que `airgap-solana-module 0.1.7` for assinado com
-a chave de produção, incorporado com seus arquivos legais e novamente
-homologado no Android. Nenhum APK anterior foi renomeado ou reaproveitado.
+A publicação inicial de 25/08/2026 foi **somente código-fonte e documentação legal**, sem APK 1.1.3. Esse estado histórico foi preservado até a homologação binária U27 concluir todos os portões do contrato v33.
 
-O arquivo adicional `airgap-vault-kaizou-1.1.3-license-provenance.zip` contém
-os documentos legais e de proveniência desta release, acompanhados de SHA-256.
-O source archive automático do GitHub contém o repositório completo.
+Em 26/08/2026, após `U27_BINARY_HOMOLOGATION_PASS=PASS`, a mesma release recebeu o APK homologado — nenhum APK anterior foi renomeado ou reaproveitado e nenhum rebuild foi feito depois da fixação do hash:
+
+- asset: `airgap-vault-kaizou-1.1.3.apk`;
+- SHA-256: `5d32bdac6de6f7414034d253f131a137e7dfc75deb49909d6ce1b447c57be79b`;
+- tamanho: 85.705.684 bytes;
+- package Android: `it.airgap.vault`, `versionName=0.0.0`, `versionCode=1`;
+- Android 11/API30/x86_64, Google Play, build `user/release-keys`, non-root;
+- módulo estático: `airgap-solana-module 0.1.7`, ZIP de produção SHA-256 `5032d045cd0e93bcb2a6a666bf4213add2f787fd70da79a0f431927916fded0c`;
+- checksum publicado separadamente em `airgap-vault-kaizou-1.1.3.apk.sha256`.
+
+O redownload autenticado do asset publicado reproduziu exatamente o SHA-256 e o tamanho locais. Os assets legais preexistentes `airgap-vault-kaizou-1.1.3-license-provenance.zip` e `.sha256` foram preservados sem sobrescrita.
+
+O arquivo adicional `airgap-vault-kaizou-1.1.3-license-provenance.zip` contém os documentos legais e de proveniência desta release, acompanhados de SHA-256. O source archive automático do GitHub contém o repositório completo.
+
+### Homologação binária U27
+
+- APK exato e módulo 0.1.7 byte-equivalente ao handoff de produção: PASS;
+- clean install Android 11/API30 Google Play non-root: PASS;
+- matriz QR resiliente: 4/4 PASS, zero `Incompatible code`;
+- replay real público de transação Solflare da documentação oficial Keystone: retorno exato `No account found`, sem rota de assinatura nem mutação relevante;
+- `controlled-solana`, Pancake CLMM, Stake Deactivate e TokenSwapV3: requestId, assinatura de 64 bytes e Ed25519 sobre mensagem exata PASS;
+- persistência por `am force-stop` → relaunch com emulator vivo: PASS;
+- `DELTA_INVENTORY`, `LEARNING_PRESERVED`, `RECONCILIATION_CLOSURE` e `DEPENDENCY_REFERENCES`: PASS.
 
 ## Licenças e proveniência implementadas em 1.1.3
 
@@ -78,7 +95,7 @@ O source archive automático do GitHub contém o repositório completo.
 - árvore npm reproduzível e inventário gerado do bundle real;
 - exclusão mecânica do código `rpc-websockets` LGPL-3.0-only não utilizado;
 - avisos dentro do pacote e hashes legais no manifesto assinado;
-- sem APK: produção e homologação binária continuam pendentes.
+- publicação inicial sem APK; atualização binária U27 de 26/08/2026 publicou o APK homologado acima após todos os portões PASS.
 
 ## Segurança e limites
 

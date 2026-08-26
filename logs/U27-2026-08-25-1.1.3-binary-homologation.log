@@ -368,3 +368,26 @@ DEPENDENCY_REFERENCES=PASS
 U27_BINARY_HOMOLOGATION_PASS=PASS
 publication_gate=READY
 note=The final foreign-account gate used a real public Solflare transaction QR published in official Keystone integration documentation. It was decoded transiently, replayed through the live Cordova QRScanner callback on the exact homologated APK, returned exactly No account found, never entered a signing route, and preserved the U27 Cleanroom secret list. No private user capture was versioned and no Solflare account/terms acceptance was used.
+
+--- U27 RELEASE PUBLICATION ---
+release_id=376067127
+release_url=https://github.com/debianlima/airgap-vault-kaizou/releases/tag/airgap-vault-kaizou-1.1.3
+apk_asset_name=airgap-vault-kaizou-1.1.3.apk
+apk_asset_id=531346364
+apk_asset_remote_size=85705684
+apk_asset_remote_sha256=5d32bdac6de6f7414034d253f131a137e7dfc75deb49909d6ce1b447c57be79b
+apk_asset_redownload_hash=PASS
+apk_checksum_asset_name=airgap-vault-kaizou-1.1.3.apk.sha256
+apk_checksum_asset_id=531346490
+apk_checksum_remote_content=PASS
+preexisting_license_asset_preserved=PASS
+remote_asset_inventory=PASS_4_ASSETS
+publication_gate=PASS
+release_body_sync=PASS
+release_body_source=releases/airgap-vault-kaizou-1.1.3.md
+resource_release_kvm=PASS
+resource_release_docker=PASS
+resource_release_avd=PASS
+android_resume_container_stopped=PASS_PRESERVED
+entry_947=ACCEPTED
+U27_PUBLICATION_COMPLETE=PASS
