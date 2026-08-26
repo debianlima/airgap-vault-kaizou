@@ -455,8 +455,9 @@ trabalho_compartilhado:
   unidade: U27-disclaimer-inspection
   descricao: retomar clean-room após aceite humano do disclaimer e executar gates runtime no mesmo APK
   agente: terminal-oracle
-  atualizado_em: '2026-08-25T22:22:00-03:00'
-  previsao_termino: '2026-08-26T00:30:00-03:00'
+  atualizado_em: '2026-08-26T01:01:00-03:00'
+  prorrogado_em: '2026-08-26T01:01:00-03:00'
+  previsao_termino: '2026-08-26T01:30:00-03:00'
   zona_exclusao:
     - manifesto.yaml
     - estado.md
