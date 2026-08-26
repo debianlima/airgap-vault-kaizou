@@ -1,6 +1,10 @@
-# Estado — 2026-08-26 — contrato v33
+# Estado — 2026-08-26 — contrato v34
 
 ## Decisões vigentes
+- A U27/Solana 1.1.3 permanece concluída e publicada; o contrato v34 abre uma frente independente de integração Monero/XMR sem alterar o APK/release já homologados.
+- A integração Monero é multiestágio e segue `xmr-output -> xmr-keyimage -> xmr-txunsigned -> xmr-txsigned`; não reutilizar a coreografia one-shot de Solana.
+- Oracle primário XMR: `monero-wallet-cli v0.18.5.1` no commit `4f92268d7c16741cfb41e5bbe2aa46cc260a9ea5`, pacote/hashes assinados e verificados.
+- Oracle de interoperabilidade: Feather Wallet `2.8.1` no commit `51dc8ed04f0fc4cead2e867a249c32bd3e3b8126`, distribuição Linux com assinatura destacada verificada.
 - `airgap-vault-kaizou-1.1.3` é a release publicada e contém agora o APK homologado da U27; não foi criada 1.1.4 apenas para o binário.
 - Asset APK: `airgap-vault-kaizou-1.1.3.apk`, SHA-256 `5d32bdac6de6f7414034d253f131a137e7dfc75deb49909d6ce1b447c57be79b`, 85.705.684 bytes.
 - Android metadata do APK: package `it.airgap.vault`, `versionName=0.0.0`, `versionCode=1`; `1.1.3` é versão/tag da release/package.
@@ -31,7 +35,7 @@
 - Nenhuma pendência técnica U27.
 
 ## Trabalho compartilhado
-- `manifesto.yaml.trabalho_compartilhado` está `null`; guest parado/preservado e locks KVM/Docker/AVD liberados.
+- `manifesto.yaml.trabalho_compartilhado` está `null`; U28 Monero protocol research encerrada e sem locks de recurso.
 
 ## Competências ativas nesta unidade
 - `telemetry-data-visualization@2`
@@ -66,4 +70,15 @@
 - Publicação: APK asset id `531346364`; checksum asset id `531346490`; redownload/hash PASS; corpo da release sincronizado; quatro assets remotos presentes.
 
 ## Próxima unidade
-- U27 concluída e publicada; próxima unidade somente por nova entrada/contrato.
+- Próxima unidade: parser/transport XMR byte-preserving contra fixtures dos oráculos pinados; signer somente depois desse gate.
+
+## Integração Monero v34
+- Contrato: `contratos/airgap-vault-kaizou-monero.schema.json`.
+- Documento de arquitetura: `docs/airgap-vault-kaizou-monero-integration.md`.
+- Gate mecânico: `scripts/airgap-vault-kaizou-monero-oracle-gate.js`.
+- Evidência U28: `logs/U28-2026-08-26-monero-protocol-research.log`.
+- UR types fixados pelo Feather 2.8.1: `xmr-output`, `xmr-keyimage`, `xmr-txunsigned`, `xmr-txsigned`.
+- Magic wallet2 fixados pelo Monero v0.18.5.1: outputs `Monero output export\x04`, key images `Monero key image export\x03`, unsigned tx `Monero unsigned tx set\x05`, signed tx `Monero signed tx set\x05`.
+- Implementação do signer ainda não começou nesta unidade por desenho: primeiro devem existir fixtures canônicas e round-trip byte-a-byte aceitos pelos oráculos.
+
+- U28 protocol research: PASS; entradas 948–951 aceitas.

@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/debianlima/airgap-vault-kaizou/contratos/airgap-vault-kaizou-monero.schema.json",
+  "title": "AirGap Vault Kaizou Monero Offline Signing Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projectContractVersion",
+    "protocol",
+    "implementationBoundary",
+    "oracles",
+    "offlineTransport",
+    "wallet2Magic",
+    "choreography",
+    "securityInvariants",
+    "homologation"
+  ],
+  "properties": {
+    "projectContractVersion": { "const": 34 },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "ticker", "homologationNetwork"],
+      "properties": {
+        "id": { "const": "monero" },
+        "ticker": { "const": "XMR" },
+        "homologationNetwork": { "const": "stagenet" }
+      }
+    },
+    "implementationBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["host", "module", "network"],
+      "properties": {
+        "host": { "const": "AirGap Vault renders/reviews state and transports opaque canonical payloads" },
+        "module": { "const": "Monero protocol module owns key derivation, wallet2 payload parsing and signing" },
+        "network": { "const": "AirGap Vault must not contact a Monero node or broadcast transactions" }
+      }
+    },
+    "oracles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "interoperability"],
+      "properties": {
+        "primary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "tag", "commit", "linuxX64ArchiveSha256", "walletCliSha256", "signedHashesFingerprint"],
+          "properties": {
+            "name": { "const": "monero-wallet-cli" },
+            "version": { "const": "0.18.5.1" },
+            "tag": { "const": "v0.18.5.1" },
+            "commit": { "const": "4f92268d7c16741cfb41e5bbe2aa46cc260a9ea5" },
+            "linuxX64ArchiveSha256": { "const": "22a7dda7b0cb699fdd6b7674c3b4a4465b337cc98a54983523b759e1e7cc9958" },
+            "walletCliSha256": { "const": "34c2a49d6d4d426062bc0c2a18bcba4bf372edfa410bbfbedfabfd2af94e74b4" },
+            "signedHashesFingerprint": { "const": "81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92" }
+          }
+        },
+        "interoperability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "tag", "commit", "linuxArchiveSha256", "releaseSignerFingerprint"],
+          "properties": {
+            "name": { "const": "Feather Wallet" },
+            "version": { "const": "2.8.1" },
+            "tag": { "const": "2.8.1" },
+            "commit": { "const": "51dc8ed04f0fc4cead2e867a249c32bd3e3b8126" },
+            "linuxArchiveSha256": { "const": "4779c57e9443f7755add3c2414447d1593ebe06998e39a9f765deab5bd64c466" },
+            "releaseSignerFingerprint": { "const": "8185E158A33330C7FD61BC0D1F76E155CEFBA71C" }
+          }
+        }
+      }
+    },
+    "offlineTransport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["encoding", "payloadEncoding", "urTypes"],
+      "properties": {
+        "encoding": { "const": "BC-UR fountain / animated QR, with file transfer as equivalent carrier" },
+        "payloadEncoding": { "const": "CBOR byte string containing the canonical wallet2 byte payload" },
+        "urTypes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["outputs", "keyImages", "unsignedTransaction", "signedTransaction"],
+          "properties": {
+            "outputs": { "const": "xmr-output" },
+            "keyImages": { "const": "xmr-keyimage" },
+            "unsignedTransaction": { "const": "xmr-txunsigned" },
+            "signedTransaction": { "const": "xmr-txsigned" }
+          }
+        }
+      }
+    },
+    "wallet2Magic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outputsHex", "keyImagesHex", "unsignedTransactionHex", "signedTransactionHex"],
+      "properties": {
+        "outputsHex": { "const": "4d6f6e65726f206f7574707574206578706f727404" },
+        "keyImagesHex": { "const": "4d6f6e65726f206b657920696d616765206578706f727403" },
+        "unsignedTransactionHex": { "const": "4d6f6e65726f20756e7369676e65642074782073657405" },
+        "signedTransactionHex": { "const": "4d6f6e65726f207369676e65642074782073657405" }
+      }
+    },
+    "choreography": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        { "const": "online-view-only -> offline-signer: xmr-output (conditional key-image synchronization)" },
+        { "const": "offline-signer -> online-view-only: xmr-keyimage (conditional key-image synchronization)" },
+        { "const": "online-view-only -> offline-signer: xmr-txunsigned" },
+        { "const": "offline-signer -> online-view-only: xmr-txsigned" }
+      ],
+      "items": false
+    },
+    "securityInvariants": {
+      "type": "array",
+      "minItems": 8,
+      "contains": { "const": "secret spend key never leaves the offline signer" },
+      "items": { "type": "string" }
+    },
+    "homologation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocolResearch",
+        "oraclePinning",
+        "transportRoundTrip",
+        "outputsImport",
+        "keyImagesExport",
+        "unsignedTxLoad",
+        "signedTxLoad",
+        "canonicalBytesPreserved",
+        "noNetworkFromVault",
+        "noBroadcastFromVault",
+        "externalOracleAcceptsSignedTx"
+      ],
+      "properties": {
+        "protocolResearch": { "const": "PASS" },
+        "oraclePinning": { "const": "PASS" },
+        "transportRoundTrip": { "const": "PASS" },
+        "outputsImport": { "enum": ["PASS", "NOT_RUN"] },
+        "keyImagesExport": { "enum": ["PASS", "NOT_RUN"] },
+        "unsignedTxLoad": { "enum": ["PASS", "NOT_RUN"] },
+        "signedTxLoad": { "enum": ["PASS", "NOT_RUN"] },
+        "canonicalBytesPreserved": { "enum": ["PASS", "NOT_RUN"] },
+        "noNetworkFromVault": { "enum": ["PASS", "NOT_RUN"] },
+        "noBroadcastFromVault": { "enum": ["PASS", "NOT_RUN"] },
+        "externalOracleAcceptsSignedTx": { "enum": ["PASS", "NOT_RUN"] }
+      }
+    }
+  }
+}
