@@ -38,16 +38,17 @@
 - O diagnóstico do foreign-account foi corrigido: `logs/U23-2026-08-24-solflare-capture-resilience.log` declara `synthetic-only; real Solflare user capture excluded from versioned evidence`, e o contrato permite captura privada apenas transitoriamente.
 - Solflare Wallet 2.34.1 foi instalada em laboratório isolado a partir do pacote oficial da Chrome Web Store, com identidade/versionamento conferidos pela organização oficial `solflare-wallet`; CRX SHA-256 `427924b56987583ab3a3b09cab8754970a83da69a2bc9d56f5114469e6f7db8e`.
 - Conta Keystone foreign sintética, sem fundos, foi pareada pela câmera virtual real da Solflare: endereço público `EPYB3u35GhLmDKv7c8ReiBrYGm3cSSYNP8eWsAdCN7oU`, fingerprint `b35695ff`; mnemonic/senha permanecem somente no cofre local e nunca foram impressas/versionadas.
+- Metadados do APK reconciliados por quatro canais independentes: `aapt`, `dumpsys package`, `android/app/build.gradle` e `output-metadata.json` concordam em `versionName=0.0.0` e `versionCode=1`. O registro histórico `1.1.3/10013` foi erro de cópia da versão da release/package e está superado; a release-alvo continua `airgap-vault-kaizou-1.1.3`. O APK não foi e não deve ser rebuildado por essa correção.
+- As quatro assinaturas runtime (`controlled-solana`, `pancake-clmm`, `stake-deactivate`, `tokenswap-v3`) fecharam PASS independente em `requestId`, comprimento de 64 bytes e Ed25519 sobre a mensagem exata.
+- Persistência de processo fechou PASS no limite contratual `am force-stop` → relaunch com emulator vivo: PID `5141` desapareceu, novo PID `11741`, rota voltou a `/tabs/tab-secrets`, `U27 Cleanroom` reapareceu após `BiometricPrompt` estável e o APK manteve o mesmo SHA-256 antes/depois.
 
 ## Pendências técnicas não humanas
 - Após H03, reabrir o perfil Solflare U27 preservado somente depois que um operador humano legalmente elegível tiver realizado pessoalmente o aceite na UI; então gerar um `sol-sign-request` real/transitório de mensagem inofensiva da conta Keystone foreign.
 - Reproduzir esse request no scanner real do Vault e exigir exatamente `No account found`, sem `Incompatible code` e sem null dereference; persistir somente hashes/metadados, não o payload real.
-- Executar as quatro assinaturas `controlled-solana`, `pancake-clmm`, `stake-deactivate`, `tokenswap-v3`, verificando requestId, 64 bytes e Ed25519 sobre a mensagem exata.
-- Executar persistência por `am force-stop` → `am start` enquanto o emulator permanece vivo; restart do container é clean-room reset porque o comando contém `-wipe-data`.
 - Recalcular fecho de dependências antes do upload se skill/catálogo mudarem.
 
 ## Trabalho compartilhado
-- `manifesto.yaml.trabalho_compartilhado` está `null`; reserva da unidade foi liberada após parar browser/guest e registrar H03.
+- ponteiro: `manifesto.yaml.trabalho_compartilhado` — unidade `U27-resume-via-action`, atualizado_em `2026-08-26T17:22:00-03:00`.
 
 ## Competências ativas nesta unidade
 - `telemetry-data-visualization@2`
@@ -60,12 +61,12 @@
 
 ## Falhas de portão por tipo de entrada
 - `evidencia-teste`: `realSolflareForeignAccount` não executado porque a Solflare exige aceite humano de Terms of Service + Privacy Policy e os Termos observados exigem elegibilidade/capacidade contratual; esse passo não é executado pelo agente.
-- `assinatura`: request `controlled-solana` chegou a `/deserialized-detail`, mas a assinatura final/Ed25519 ainda não foi executada; demais três casos não executados.
-- `persistencia`: `force-stop/start` ainda não executado nesta clean-room.
+- `assinatura`: quatro casos runtime PASS em requestId, 64 bytes e Ed25519 sobre mensagem exata; nenhuma reprovação permanece.
+- `persistencia`: `force-stop/start` PASS com emulator vivo, PID novo, secret `U27 Cleanroom` recuperado e APK hash-idêntico.
 - `harness`: algumas primeiras tentativas de CDP terminaram em target/reload sem marcador; foram descartadas e não contaram como PASS. A matriz aceita usa resultado observável por rota/arquivo de resultado independente.
 
 ## Divergências da última reconciliação
-- corrigidas: a suposição de que deveria existir captura real Solflare versionada foi corrigida pela evidência U23/contrato; o projeto deliberadamente não guarda payload real de usuário.
+- corrigidas: a suposição de que deveria existir captura real Solflare versionada foi corrigida pela evidência U23/contrato; o projeto deliberadamente não guarda payload real de usuário. O registro APK `1.1.3/10013` também foi corrigido: o artefato exato é `0.0.0/1`, enquanto `1.1.3` é versão/tag da release/package.
 - portões mantidos: `RECONCILIATION_CLOSURE=PASS`, `DEPENDENCY_REFERENCES=PASS` do fechamento anterior.
 - recurso legado observado e não removido: `airgap-vault-kaizou-signing-simulation.lock`, U18, recurso `cpu-signing-simulation`; não pertence à unidade atual e não foi tratado como órfão por inferência.
 - pendente humana: H03.
@@ -79,11 +80,13 @@
 - instalação limpa: app inicialmente ausente; `base.apk` instalado teve o mesmo SHA-256 do candidato antes da execução runtime.
 - conta Vault clean-room: Solana pública `5U13P2iuS1FWH66RvVTY2G4o59ew6xkGx7pFjerCmoSX`, fingerprint `477097b9`; PIN/mnemonic somente no cofre local.
 - matriz de captura: 4/4 PASS, `Incompatible code` = 0.
-- fixture de assinatura atual: SHA-256 `1c69a8ddb3463d8c113e7de234f151536b1e3316ab15ffb03f269b99711c1400`; ainda não constitui evidência das quatro assinaturas finais.
+- metadados Android do APK: package `it.airgap.vault`, `versionName=0.0.0`, `versionCode=1`; release/package alvo continua `1.1.3`.
+- fixture de assinatura atual: SHA-256 `1c69a8ddb3463d8c113e7de234f151536b1e3316ab15ffb03f269b99711c1400`; quatro respostas runtime foram verificadas independentemente em requestId, 64 bytes e Ed25519 exata.
+- persistência de processo: PASS por `force-stop/start` com emulator vivo; secret `U27 Cleanroom` e hash do APK preservados.
 - Solflare 2.34.1: CRX oficial SHA-256 `427924b56987583ab3a3b09cab8754970a83da69a2bc9d56f5114469e6f7db8e`; perfil de homologação preservado em `/mnt/e/airgap-vault-kaizou-workspace/tools/solflare-extension-u27/profile-u27-v2`.
 - foreign account Keystone: pareamento Solflare PASS; `realSolflareForeignAccount` NÃO EXECUTADO por H03.
 - `U27_BINARY_HOMOLOGATION_PASS`: NÃO DECLARADO.
 - publicação: NÃO EXECUTADA.
 
 ## Próxima unidade
-- Um operador humano legalmente elegível deve realizar pessoalmente o aceite dos Terms of Service e Privacy Policy na UI da Solflare. Depois disso, retomar o perfil U27 preservado e gerar o request real/transitório foreign-account; então fechar assinaturas e persistência, sem rebuildar o APK.
+- Fechar `realSolflareForeignAccount` sem versionar payload privado; depois recalcular fecho de reconciliação/dependências. Somente se todos os gates restantes estiverem PASS declarar `U27_BINARY_HOMOLOGATION_PASS` e preparar publicação do mesmo APK, sem rebuild.
