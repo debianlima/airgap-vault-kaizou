@@ -48,7 +48,7 @@
 - Recalcular fecho de dependências antes do upload se skill/catálogo mudarem.
 
 ## Trabalho compartilhado
-- ponteiro: `manifesto.yaml.trabalho_compartilhado` — unidade `U27-resume-via-action`, atualizado_em `2026-08-26T17:22:00-03:00`.
+- `manifesto.yaml.trabalho_compartilhado` está `null`; a unidade `U27-resume-via-action` terminou com guest parado/preservado e locks KVM/Docker/AVD liberados.
 
 ## Competências ativas nesta unidade
 - `telemetry-data-visualization@2`
@@ -67,7 +67,7 @@
 
 ## Divergências da última reconciliação
 - corrigidas: a suposição de que deveria existir captura real Solflare versionada foi corrigida pela evidência U23/contrato; o projeto deliberadamente não guarda payload real de usuário. O registro APK `1.1.3/10013` também foi corrigido: o artefato exato é `0.0.0/1`, enquanto `1.1.3` é versão/tag da release/package.
-- portões mantidos: `RECONCILIATION_CLOSURE=PASS`, `DEPENDENCY_REFERENCES=PASS` do fechamento anterior.
+- portões atuais: catálogo `30a0fffe2ddce8701d5186d05836b73aec343b6c` + skill `4741f19df57950a9f487748e1b7d41c97dfef4b9`; `DELTA_INVENTORY=PASS`, `LEARNING_PRESERVED=PASS`, `RECONCILIATION_CLOSURE=PASS`, `DEPENDENCY_REFERENCES=PASS`.
 - recurso legado observado e não removido: `airgap-vault-kaizou-signing-simulation.lock`, U18, recurso `cpu-signing-simulation`; não pertence à unidade atual e não foi tratado como órfão por inferência.
 - pendente humana: H03.
 
@@ -89,4 +89,4 @@
 - publicação: NÃO EXECUTADA.
 
 ## Próxima unidade
-- Fechar `realSolflareForeignAccount` sem versionar payload privado; depois recalcular fecho de reconciliação/dependências. Somente se todos os gates restantes estiverem PASS declarar `U27_BINARY_HOMOLOGATION_PASS` e preparar publicação do mesmo APK, sem rebuild.
+- Único gate funcional restante: `realSolflareForeignAccount`, com resultado exato `No account found` e sem `Incompatible code`/null dereference. Depois dele, revalidar rapidamente os refs atuais e, somente com todos os gates PASS, declarar `U27_BINARY_HOMOLOGATION_PASS` e preparar publicação do mesmo APK, sem rebuild.

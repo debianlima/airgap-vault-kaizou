@@ -294,3 +294,30 @@ realSolflareForeignAccount=NOT_RUN
 U27_BINARY_HOMOLOGATION_PASS=NOT_DECLARED
 publication=NOT_RUN
 note=The historical apk_version_name=1.1.3 and apk_version_code=10013 were not properties of this exact APK. Independent aapt, installed PackageManager, Gradle source, and output-metadata.json agree on 0.0.0/1. The release tag/package version remains 1.1.3; no rebuild is authorized or required by contract v33 for this metadata correction.
+
+--- U27 resume via action route: current dependency closure ---
+unit=U27-resume-via-action
+catalog_commit=30a0fffe2ddce8701d5186d05836b73aec343b6c
+project_skill_head=4741f19df57950a9f487748e1b7d41c97dfef4b9
+catalog_validate_catalog=PASS
+project_skill_validate_skills=PASS
+project_skill_validate_provenance=PASS
+project_skill_validate_references=PASS
+project_skill_validate_project=PASS
+project_structure=PASS
+project_nonregression=PASS
+project_skill_catalog_refs=PASS_13_OF_13
+global_method_macro_refs=PASS_4_OF_4
+project_root_reference=PASS
+DELTA_INVENTORY=PASS
+LEARNING_PRESERVED=PASS
+RECONCILIATION_CLOSURE=PASS
+DEPENDENCY_REFERENCES=PASS
+realSolflareForeignAccount=NOT_RUN
+U27_BINARY_HOMOLOGATION_PASS=NOT_DECLARED
+publication=NOT_RUN
+resource_release_kvm=PASS
+resource_release_docker=PASS
+resource_release_avd=PASS
+android_resume_container_stopped=PASS_PRESERVED
+note=Current origin/main catalog was verified at 30a0fff. A stale local catalog checkout initially displayed obsolete versions, but no remote catalog repair was needed. Field-by-field comparison against b0748d showed all prior U27 learning preserved and five legitimate new telemetry consumers added. No release gate was promoted without runtime evidence.
