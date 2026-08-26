@@ -462,20 +462,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
-  unidade: U29-monero-transport-parser
-  descricao: implementar transporte/parsing XMR byte-preserving sem signer nem rede
-  agente: terminal-oracle
-  atualizado_em: '2026-08-26T18:29:00-03:00'
-  previsao_termino: '2026-08-26T20:45:00-03:00'
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - src/app/services/monero-airgap/**
-  - scripts/airgap-vault-kaizou-monero-transport-gate.js
-  - logs/U29-2026-08-26-monero-transport-parser.log
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8175,6 +8162,40 @@ entradas:
   produz: null
   aceite: test -s logs/U28-2026-08-26-monero-protocol-research.log && grep -q 'MONERO_PROTOCOL_RESEARCH_PASS=PASS'
     logs/U28-2026-08-26-monero-protocol-research.log
+  status: aceito
+- id: 952
+  caminho: src/app/services/monero-airgap/monero-airgap.service.ts
+  proposito: transportar payloads wallet2 Monero por BC-UR preservando bytes e exigindo
+    coerência entre UR type e magic/version atual
+  tipo: implementacao-protocolo
+  consome:
+  - 948
+  - 949
+  - 950
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 11 --include src/app/services/monero-airgap/monero-airgap.service.spec.ts
+  status: aceito
+- id: 953
+  caminho: src/app/services/monero-airgap/monero-airgap.service.spec.ts
+  proposito: provar round-trip byte-a-byte dos quatro UR types XMR e rejeição explícita
+    dos fixtures oficiais legados v3
+  tipo: teste-integracao
+  consome:
+  - 952
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 11 --include src/app/services/monero-airgap/monero-airgap.service.spec.ts
+  status: aceito
+- id: 954
+  caminho: logs/U29-2026-08-26-monero-transport-parser.log
+  proposito: registrar hashes dos fixtures oficiais Monero v3 usados como negativos
+    e resultado do gate de transporte XMR
+  tipo: evidencia-teste
+  consome:
+  - 952
+  - 953
+  produz: null
+  aceite: test -s logs/U29-2026-08-26-monero-transport-parser.log && grep -q 'MONERO_TRANSPORT_PARSER_PASS=PASS'
+    logs/U29-2026-08-26-monero-transport-parser.log
   status: aceito
 procedencia_externa:
 - entrada: 802

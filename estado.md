@@ -35,7 +35,7 @@
 - Nenhuma pendência técnica U27.
 
 ## Trabalho compartilhado
-- `manifesto.yaml.trabalho_compartilhado` está `null`; U28 Monero protocol research encerrada e sem locks de recurso.
+- `manifesto.yaml.trabalho_compartilhado` está `null`; U29 Monero transport/parser encerrada e sem locks de recurso.
 
 ## Competências ativas nesta unidade
 - `telemetry-data-visualization@2`
@@ -70,7 +70,7 @@
 - Publicação: APK asset id `531346364`; checksum asset id `531346490`; redownload/hash PASS; corpo da release sincronizado; quatro assets remotos presentes.
 
 ## Próxima unidade
-- Próxima unidade: parser/transport XMR byte-preserving contra fixtures dos oráculos pinados; signer somente depois desse gate.
+- Próxima unidade: integrar o parser XMR ao scanner/roteamento do Vault, mantendo signer e rede fora do escopo até a homologação de transporte runtime.
 
 ## Integração Monero v34
 - Contrato: `contratos/airgap-vault-kaizou-monero.schema.json`.
@@ -82,3 +82,6 @@
 - Implementação do signer ainda não começou nesta unidade por desenho: primeiro devem existir fixtures canônicas e round-trip byte-a-byte aceitos pelos oráculos.
 
 - U28 protocol research: PASS; entradas 948–951 aceitas.
+
+- U29 transport/parser: PASS; `MoneroAirgapService` implementa BC-UR byte-preserving para `xmr-output`, `xmr-keyimage`, `xmr-txunsigned`, `xmr-txsigned`; 11/11 testes PASS; fixtures oficiais Monero v3 são rejeitados como versões legadas.
+- Entradas 952–954: `aceito`.
