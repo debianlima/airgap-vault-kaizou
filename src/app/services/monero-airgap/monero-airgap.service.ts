@@ -19,6 +19,12 @@ export interface MoneroDecodedPayload {
   bytes: Uint8Array
 }
 
+export interface MoneroCollectionProgress {
+  urType: MoneroUrType
+  progress: number
+  payload?: MoneroDecodedPayload
+}
+
 interface MoneroPayloadDefinition {
   kind: MoneroPayloadKind
   urType: MoneroUrType
@@ -158,6 +164,10 @@ function parseUrType(frame: string): MoneroUrType {
 
 @Injectable({ providedIn: 'root' })
 export class MoneroAirgapService {
+  public isMoneroUrFrame(data: string): boolean {
+    return /^ur:xmr-(output|keyimage|txunsigned|txsigned)[/]/i.test(data.trim())
+  }
+
   public encode(kind: MoneroPayloadKind, payload: Uint8Array, maxFragmentLength: number = 250): string[] {
     const definition = DEFINITION_BY_KIND.get(kind)
     if (!definition) throw new Error(`Unsupported Monero payload kind: ${kind}`)
@@ -173,7 +183,7 @@ export class MoneroAirgapService {
     return new UREncoder(ur, maxFragmentLength).encodeWhole()
   }
 
-  public decode(frames: string[]): MoneroDecodedPayload {
+  public collect(frames: string[]): MoneroCollectionProgress {
     if (frames.length === 0) throw new Error('Monero transport requires at least one UR frame')
     const normalized = frames.map((frame) => frame.trim().toLowerCase())
     const expectedType = parseUrType(normalized[0])
@@ -183,7 +193,9 @@ export class MoneroAirgapService {
 
     const decoder = new URDecoder()
     for (const frame of normalized) decoder.receivePart(frame)
-    if (!decoder.isComplete()) throw new Error('Incomplete Monero UR fountain stream')
+    if (!decoder.isComplete()) {
+      return { urType: expectedType, progress: Math.max(0, Math.min(1, decoder.getProgress())) }
+    }
     if (!decoder.isSuccess()) throw new Error(`Invalid Monero UR fountain stream: ${decoder.resultError()}`)
 
     const result = decoder.resultUR()
@@ -195,6 +207,12 @@ export class MoneroAirgapService {
       throw new Error(`Monero UR/payload mismatch: ${urType} cannot carry ${definition.kind}`)
     }
 
-    return { urType, kind: definition.kind, bytes }
+    return { urType, progress: 1, payload: { urType, kind: definition.kind, bytes } }
+  }
+
+  public decode(frames: string[]): MoneroDecodedPayload {
+    const result = this.collect(frames)
+    if (!result.payload) throw new Error('Incomplete Monero UR fountain stream')
+    return result.payload
   }
 }

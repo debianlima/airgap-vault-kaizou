@@ -23,7 +23,14 @@ const allowedProductChanges = new Set([
   'src/app/pages/deserialized-detail/deserialized-detail.effects.ts',
   'src/app/pages/deserialized-detail/deserialized-detail.effects.spec.ts',
   'src/app/pages/tab-scan/tab-scan.page.ts',
-  'src/app/pages/tab-scan/tab-scan.page.spec.ts'
+  'src/app/pages/tab-scan/tab-scan.page.spec.ts',
+  'src/app/app-routing.module.ts',
+  'src/app/services/monero-airgap/monero-airgap.service.ts',
+  'src/app/services/monero-airgap/monero-airgap.service.spec.ts',
+  'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.ts',
+  'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.html',
+  'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.spec.ts',
+  'src/app/pages/monero-airgap-detail/monero-airgap-detail.module.ts'
 ])
 const changed = execFileSync(
   'git',
@@ -31,7 +38,7 @@ const changed = execFileSync(
   { cwd: root, encoding: 'utf8' }
 ).trim().split(/\r?\n/).filter(Boolean)
 const unexpected = changed.filter((file) => !allowedProductChanges.has(file))
-if (unexpected.length) throw new Error(`unexpected product changes outside Solflare surface: ${unexpected.join(', ')}`)
+if (unexpected.length) throw new Error(`unexpected product changes outside declared Solflare/Monero surface: ${unexpected.join(', ')}`)
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'))
 if (pkg.dependencies['@keystonehq/bc-ur-registry-sol'] !== '0.9.5') throw new Error('Solana registry dependency is not pinned to 0.9.5')
 const address = fs.readFileSync(path.join(root, 'src/app/pages/account-address/account-address.page.ts'), 'utf8')
@@ -52,4 +59,20 @@ const detailsEffects = fs.readFileSync(path.join(root, 'src/app/pages/deserializ
 if (!detailsEffects.includes("String(walletProtocolIdentifier) === 'solana'")) throw new Error('Solana detail guard missing')
 if (!detailsEffects.includes('details = await wallet.protocol.getTransactionDetails(request.payload as UnsignedTransaction)')) throw new Error('Solana direct detail path missing')
 if (!detailsEffects.includes('details = await this.transactionService.getDetailsFromIACMessages([request])')) throw new Error('upstream non-Solana detail path missing')
-console.log(`PASS: Solflare changes isolated; ${changed.length} product files differ from v3.34.4 and all are declared`)
+
+const scan = fs.readFileSync(path.join(root, 'src/app/pages/tab-scan/tab-scan.page.ts'), 'utf8')
+if (!scan.includes('this.moneroAirgapService.isMoneroUrFrame(data)')) throw new Error('Monero scanner protocol guard missing')
+if (!scan.includes('this.iacService') || !scan.includes('.handleRequest(data, IACMessageTransport.QR_SCANNER')) throw new Error('existing IAC scanner path not preserved')
+const monero = fs.readFileSync(path.join(root, 'src/app/services/monero-airgap/monero-airgap.service.ts'), 'utf8')
+for (const forbidden of ['HttpClient', 'fetch(', 'XMLHttpRequest', 'signTransaction', 'secretSpendKey']) {
+  if (monero.includes(forbidden)) throw new Error(`Monero transport crossed pre-signing boundary: ${forbidden}`)
+}
+for (const required of ['xmr-output', 'xmr-keyimage', 'xmr-txunsigned', 'xmr-txsigned']) {
+  if (!monero.includes(required)) throw new Error(`Monero transport type missing: ${required}`)
+}
+const moneroRoute = fs.readFileSync(path.join(root, 'src/app/app-routing.module.ts'), 'utf8')
+if (!moneroRoute.includes("path: 'monero-airgap-detail'")) throw new Error('Monero review route missing')
+const moneroPage = fs.readFileSync(path.join(root, 'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.ts'), 'utf8')
+if (!moneroPage.includes('signingEnabled: boolean = false')) throw new Error('Monero review-only guard missing')
+if (/(sign|continue|approved)\s*\(/.test(moneroPage)) throw new Error('Monero review page exposes a signing/approval method')
+console.log(`PASS: Solflare/Monero changes isolated; ${changed.length} product files differ from v3.34.4 and all are declared`)

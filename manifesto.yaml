@@ -462,24 +462,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
-  unidade: U30-monero-scanner-routing
-  descricao: integrar scanner/roteamento XMR para revisão segura sem signer
-  agente: terminal-oracle
-  atualizado_em: '2026-08-26T18:34:00-03:00'
-  previsao_termino: '2026-08-26T21:00:00-03:00'
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - src/app/pages/tab-scan/tab-scan.page.ts
-  - src/app/pages/tab-scan/tab-scan.page.spec.ts
-  - src/app/services/monero-airgap/**
-  - src/app/pages/monero-airgap-detail/**
-  - src/app/app-routing.module.ts
-  - src/app/app.module.ts
-  - logs/U30-2026-08-26-monero-scanner-routing.log
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -2416,11 +2399,14 @@ entradas:
   status: em_curso
 - id: 241
   caminho: src/app/app-routing.module.ts
-  proposito: arquivo upstream AirGap Vault v3.34.4 preservado no bootstrap
+  proposito: roteamento lazy do Vault preservado com adição isolada da página review-only
+    Monero para payloads xmr-* completos
   tipo: nao-classificado
-  consome: []
+  consome:
+  - 952
   produz: null
-  aceite: git diff --quiet v3.34.4 -- src/app/app-routing.module.ts
+  aceite: 'grep -Fq "path: ''monero-airgap-detail''" src/app/app-routing.module.ts
+    && node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/pages/monero-airgap-detail/monero-airgap-detail.page.spec.ts'
   status: aceito
 - id: 242
   caminho: src/app/app.component.html
@@ -6119,23 +6105,23 @@ entradas:
   status: aceito
 - id: 703
   caminho: src/app/pages/tab-scan/tab-scan.page.spec.ts
-  proposito: provar que TabScanPage preserva cache visual de partes mas encaminha
-    leituras QR duplicadas ao IACService para dedupe/settle stream-aware do coletor
-    Solflare
+  proposito: 'provar separação de protocolo no scanner: IAC/Solana preservado, XMR
+    não encaminhado ao IAC, progresso multipart e rota segura review-only'
   tipo: teste-integracao
-  consome: []
+  consome:
+  - 952
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 1 --include src/app/pages/tab-scan/tab-scan.page.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 4 --include src/app/pages/tab-scan/tab-scan.page.spec.ts
   status: aceito
 - id: 704
   caminho: src/app/pages/tab-scan/tab-scan.page.ts
-  proposito: integrar scanner físico com coletor multipart stream-aware; duplicata
-    não aumenta partes visuais mas continua sendo entregue ao IACService enquanto
-    o handler decide PARTIAL/SUCCESS
+  proposito: integrar scanner físico com separação XMR/IAC; xmr-* usa coletor Monero
+    byte-preserving e só navega para revisão após payload completo
   tipo: integracao-qr
-  consome: []
+  consome:
+  - 952
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 1 --include src/app/pages/tab-scan/tab-scan.page.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 4 --include src/app/pages/tab-scan/tab-scan.page.spec.ts
   status: aceito
 - id: 705
   caminho: src/app/pages/tab-secrets/tab-secret-popover/tab-secret-popover.component.html
@@ -7968,10 +7954,13 @@ entradas:
   status: aceito
 - id: 932
   caminho: scripts/airgap-vault-kaizou-nonregression.js
-  proposito: verificar mecanicamente que a integração Solflare/stake/QR scanner está
-    isolada à superfície declarada e que demais redes permanecem upstream
+  proposito: verificar mecanicamente que as integrações Solflare e Monero ficam restritas
+    às superfícies declaradas, preservam branches legados e não introduzem signer/rede
+    XMR antes dos portões
   tipo: teste-integracao
-  consome: []
+  consome:
+  - 952
+  - 955
   produz: null
   aceite: node scripts/airgap-vault-kaizou-nonregression.js
   status: aceito
@@ -8182,25 +8171,25 @@ entradas:
   status: aceito
 - id: 952
   caminho: src/app/services/monero-airgap/monero-airgap.service.ts
-  proposito: transportar payloads wallet2 Monero por BC-UR preservando bytes e exigindo
-    coerência entre UR type e magic/version atual
+  proposito: transportar/coletar payloads wallet2 Monero por BC-UR preservando bytes,
+    progresso fountain e coerência UR type/magic/version
   tipo: implementacao-protocolo
   consome:
   - 948
   - 949
   - 950
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 11 --include src/app/services/monero-airgap/monero-airgap.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 13 --include src/app/services/monero-airgap/monero-airgap.service.spec.ts
   status: aceito
 - id: 953
   caminho: src/app/services/monero-airgap/monero-airgap.service.spec.ts
-  proposito: provar round-trip byte-a-byte dos quatro UR types XMR e rejeição explícita
-    dos fixtures oficiais legados v3
+  proposito: provar round-trip byte-a-byte, detecção/progresso fountain dos quatro
+    UR types XMR e rejeição explícita de versões legadas
   tipo: teste-integracao
   consome:
   - 952
   produz: null
-  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 11 --include src/app/services/monero-airgap/monero-airgap.service.spec.ts
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 13 --include src/app/services/monero-airgap/monero-airgap.service.spec.ts
   status: aceito
 - id: 954
   caminho: logs/U29-2026-08-26-monero-transport-parser.log
@@ -8213,6 +8202,64 @@ entradas:
   produz: null
   aceite: test -s logs/U29-2026-08-26-monero-transport-parser.log && grep -q 'MONERO_TRANSPORT_PARSER_PASS=PASS'
     logs/U29-2026-08-26-monero-transport-parser.log
+  status: aceito
+- id: 955
+  caminho: src/app/pages/monero-airgap-detail/monero-airgap-detail.page.ts
+  proposito: exibir somente tipo, tamanho e SHA-256 do payload XMR decodificado em
+    memória, sem ação de assinatura/broadcast
+  tipo: interface-revisao
+  consome:
+  - 952
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/pages/monero-airgap-detail/monero-airgap-detail.page.spec.ts
+  status: aceito
+- id: 956
+  caminho: src/app/pages/monero-airgap-detail/monero-airgap-detail.page.html
+  proposito: UI review-only para payload Monero com aviso explícito de signer desabilitado
+  tipo: interface-revisao
+  consome:
+  - 955
+  produz: null
+  aceite: grep -Fq 'Review only' src/app/pages/monero-airgap-detail/monero-airgap-detail.page.html
+    && ! grep -Eqi '\(click\).*(sign|approve|continue)' src/app/pages/monero-airgap-detail/monero-airgap-detail.page.html
+  status: aceito
+- id: 957
+  caminho: src/app/pages/monero-airgap-detail/monero-airgap-detail.module.ts
+  proposito: módulo lazy isolado da página review-only Monero
+  tipo: integracao-ui
+  consome:
+  - 955
+  - 956
+  produz: null
+  aceite: grep -Fq 'MoneroAirgapDetailPageModule' src/app/pages/monero-airgap-detail/monero-airgap-detail.module.ts
+  status: aceito
+- id: 958
+  caminho: src/app/pages/monero-airgap-detail/monero-airgap-detail.page.spec.ts
+  proposito: provar metadados SHA-256 e ausência de métodos de assinatura/aprovação
+    na página Monero
+  tipo: teste-integracao
+  consome:
+  - 955
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/pages/monero-airgap-detail/monero-airgap-detail.page.spec.ts
+  status: aceito
+- id: 959
+  caminho: logs/U30-2026-08-26-monero-scanner-routing.log
+  proposito: registrar gates de separação XMR/IAC, roteamento review-only e regressões
+    U30
+  tipo: evidencia-teste
+  consome:
+  - 703
+  - 704
+  - 952
+  - 953
+  - 955
+  - 956
+  - 957
+  - 958
+  produz: null
+  aceite: test -s logs/U30-2026-08-26-monero-scanner-routing.log && grep -q 'MONERO_SCANNER_ROUTING_PASS=PASS'
+    logs/U30-2026-08-26-monero-scanner-routing.log
   status: aceito
 procedencia_externa:
 - entrada: 802

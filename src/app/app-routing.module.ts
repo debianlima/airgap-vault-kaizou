@@ -215,6 +215,10 @@ const routes: Routes = [
   },
 
   {
+    path: 'monero-airgap-detail',
+    loadChildren: () => import('./pages/monero-airgap-detail/monero-airgap-detail.module').then((m) => m.MoneroAirgapDetailPageModule)
+  },
+  {
     path: 'deserialized-detail',
     loadChildren: () => import('./pages/deserialized-detail/deserialized-detail.module').then((m) => m.DeserializedDetailPageModule)
   },

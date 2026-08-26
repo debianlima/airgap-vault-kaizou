@@ -40,6 +40,26 @@ describe('MoneroAirgapService', () => {
     })
   }
 
+  it('recognizes only the four contracted Monero UR prefixes', () => {
+    expect(service.isMoneroUrFrame('UR:XMR-OUTPUT/AAAA')).toBeTrue()
+    expect(service.isMoneroUrFrame('ur:xmr-keyimage/aaaa')).toBeTrue()
+    expect(service.isMoneroUrFrame('ur:xmr-txunsigned/aaaa')).toBeTrue()
+    expect(service.isMoneroUrFrame('ur:xmr-txsigned/aaaa')).toBeTrue()
+    expect(service.isMoneroUrFrame('ur:sol-sign-request/aaaa')).toBeFalse()
+    expect(service.isMoneroUrFrame('ur:xmr-unknown/aaaa')).toBeFalse()
+  })
+
+  it('reports partial fountain progress without exposing a payload before completion', () => {
+    const payload = bytes('Monero unsigned tx set', 5, 1800)
+    const frames = service.encode('unsignedTransaction', payload, 60)
+    expect(frames.length).toBeGreaterThan(2)
+    const partial = service.collect([frames[0]])
+    expect(partial.urType).toBe('xmr-txunsigned')
+    expect(partial.progress).toBeGreaterThan(0)
+    expect(partial.progress).toBeLessThan(1)
+    expect(partial.payload).toBeUndefined()
+  })
+
   it('rejects the official legacy Monero outputs v3 fixture header', () => {
     const stale = bytes('Monero output export', 3, 32)
     expect(() => service.encode('outputs', stale)).toThrowError(/format version 3; contract requires 4/)

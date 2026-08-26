@@ -1,0 +1,42 @@
+<!--
+  SPDX-License-Identifier: MIT
+  AirGap Vault Kaizou modification/addition, 2026, based on AirGap Vault v3.34.4.
+  See LICENSE.md, MODIFICATIONS.md and THIRD_PARTY_NOTICES.md.
+-->
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/tab-scan"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Monero offline payload</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h2>{{ kindLabel }}</h2>
+  <ion-list>
+    <ion-item>
+      <ion-label>UR type</ion-label>
+      <ion-note slot="end">{{ urType }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Canonical payload size</ion-label>
+      <ion-note slot="end">{{ size }} bytes</ion-note>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label class="ion-text-wrap">
+        <h3>SHA-256</h3>
+        <p class="text--selectable typography--mono word-break__all">{{ sha256 }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-card color="warning">
+    <ion-card-header>
+      <ion-card-title>Review only</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Monero signing is not enabled yet. This screen proves transport and payload identity only; it cannot sign or broadcast.
+    </ion-card-content>
+  </ion-card>
+</ion-content>

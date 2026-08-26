@@ -85,3 +85,4 @@
 
 - U29 transport/parser: PASS; `MoneroAirgapService` implementa BC-UR byte-preserving para `xmr-output`, `xmr-keyimage`, `xmr-txunsigned`, `xmr-txsigned`; 11/11 testes PASS; fixtures oficiais Monero v3 são rejeitados como versões legadas.
 - Entradas 952–954: `aceito`.
+- U30 nonregression Solflare/Monero: PASS; 23 arquivos de produto divergentes do upstream estão em allowlist explícita, mantendo guards IAC/Solflare e proibindo rede/signer no transport XMR.

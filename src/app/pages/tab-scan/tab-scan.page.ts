@@ -13,6 +13,8 @@ import { ZXingScannerComponent } from '@zxing/ngx-scanner'
 import { SecurityUtilsPlugin } from 'src/app/capacitor-plugins/definitions'
 import { SECURITY_UTILS_PLUGIN } from 'src/app/capacitor-plugins/injection-tokens'
 import { IACService } from 'src/app/services/iac/iac.service'
+import { MoneroAirgapService } from 'src/app/services/monero-airgap/monero-airgap.service'
+import { NavigationService } from 'src/app/services/navigation/navigation.service'
 // import { NavigationService } from 'src/app/services/navigation/navigation.service'
 
 import { ErrorCategory, handleErrorLocal } from '../../services/error-handler/error-handler.service'
@@ -32,6 +34,7 @@ export class TabScanPage extends ScanBasePage {
   public percentageScanned: number = 0
 
   private parts: Set<string> = new Set()
+  private moneroParts: Set<string> = new Set()
 
   public isMultiQr: boolean = false
 
@@ -41,7 +44,9 @@ export class TabScanPage extends ScanBasePage {
     permissionsProvider: PermissionsService,
     @Inject(SECURITY_UTILS_PLUGIN) securityUtils: SecurityUtilsPlugin,
     private readonly iacService: IACService,
-    private readonly ngZone: NgZone // private readonly navigationService: NavigationService
+    private readonly moneroAirgapService: MoneroAirgapService,
+    private readonly navigationService: NavigationService,
+    private readonly ngZone: NgZone
   ) {
     super(platform, scanner, permissionsProvider, securityUtils)
   }
@@ -61,6 +66,7 @@ export class TabScanPage extends ScanBasePage {
 
   private resetScannerPage(): void {
     this.parts = new Set()
+    this.moneroParts = new Set()
     this.percentageScanned = 0
     this.isMultiQr = false
     this.iacService.resetHandlers()
@@ -68,6 +74,32 @@ export class TabScanPage extends ScanBasePage {
 
   public async checkScan(data: string): Promise<boolean | void> {
     this.parts.add(data)
+
+    if (this.moneroAirgapService.isMoneroUrFrame(data)) {
+      this.moneroParts.add(data)
+      this.ngZone.run(() => {
+        try {
+          const result = this.moneroAirgapService.collect(Array.from(this.moneroParts))
+          this.isMultiQr = result.progress < 1 || this.moneroParts.size > 1
+          this.percentageScanned = result.progress
+
+          if (result.payload) {
+            const payload = result.payload
+            this.resetScannerPage()
+            this.stopScan()
+            this.navigationService
+              .routeWithState('/monero-airgap-detail', { moneroPayload: payload })
+              .catch(handleErrorLocal(ErrorCategory.IONIC_NAVIGATION))
+          } else {
+            this.startScan()
+          }
+        } catch (error) {
+          handleErrorLocal(ErrorCategory.SCHEME_ROUTING)(error as Error)
+          this.startScan()
+        }
+      })
+      return
+    }
 
     // Keep the UI cache deduplicated, but always forward the carrier event to IACService.
     // Multipart handlers perform stream-aware dedupe and may need repeated captures to
