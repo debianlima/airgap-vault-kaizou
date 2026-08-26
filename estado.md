@@ -86,3 +86,14 @@
 - U29 transport/parser: PASS; `MoneroAirgapService` implementa BC-UR byte-preserving para `xmr-output`, `xmr-keyimage`, `xmr-txunsigned`, `xmr-txsigned`; 11/11 testes PASS; fixtures oficiais Monero v3 são rejeitados como versões legadas.
 - Entradas 952–954: `aceito`.
 - U30 nonregression Solflare/Monero: PASS; 23 arquivos de produto divergentes do upstream estão em allowlist explícita, mantendo guards IAC/Solflare e proibindo rede/signer no transport XMR.
+
+## U31 — Cake × Feather × Keystone3 Monero QR
+- Estudo de source/licenças concluído em refs pinados: Cake `v6.4.1` (`8f38ba6b...`), Feather `2.8.1` (`51dc8ed0...`) e Keystone3 `3.0.0` Cypherpunk (`7f2c4423...`).
+- Pareamento público: wire-compatible nos três. Keystone gera JSON version 0 com `primaryAddress`, `privateViewKey` e `restoreHeight`; Cake e Feather reconhecem esses campos. Cake v6.4.1 ainda mantém Keystone como `coming soon` na UI; Feather tem apenas ressalva de nome local porque Keystone não envia `walletName`.
+- Pareamento privado/PIN do Keystone: bloqueado para Cake/Feather nesta versão; nenhum decoder correspondente foi encontrado nos refs auditados.
+- Outputs↔key-images: compatibilidade direta três-vias por `xmr-output`/`xmr-keyimage`, CBOR byte string e bytes wallet2 canônicos.
+- Unsigned↔signed tx: compatibilidade direta três-vias por `xmr-txunsigned`/`xmr-txsigned`, CBOR byte string e bytes wallet2 canônicos.
+- Simulação byte-preserving: 4/4 PASS; relatório visual `reports/airgap-vault-kaizou-monero-compatibility.html`.
+- Licenças: Cake MIT; `cw_monero` MIT; `monero_c` LGPL-3.0; bc-ur-dart MIT; C++ bc-ur BSD-2-Clause-Patent; Feather BSD-3-Clause; Keystone3 root MIT; ur-registry e crates Monero Serai/Cuprate usados pelo firmware MIT. Biblioteca MH1903 QRDecode é pré-compilada/IP-restricted e não deve ser importada.
+- Diretriz: preferir interoperabilidade por protocolo/implementação própria no Kaizou. Qualquer futura incorporação de `monero_c` exige decisão explícita sobre LGPL-3.0 e obrigações de distribuição; qualquer componente Keystone copiado exige novo fecho de licenças por crate/arquivo.
+- Entradas 960–963: `aceito`.

@@ -462,22 +462,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
-  unidade: U31-monero-cake-feather-keystone3-study
-  descricao: estudar Cake/Feather/Keystone3 Monero QR, licencas e simular interoperabilidade
-    tres vias
-  agente: terminal-oracle
-  atualizado_em: '2026-08-26T19:05:00-03:00'
-  previsao_termino: '2026-08-26T22:00:00-03:00'
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - docs/airgap-vault-kaizou-monero-wallet-compatibility-study.md
-  - scripts/airgap-vault-kaizou-monero-compatibility-simulation.js
-  - reports/airgap-vault-kaizou-monero-compatibility.html
-  - logs/U31-2026-08-26-monero-cake-feather-keystone3-study.log
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8276,6 +8261,54 @@ entradas:
   aceite: test -s logs/U30-2026-08-26-monero-scanner-routing.log && grep -q 'MONERO_SCANNER_ROUTING_PASS=PASS'
     logs/U30-2026-08-26-monero-scanner-routing.log
   status: aceito
+- id: 960
+  caminho: docs/airgap-vault-kaizou-monero-wallet-compatibility-study.md
+  proposito: estudar interoperabilidade e licenças Cake Wallet v6.4.1, Feather 2.8.1
+    e Keystone3 firmware 3.0.0 Cypherpunk nos três métodos Monero QR
+  tipo: documentacao-protocolo
+  consome:
+  - 948
+  - 952
+  - 955
+  produz: null
+  aceite: grep -Fq 'Method 1' docs/airgap-vault-kaizou-monero-wallet-compatibility-study.md
+    && grep -Fq 'LGPL-3.0' docs/airgap-vault-kaizou-monero-wallet-compatibility-study.md
+  status: aceito
+- id: 961
+  caminho: scripts/airgap-vault-kaizou-monero-compatibility-simulation.js
+  proposito: simular pareamento público/privado e round-trip BC-UR dos quatro payloads
+    XMR, validando evidência de source quando os refs externos estão disponíveis
+  tipo: teste-integracao
+  consome:
+  - 960
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-monero-compatibility-simulation.js --source-audit
+    --references-root /home/anderson/airgap-solana-work/reference-oracles
+  status: aceito
+- id: 962
+  caminho: reports/airgap-vault-kaizou-monero-compatibility.html
+  proposito: visualizar matriz Cake/Feather/Keystone3 dos três métodos, private-QR
+    caveat, round-trip e licenças
+  tipo: relatorio-visual
+  consome:
+  - 961
+  produz: null
+  aceite: test -s reports/airgap-vault-kaizou-monero-compatibility.html && grep -Fq
+    'Cake × Feather × Keystone3' reports/airgap-vault-kaizou-monero-compatibility.html
+  status: aceito
+- id: 963
+  caminho: logs/U31-2026-08-26-monero-cake-feather-keystone3-study.log
+  proposito: registrar refs, licenças, compatibilidade dos três métodos e resultado
+    da simulação U31
+  tipo: evidencia-teste
+  consome:
+  - 960
+  - 961
+  - 962
+  produz: null
+  aceite: test -s logs/U31-2026-08-26-monero-cake-feather-keystone3-study.log && grep
+    -q 'MONERO_THREE_WAY_STUDY_PASS=PASS' logs/U31-2026-08-26-monero-cake-feather-keystone3-study.log
+  status: aceito
 procedencia_externa:
 - entrada: 802
   problema: aceitar sol-sign-request real do Solflare quando signData é transação
@@ -8391,6 +8424,32 @@ procedencia_externa:
   alteracoes: nenhum código Feather copiado; apenas nomes de tipos interoperáveis,
     coreografia observada e hashes/commits pinados
   teste_de_aceite: scripts/airgap-vault-kaizou-monero-oracle-gate.js
+- entrada: 960
+  problema: determinar compatibilidade QR Monero real de Cake com Keystone3 sem inferir
+    por nome de UR
+  degraus_tentados:
+  - source Cake v6.4.1
+  - monero_c pin exato
+  - Keystone3 firmware 3.0.0 Cypherpunk
+  adotado_de: https://github.com/cake-tech/cake_wallet/tree/v6.4.1
+  fonte_complementar: https://github.com/mrcyjanek/monero_c
+  acessado_em: '2026-08-26'
+  licenca: Cake MIT; monero_c LGPL-3.0
+  alteracoes: nenhum código externo copiado; somente estudo, assertions de protocolo
+    e hashes/refs
+  teste_de_aceite: scripts/airgap-vault-kaizou-monero-compatibility-simulation.js
+- entrada: 960
+  problema: comparar Feather QR/watch-only e assinatura offline com Keystone3
+  degraus_tentados:
+  - source Feather 2.8.1
+  - source Keystone3 3.0.0
+  - ur-registry 1.0.5 source
+  adotado_de: https://github.com/feather-wallet/feather/tree/2.8.1
+  fonte_complementar: https://github.com/KeystoneHQ/keystone3-firmware/tree/3.0.0
+  acessado_em: '2026-08-26'
+  licenca: Feather BSD-3-Clause; Keystone3 MIT com componentes externos auditáveis
+  alteracoes: nenhum código externo copiado; somente matriz de interoperabilidade
+  teste_de_aceite: scripts/airgap-vault-kaizou-monero-compatibility-simulation.js
 infraestrutura:
   perfil_requerido: terminal
   requer:
