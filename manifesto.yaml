@@ -1,5 +1,5 @@
 projeto: airgap-vault-kaizou
-versao_contrato: 33
+versao_contrato: 34
 historico_emendas:
 - versao: 33
   data: '2026-08-25'
@@ -462,7 +462,21 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
+  unidade: U28-monero-protocol-research
+  descricao: fixar contrato XMR, oraculos independentes e coreografia airgap antes de qualquer signer
+  agente: terminal-oracle
+  atualizado_em: '2026-08-26T18:24:00-03:00'
+  previsao_termino: '2026-08-26T20:30:00-03:00'
+  zona_exclusao:
+    - manifesto.yaml
+    - estado.md
+    - contratos/airgap-vault-kaizou-monero.schema.json
+    - docs/airgap-vault-kaizou-monero-integration.md
+    - scripts/airgap-vault-kaizou-monero-oracle-gate.js
+    - logs/U28-2026-08-26-monero-protocol-research.log
 entradas:
 - id: 1
   caminho: .browserslistrc
