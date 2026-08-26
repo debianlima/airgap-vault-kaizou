@@ -462,7 +462,24 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
+  unidade: U30-monero-scanner-routing
+  descricao: integrar scanner/roteamento XMR para revisão segura sem signer
+  agente: terminal-oracle
+  atualizado_em: '2026-08-26T18:34:00-03:00'
+  previsao_termino: '2026-08-26T21:00:00-03:00'
+  zona_exclusao:
+  - manifesto.yaml
+  - estado.md
+  - src/app/pages/tab-scan/tab-scan.page.ts
+  - src/app/pages/tab-scan/tab-scan.page.spec.ts
+  - src/app/services/monero-airgap/**
+  - src/app/pages/monero-airgap-detail/**
+  - src/app/app-routing.module.ts
+  - src/app/app.module.ts
+  - logs/U30-2026-08-26-monero-scanner-routing.log
 entradas:
 - id: 1
   caminho: .browserslistrc
