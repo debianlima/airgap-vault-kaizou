@@ -462,7 +462,22 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
+  unidade: U31-monero-cake-feather-keystone3-study
+  descricao: estudar Cake/Feather/Keystone3 Monero QR, licencas e simular interoperabilidade
+    tres vias
+  agente: terminal-oracle
+  atualizado_em: '2026-08-26T19:05:00-03:00'
+  previsao_termino: '2026-08-26T22:00:00-03:00'
+  zona_exclusao:
+  - manifesto.yaml
+  - estado.md
+  - docs/airgap-vault-kaizou-monero-wallet-compatibility-study.md
+  - scripts/airgap-vault-kaizou-monero-compatibility-simulation.js
+  - reports/airgap-vault-kaizou-monero-compatibility.html
+  - logs/U31-2026-08-26-monero-cake-feather-keystone3-study.log
 entradas:
 - id: 1
   caminho: .browserslistrc
