@@ -452,11 +452,12 @@ historico_emendas:
 trabalho_compartilhado:
   projeto: airgap-vault-kaizou
   caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
-  unidade: U27-local-signatures-persistence
-  descricao: executar quatro assinaturas locais e persistencia de processo no mesmo APK hash-fixado
+  unidade: U27-resume-via-action
+  descricao: retomar U27 pela rota action->win110; reconciliar metadados, persistencia e fecho binario
   agente: terminal-oracle
-  atualizado_em: '2026-08-26T08:42:00-03:00'
-  previsao_termino: '2026-08-26T10:30:00-03:00'
+  atualizado_em: '2026-08-26T17:22:00-03:00'
+  prorrogado_em: '2026-08-26T17:22:00-03:00'
+  previsao_termino: '2026-08-26T19:30:00-03:00'
   zona_exclusao:
     - manifesto.yaml
     - estado.md
