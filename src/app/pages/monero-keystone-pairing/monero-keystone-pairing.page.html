@@ -10,11 +10,22 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" [class.transparent]="hasCameraPermission | async">
   <ng-container *ngIf="!summary">
     <h2>Scan public pairing QR</h2>
     <p>Use the public Monero view-only QR from Keystone Cypherpunk. Private/PIN QR is intentionally not supported yet.</p>
-    <zxing-scanner #scanner *ngIf="isBrowser" (scanSuccess)="checkScan($event)"></zxing-scanner>
+
+    <ng-container *ngIf="hasCameraPermission | async">
+      <zxing-scanner #scanner *ngIf="isBrowser || isElectron" (scanSuccess)="checkScan($event)"></zxing-scanner>
+    </ng-container>
+
+    <div *ngIf="(hasCameraPermission | async) === false" class="ion-text-center ion-padding" (click)="requestPermission()">
+      <img src="../assets/img/permission_onboarding_camera.svg" alt="Camera permission" />
+      <h3>Camera permission required</h3>
+      <p>Camera access is used only to scan the Monero pairing QR.</p>
+      <ion-button shape="round" color="primary">Grant camera permission</ion-button>
+    </div>
+
     <ion-text color="danger" *ngIf="error"><p>{{ error }}</p></ion-text>
   </ng-container>
 

@@ -470,11 +470,13 @@ trabalho_compartilhado:
     metodos compartilhados
   agente: terminal-oracle
   atualizado_em: '2026-08-27T22:32:00-03:00'
-  previsao_termino: '2026-08-28T01:00:00-03:00'
+  previsao_termino: '2026-08-28T04:00:00-03:00'
   zona_exclusao:
   - manifesto.yaml
   - estado.md
   - logs/U33-2026-08-27-monero-pairing-android-runtime.log
+  - src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
+  prorrogado_em: '2026-08-28T00:55:00-03:00'
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -8355,15 +8357,16 @@ entradas:
   status: aceito
 - id: 967
   caminho: src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
-  proposito: preview redigido do pareamento público mostrando endereço/restoreHeight/origem
-    sem private view key
+  proposito: preview redigido do pareamento público com fluxo de permissão de câmera
+    isolado, endereço/restoreHeight/origem sem private view key
   tipo: interface-revisao
   consome:
   - 966
   produz: null
-  aceite: grep -Fq 'value is not displayed' src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
+  aceite: grep -Fq 'requestPermission()' src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
+    && grep -Fq 'value is not displayed' src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
     && ! grep -Fq '{{ summary.privateViewKey }}' src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
-  status: aceito
+  status: em_curso
 - id: 968
   caminho: src/app/pages/monero-keystone-pairing/monero-keystone-pairing.module.ts
   proposito: módulo lazy dedicado ao pareamento Monero Keystone sem alterar módulos
