@@ -462,7 +462,23 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado: null
+trabalho_compartilhado:
+  projeto: airgap-vault-kaizou
+  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
+  unidade: U32-monero-keystone-public-pairing-isolated
+  descricao: implementar pareamento publico Keystone Monero em componentes isolados
+    sem alterar metodos runtime compartilhados
+  agente: terminal-oracle
+  atualizado_em: '2026-08-27T22:24:00-03:00'
+  previsao_termino: '2026-08-28T00:15:00-03:00'
+  zona_exclusao:
+  - manifesto.yaml
+  - estado.md
+  - src/app/services/monero-keystone-pairing/**
+  - src/app/pages/monero-keystone-pairing/**
+  - src/app/app-routing.module.ts
+  - scripts/airgap-vault-kaizou-nonregression.js
+  - logs/U32-2026-08-27-monero-keystone-public-pairing.log
 entradas:
 - id: 1
   caminho: .browserslistrc
