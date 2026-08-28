@@ -2,6 +2,7 @@
 const { execFileSync } = require('child_process')
 const fs = require('fs')
 const path = require('path')
+const cp = require('child_process')
 const root = path.resolve(__dirname, '..')
 const allowedProductChanges = new Set([
   'package.json',
@@ -30,7 +31,13 @@ const allowedProductChanges = new Set([
   'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.ts',
   'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.html',
   'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.spec.ts',
-  'src/app/pages/monero-airgap-detail/monero-airgap-detail.module.ts'
+  'src/app/pages/monero-airgap-detail/monero-airgap-detail.module.ts',
+  'src/app/services/monero-keystone-pairing/monero-keystone-pairing.service.ts',
+  'src/app/services/monero-keystone-pairing/monero-keystone-pairing.service.spec.ts',
+  'src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.ts',
+  'src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html',
+  'src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.spec.ts',
+  'src/app/pages/monero-keystone-pairing/monero-keystone-pairing.module.ts'
 ])
 const changed = execFileSync(
   'git',
@@ -75,4 +82,16 @@ if (!moneroRoute.includes("path: 'monero-airgap-detail'")) throw new Error('Mone
 const moneroPage = fs.readFileSync(path.join(root, 'src/app/pages/monero-airgap-detail/monero-airgap-detail.page.ts'), 'utf8')
 if (!moneroPage.includes('signingEnabled: boolean = false')) throw new Error('Monero review-only guard missing')
 if (/(sign|continue|approved)\s*\(/.test(moneroPage)) throw new Error('Monero review page exposes a signing/approval method')
+const sharedRuntimeBaseline = '0c14f3cc53ff59e6978d4fffd7b1253dcb024b09'
+const protectedSharedRuntimeFiles = [
+  'src/app/pages/tab-scan/tab-scan.page.ts',
+  'src/app/services/navigation/navigation.service.ts',
+  'src/app/services/iac/iac.service.ts',
+  'src/app/services/transaction/transaction.service.ts'
+]
+for (const file of protectedSharedRuntimeFiles) {
+  const diff = cp.spawnSync('git', ['diff', '--quiet', sharedRuntimeBaseline, '--', file], { cwd: root })
+  if (diff.status !== 0) throw new Error(`shared runtime method changed since U31 without explicit human decision: ${file}`)
+}
+console.log('PASS: U32 shared runtime methods unchanged since U31 baseline')
 console.log(`PASS: Solflare/Monero changes isolated; ${changed.length} product files differ from v3.34.4 and all are declared`)

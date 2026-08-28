@@ -1,0 +1,41 @@
+<!--
+  SPDX-License-Identifier: MIT
+  AirGap Vault Kaizou modification/addition, 2026, based on AirGap Vault v3.34.4.
+  See LICENSE.md, MODIFICATIONS.md and THIRD_PARTY_NOTICES.md.
+-->
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start"><ion-back-button defaultHref="/tabs/tab-scan"></ion-back-button></ion-buttons>
+    <ion-title>Monero Keystone pairing</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ng-container *ngIf="!summary">
+    <h2>Scan public pairing QR</h2>
+    <p>Use the public Monero view-only QR from Keystone Cypherpunk. Private/PIN QR is intentionally not supported yet.</p>
+    <zxing-scanner #scanner *ngIf="isBrowser" (scanSuccess)="checkScan($event)"></zxing-scanner>
+    <ion-text color="danger" *ngIf="error"><p>{{ error }}</p></ion-text>
+  </ng-container>
+
+  <ng-container *ngIf="summary">
+    <ion-card>
+      <ion-card-header><ion-card-title>Pairing recognized</ion-card-title></ion-card-header>
+      <ion-card-content>
+        <p><strong>Source:</strong> {{ summary.source }}</p>
+        <p *ngIf="summary.walletName"><strong>Wallet:</strong> {{ summary.walletName }}</p>
+        <p><strong>Restore height:</strong> {{ summary.restoreHeight }}</p>
+        <p><strong>Primary address:</strong></p>
+        <p class="text--selectable typography--mono word-break__all">{{ summary.primaryAddress }}</p>
+        <p><strong>Private view key:</strong> valid and kept in memory; value is not displayed.</p>
+      </ion-card-content>
+    </ion-card>
+    <ion-button expand="block" fill="outline" (click)="scanAgain()">Scan another</ion-button>
+  </ng-container>
+
+  <ion-card color="warning">
+    <ion-card-content>
+      This step validates pairing only. It does not create a wallet, derive a spend key, sign, broadcast, or modify other cryptocurrency flows.
+    </ion-card-content>
+  </ion-card>
+</ion-content>

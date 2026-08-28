@@ -462,23 +462,7 @@ historico_emendas:
   - QR fountain multipart deve acumular fragmentos até SUCCESS sem cair no alerta
     genérico Incompatible code
   - redes não-Solana permanecem semanticamente inalteradas
-trabalho_compartilhado:
-  projeto: airgap-vault-kaizou
-  caminho: /home/anderson/airgap-solana-work/airgap-vault-kaizou-u27-terminal
-  unidade: U32-monero-keystone-public-pairing-isolated
-  descricao: implementar pareamento publico Keystone Monero em componentes isolados
-    sem alterar metodos runtime compartilhados
-  agente: terminal-oracle
-  atualizado_em: '2026-08-27T22:24:00-03:00'
-  previsao_termino: '2026-08-28T00:15:00-03:00'
-  zona_exclusao:
-  - manifesto.yaml
-  - estado.md
-  - src/app/services/monero-keystone-pairing/**
-  - src/app/pages/monero-keystone-pairing/**
-  - src/app/app-routing.module.ts
-  - scripts/airgap-vault-kaizou-nonregression.js
-  - logs/U32-2026-08-27-monero-keystone-public-pairing.log
+trabalho_compartilhado: null
 entradas:
 - id: 1
   caminho: .browserslistrc
@@ -2415,14 +2399,15 @@ entradas:
   status: em_curso
 - id: 241
   caminho: src/app/app-routing.module.ts
-  proposito: roteamento lazy do Vault preservado com adição isolada da página review-only
-    Monero para payloads xmr-* completos
+  proposito: roteamento lazy do Vault preservado com rotas Monero aditivas para review-only
+    XMR e pareamento público Keystone isolado
   tipo: nao-classificado
   consome:
   - 952
+  - 964
   produz: null
   aceite: 'grep -Fq "path: ''monero-airgap-detail''" src/app/app-routing.module.ts
-    && node scripts/airgap-vault-kaizou-karma-gate.js --expected 3 --include src/app/pages/monero-airgap-detail/monero-airgap-detail.page.spec.ts'
+    && grep -Fq "path: ''monero-keystone-pairing''" src/app/app-routing.module.ts'
   status: aceito
 - id: 242
   caminho: src/app/app.component.html
@@ -7970,13 +7955,13 @@ entradas:
   status: aceito
 - id: 932
   caminho: scripts/airgap-vault-kaizou-nonregression.js
-  proposito: verificar mecanicamente que as integrações Solflare e Monero ficam restritas
-    às superfícies declaradas, preservam branches legados e não introduzem signer/rede
-    XMR antes dos portões
+  proposito: verificar isolamento Solflare/Monero e bloquear mudanças em métodos runtime
+    compartilhados desde U31 sem decisão humana explícita
   tipo: teste-integracao
   consome:
   - 952
   - 955
+  - 964
   produz: null
   aceite: node scripts/airgap-vault-kaizou-nonregression.js
   status: aceito
@@ -8324,6 +8309,88 @@ entradas:
   produz: null
   aceite: test -s logs/U31-2026-08-26-monero-cake-feather-keystone3-study.log && grep
     -q 'MONERO_THREE_WAY_STUDY_PASS=PASS' logs/U31-2026-08-26-monero-cake-feather-keystone3-study.log
+  status: aceito
+- id: 964
+  caminho: src/app/services/monero-keystone-pairing/monero-keystone-pairing.service.ts
+  proposito: validar pareamento público Monero version 0 de Keystone/Feather sem persistir
+    ou exibir private view key e rejeitar Private QR criptografado
+  tipo: implementacao-protocolo
+  consome:
+  - 960
+  - 961
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 9 --include src/app/services/monero-keystone-pairing/monero-keystone-pairing.service.spec.ts
+  status: aceito
+- id: 965
+  caminho: src/app/services/monero-keystone-pairing/monero-keystone-pairing.service.spec.ts
+  proposito: provar shape Cake/Feather/Keystone público, redaction da view key e rejeição
+    do modo privado/PIN
+  tipo: teste-integracao
+  consome:
+  - 964
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 9 --include src/app/services/monero-keystone-pairing/monero-keystone-pairing.service.spec.ts
+  status: aceito
+- id: 966
+  caminho: src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.ts
+  proposito: scanner dedicado Monero para pareamento público Keystone sem IAC, navegação
+    compartilhada, signer ou wallet mutation
+  tipo: integracao-qr
+  consome:
+  - 964
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 4 --include src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.spec.ts
+  status: aceito
+- id: 967
+  caminho: src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
+  proposito: preview redigido do pareamento público mostrando endereço/restoreHeight/origem
+    sem private view key
+  tipo: interface-revisao
+  consome:
+  - 966
+  produz: null
+  aceite: grep -Fq 'value is not displayed' src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
+    && ! grep -Fq '{{ summary.privateViewKey }}' src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.html
+  status: aceito
+- id: 968
+  caminho: src/app/pages/monero-keystone-pairing/monero-keystone-pairing.module.ts
+  proposito: módulo lazy dedicado ao pareamento Monero Keystone sem alterar módulos
+    de outras criptos
+  tipo: integracao-ui
+  consome:
+  - 966
+  - 967
+  produz: null
+  aceite: grep -Fq 'MoneroKeystonePairingPageModule' src/app/pages/monero-keystone-pairing/monero-keystone-pairing.module.ts
+  status: aceito
+- id: 969
+  caminho: src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.spec.ts
+  proposito: provar preview seguro, ausência de IAC/navigation/transaction/wallet
+    services e retry local
+  tipo: teste-integracao
+  consome:
+  - 966
+  - 967
+  produz: null
+  aceite: node scripts/airgap-vault-kaizou-karma-gate.js --expected 4 --include src/app/pages/monero-keystone-pairing/monero-keystone-pairing.page.spec.ts
+  status: aceito
+- id: 970
+  caminho: logs/U32-2026-08-27-monero-keystone-public-pairing.log
+  proposito: registrar gates do pareamento público isolado e prova de que métodos
+    runtime compartilhados permaneceram byte-idênticos a U31
+  tipo: evidencia-teste
+  consome:
+  - 241
+  - 932
+  - 964
+  - 965
+  - 966
+  - 967
+  - 968
+  - 969
+  produz: null
+  aceite: test -s logs/U32-2026-08-27-monero-keystone-public-pairing.log && grep -q
+    'MONERO_PUBLIC_PAIRING_ISOLATED_PASS=PASS' logs/U32-2026-08-27-monero-keystone-public-pairing.log
   status: aceito
 procedencia_externa:
 - entrada: 802

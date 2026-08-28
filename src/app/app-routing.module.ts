@@ -215,6 +215,11 @@ const routes: Routes = [
   },
 
   {
+    path: 'monero-keystone-pairing',
+    loadChildren: () =>
+      import('./pages/monero-keystone-pairing/monero-keystone-pairing.module').then((m) => m.MoneroKeystonePairingPageModule)
+  },
+  {
     path: 'monero-airgap-detail',
     loadChildren: () => import('./pages/monero-airgap-detail/monero-airgap-detail.module').then((m) => m.MoneroAirgapDetailPageModule)
   },

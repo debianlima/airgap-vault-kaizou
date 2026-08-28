@@ -97,3 +97,13 @@
 - Licenças: Cake MIT; `cw_monero` MIT; `monero_c` LGPL-3.0; bc-ur-dart MIT; C++ bc-ur BSD-2-Clause-Patent; Feather BSD-3-Clause; Keystone3 root MIT; ur-registry e crates Monero Serai/Cuprate usados pelo firmware MIT. Biblioteca MH1903 QRDecode é pré-compilada/IP-restricted e não deve ser importada.
 - Diretriz: preferir interoperabilidade por protocolo/implementação própria no Kaizou. Qualquer futura incorporação de `monero_c` exige decisão explícita sobre LGPL-3.0 e obrigações de distribuição; qualquer componente Keystone copiado exige novo fecho de licenças por crate/arquivo.
 - Entradas 960–963: `aceito`.
+
+## U32 — pareamento público Keystone isolado
+- Parser version-0 público implementado em serviço Monero dedicado: primary address 95-char Monero Base58, private view key 32-byte hex e restoreHeight não negativo.
+- Private/PIN QR (`encrypted=true`) continua explicitamente bloqueado até existir decoder auditado.
+- Página dedicada `/monero-keystone-pairing` usa o scanner existente por composição/herança, mas não chama IACService, NavigationService, TransactionService nem WalletService.
+- A private view key permanece somente em memória durante parsing e não é exibida nem registrada; a UI mostra apenas endereço público, restore height, origem e confirmação de shape válido.
+- Tests: pairing service 9/9 PASS; pairing page 4/4 PASS.
+- Guard de preservação: `TabScanPage`, `NavigationService`, `IACService` e `TransactionService` estão byte-idênticos ao commit U31 `0c14f3cc...`.
+- `package.json` e `yarn.lock` não mudaram; nenhuma nova dependência/licença foi incorporada. Gate de licenças U31 foi rerodado e permaneceu PASS.
+- Entradas 964–970 aceitas; entrada 241 foi alterada somente por rota lazy aditiva e 932 passou a proteger explicitamente métodos runtime compartilhados.
